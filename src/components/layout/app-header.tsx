@@ -1,5 +1,4 @@
 import React from 'react';
-import { Sparkles } from 'lucide-react';
 import { useWeddingPlanner } from '../../hooks/use-wedding-planner';
 import { UserAuthButton } from '../auth/user-auth-button';
 
@@ -24,9 +23,12 @@ export const AppHeader: React.FC<AppHeaderProps> = ({ onOpenInvite }) => {
       <div className="max-w-md mx-auto px-4 h-14 flex items-center justify-between">
         {/* Brand & Couple Names */}
         <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-full bg-[#FDF0EE] flex items-center justify-center border border-[#F2DFDC]">
-            <Sparkles className="w-4 h-4 text-[#B86B70]" strokeWidth={1.75} />
-          </div>
+          <img
+            data-testid="header-app-logo"
+            src="/icon-192.png"
+            alt="Janji Suci"
+            className="w-8 h-8 rounded-full object-cover border border-[#ECE5DE] shadow-xs"
+          />
           <div>
             <span
               data-testid="header-couple-title"

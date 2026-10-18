@@ -1,5 +1,5 @@
 import { forwardRef } from 'react';
-import { Sparkles, CalendarHeart, CheckCircle2, WalletCards, Users } from 'lucide-react';
+import { CalendarHeart, CheckCircle2, WalletCards, Users } from 'lucide-react';
 import type { CoupleProfile, ChecklistItem, BudgetItem, GuestItem } from '../../types/wedding.types';
 import { calculateTimeRemaining, formatIndonesianDate } from '../../utils/date.utils';
 import { calculatePercentage } from '../../utils/currency.utils';
@@ -35,19 +35,17 @@ export const StoryCardPreview = forwardRef<HTMLDivElement, StoryCardPreviewProps
         {/* Subtle decorative inner border */}
         <div className="absolute inset-2.5 rounded-2xl border border-[#F2DFDC]/80 pointer-events-none" />
 
-        {/* Top Editorial Magazine Header */}
-        <div className="text-center pt-2 relative z-10">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/90 border border-[#ECE5DE] text-[10px] uppercase tracking-widest text-[#B86B70] font-semibold mb-2">
-            <Sparkles className="w-3 h-3 text-[#B86B70]" strokeWidth={1.75} />
-            <span>The Wedding Chronicle</span>
-          </div>
-          <span className="block text-[9px] uppercase tracking-widest text-[#A89B95]">
-            EverAfter Journal • Special Edition
-          </span>
+        {/* Top Brand Logo - Clean Centered */}
+        <div className="flex justify-center pt-3 pb-1 relative z-10">
+          <img
+            src="/icon-192.png"
+            alt="Janji Suci"
+            className="w-14 h-14 rounded-full object-cover shadow-xs border border-[#ECE5DE]/60"
+          />
         </div>
 
         {/* Couple & Date Section */}
-        <div className="text-center my-auto py-2 relative z-10">
+        <div className="text-center py-2 relative z-10">
           <span className="text-[11px] uppercase tracking-widest text-[#73635C] block mb-1">
             Menghitung Hari Bahagia
           </span>
