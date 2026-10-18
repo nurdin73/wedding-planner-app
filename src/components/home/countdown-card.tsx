@@ -19,22 +19,24 @@ export const CountdownCard: React.FC = () => {
     return () => clearInterval(interval);
   }, [profile.weddingDate]);
 
-  const formattedDate = formatIndonesianDate(profile.weddingDate);
+  const formattedDate = formatIndonesianDate(profile.weddingDate, { showWeekday: false });
+  const fullFormattedDate = formatIndonesianDate(profile.weddingDate);
 
   return (
     <div
       data-testid="home-countdown-card"
       className="w-full bg-white rounded-2xl p-5 border border-[#ECE5DE] shadow-ambient relative overflow-hidden"
     >
-      <div className="flex items-center justify-between mb-3">
-        <div className="flex items-center gap-2 text-[#B86B70]">
-          <CalendarHeart className="w-4 h-4" strokeWidth={1.75} />
-          <span className="text-[11px] font-medium uppercase tracking-widest text-[#B86B70]">
-            Hitung Mundur Hari Bahagia
+      <div className="flex items-center justify-between gap-3 mb-3 overflow-hidden">
+        <div className="flex items-center gap-1.5 sm:gap-2 text-[#B86B70] min-w-0 shrink">
+          <CalendarHeart className="w-4 h-4 shrink-0" strokeWidth={1.75} />
+          <span className="text-[10px] sm:text-[11px] font-medium uppercase tracking-wider sm:tracking-widest text-[#B86B70] whitespace-nowrap">
+            Hitung Mundur<span className="hidden sm:inline"> Hari Bahagia</span>
           </span>
         </div>
-        <span className="text-xs text-[#73635C] font-normal">
-          {formattedDate || 'Tanggal belum diatur'}
+        <span className="text-[11px] sm:text-xs text-[#73635C] font-normal whitespace-nowrap shrink-0">
+          <span className="hidden sm:inline">{fullFormattedDate || 'Tanggal belum diatur'}</span>
+          <span className="sm:hidden">{formattedDate || 'Belum diatur'}</span>
         </span>
       </div>
 

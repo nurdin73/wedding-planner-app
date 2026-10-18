@@ -77,9 +77,6 @@ export const BottomNav: React.FC = () => {
               >
                 {item.label}
               </span>
-              {isActive && (
-                <span className="w-1 h-1 rounded-full bg-[#B86B70] mt-0.5" />
-              )}
             </button>
           );
         })}

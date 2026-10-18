@@ -53,9 +53,6 @@ export const InvitePartnerDialog: React.FC<InvitePartnerDialogProps> = ({
         {/* Header */}
         <div className="flex items-center justify-between p-5 border-b border-stone-200 bg-white">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-full bg-rose-50 border border-rose-200 flex items-center justify-center text-rose-700">
-              <Heart className="w-4 h-4 fill-rose-500 text-rose-500" />
-            </div>
             <div>
               <h3 className="font-serif text-lg font-medium text-stone-800">
                 {isPaired ? 'Ruang Pasangan Terhubung' : 'Ajak Pasangan Kolaborasi'}
