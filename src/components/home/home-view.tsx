@@ -1,6 +1,7 @@
 import React from 'react';
 import { PlusCircle, ReceiptText, RotateCcw, Share2, BookOpen, Heart } from 'lucide-react';
 import { CountdownCard } from './countdown-card';
+import { UrgentTasksCard } from './urgent-tasks-card';
 import { PillarBarometer } from './pillar-barometer';
 import { useWeddingPlanner } from '../../hooks/use-wedding-planner';
 
@@ -72,6 +73,9 @@ export const HomeView: React.FC<HomeViewProps> = ({
           </button>
         </div>
       )}
+
+      {/* Urgent H-7 Tasks Card */}
+      <UrgentTasksCard />
 
       {/* Barometer */}
       <PillarBarometer />

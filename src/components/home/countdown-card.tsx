@@ -19,8 +19,10 @@ export const CountdownCard: React.FC = () => {
     return () => clearInterval(interval);
   }, [profile.weddingDate]);
 
-  const formattedDate = formatIndonesianDate(profile.weddingDate, { showWeekday: false });
-  const fullFormattedDate = formatIndonesianDate(profile.weddingDate);
+  const formattedDate = formatIndonesianDate(profile.weddingDate, {
+    showWeekday: true,
+    monthFormat: 'short',
+  });
 
   return (
     <div
@@ -30,13 +32,12 @@ export const CountdownCard: React.FC = () => {
       <div className="flex items-center justify-between gap-3 mb-3 overflow-hidden">
         <div className="flex items-center gap-1.5 sm:gap-2 text-[#B86B70] min-w-0 shrink">
           <CalendarHeart className="w-4 h-4 shrink-0" strokeWidth={1.75} />
-          <span className="text-[10px] sm:text-[11px] font-medium uppercase tracking-wider sm:tracking-widest text-[#B86B70] whitespace-nowrap">
-            Hitung Mundur<span className="hidden sm:inline"> Hari Bahagia</span>
+          <span className="text-[11px] font-medium uppercase tracking-wider text-[#B86B70] whitespace-nowrap">
+            Menuju Hari Bahagia
           </span>
         </div>
-        <span className="text-[11px] sm:text-xs text-[#73635C] font-normal whitespace-nowrap shrink-0">
-          <span className="hidden sm:inline">{fullFormattedDate || 'Tanggal belum diatur'}</span>
-          <span className="sm:hidden">{formattedDate || 'Belum diatur'}</span>
+        <span className="text-xs text-[#73635C] font-normal whitespace-nowrap shrink-0">
+          {formattedDate || 'Belum diatur'}
         </span>
       </div>
 

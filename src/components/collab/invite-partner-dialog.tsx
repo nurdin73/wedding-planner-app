@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Copy, Check, MessageCircle, Heart, Share2 } from 'lucide-react';
+import { X, Copy, Check, MessageCircle, Share2 } from 'lucide-react';
 import { useWeddingPlanner } from '../../hooks/use-wedding-planner';
 import { useAuth } from '../../hooks/use-auth';
 
