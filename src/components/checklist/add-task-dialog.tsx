@@ -1,0 +1,131 @@
+import React, { useState } from 'react';
+import { X } from 'lucide-react';
+import type { TimePhase } from '../../types/wedding.types';
+
+interface AddTaskDialogProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onAdd: (title: string, phase: Exclude<TimePhase, 'ALL'>, notes?: string) => void;
+  initialPhase?: TimePhase;
+}
+
+const PHASE_OPTIONS: { id: Exclude<TimePhase, 'ALL'>; label: string }[] = [
+  { id: 'H_12_6_MONTHS', label: 'H-12 s/d H-6 Bulan' },
+  { id: 'H_3_MONTHS', label: 'H-3 Bulan' },
+  { id: 'H_1_MONTH', label: 'H-1 Bulan' },
+  { id: 'H_7_DAYS', label: 'H-7 Hari' },
+  { id: 'WEDDING_DAY', label: 'Hari-H' },
+];
+
+export const AddTaskDialog: React.FC<AddTaskDialogProps> = ({
+  isOpen,
+  onClose,
+  onAdd,
+  initialPhase = 'H_12_6_MONTHS',
+}) => {
+  const defaultPhase = initialPhase === 'ALL' ? 'H_12_6_MONTHS' : initialPhase;
+  const [title, setTitle] = useState('');
+  const [phase, setPhase] = useState<Exclude<TimePhase, 'ALL'>>(defaultPhase);
+  const [notes, setNotes] = useState('');
+
+  if (!isOpen) return null;
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!title.trim()) return;
+    onAdd(title.trim(), phase, notes.trim() || undefined);
+    setTitle('');
+    setNotes('');
+    onClose();
+  };
+
+  return (
+    <div
+      data-testid="add-task-dialog"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#3A302C]/40 backdrop-blur-sm"
+    >
+      <div className="w-full max-w-sm bg-white rounded-2xl p-5 border border-[#ECE5DE] shadow-ambient">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="font-serif text-lg font-semibold text-[#3A302C]">
+            Tambah Tugas Persiapan
+          </h3>
+          <button
+            type="button"
+            data-testid="button-close-add-task"
+            onClick={onClose}
+            className="text-[#A89B95] hover:text-[#3A302C] p-1 rounded-md cursor-pointer"
+          >
+            <X className="w-4 h-4" strokeWidth={1.75} />
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="flex flex-col gap-3.5">
+          <div>
+            <label className="block text-[11px] font-medium text-[#73635C] mb-1">
+              Nama Tugas
+            </label>
+            <input
+              data-testid="input-task-title"
+              type="text"
+              placeholder="cth: Booking venue & tentukan tanggal"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              className="w-full px-3 py-2 text-sm rounded-lg bg-[#FAF8F5] border border-[#ECE5DE] text-[#3A302C] placeholder-[#A89B95] focus:outline-none focus:border-[#B86B70]"
+              required
+              autoFocus
+            />
+          </div>
+
+          <div>
+            <label className="block text-[11px] font-medium text-[#73635C] mb-1">
+              Fase Waktu
+            </label>
+            <select
+              data-testid="select-task-phase"
+              value={phase}
+              onChange={(e) => setPhase(e.target.value as Exclude<TimePhase, 'ALL'>)}
+              className="w-full px-3 py-2 text-sm rounded-lg bg-[#FAF8F5] border border-[#ECE5DE] text-[#3A302C] focus:outline-none focus:border-[#B86B70]"
+            >
+              {PHASE_OPTIONS.map((opt) => (
+                <option key={opt.id} value={opt.id}>
+                  {opt.label}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-[11px] font-medium text-[#73635C] mb-1">
+              Catatan Singkat (opsional)
+            </label>
+            <input
+              data-testid="input-task-notes"
+              type="text"
+              placeholder="cth: Kontak marketing Ibu Rini"
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              className="w-full px-3 py-2 text-sm rounded-lg bg-[#FAF8F5] border border-[#ECE5DE] text-[#3A302C] placeholder-[#A89B95] focus:outline-none focus:border-[#B86B70]"
+            />
+          </div>
+
+          <div className="flex gap-2.5 mt-2">
+            <button
+              type="button"
+              onClick={onClose}
+              className="flex-1 py-2 rounded-xl border border-[#ECE5DE] text-xs font-medium text-[#73635C] hover:bg-[#FAF8F5] transition-colors cursor-pointer"
+            >
+              Batal
+            </button>
+            <button
+              data-testid="button-submit-task"
+              type="submit"
+              className="flex-1 py-2 rounded-xl bg-[#B86B70] hover:bg-[#a65d62] text-xs font-medium text-white transition-colors cursor-pointer shadow-sm"
+            >
+              Simpan Tugas
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+};
