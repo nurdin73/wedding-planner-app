@@ -88,3 +88,13 @@ export const onboardingFormSchema = z.object({
   guestCountTarget: z.number().int().min(0, 'Target tamu tidak boleh negatif'),
 });
 export type OnboardingFormValues = z.infer<typeof onboardingFormSchema>;
+
+// 8. Join Partner Form Schema
+export const joinCodeSchema = z.object({
+  code: z
+    .string()
+    .trim()
+    .min(4, 'Kode pasangan minimal 4 karakter')
+    .max(12, 'Kode pasangan tidak valid'),
+});
+export type JoinCodeFormValues = z.infer<typeof joinCodeSchema>;

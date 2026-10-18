@@ -133,6 +133,10 @@ export interface WeddingPlannerContextType {
   state: WeddingPlannerState;
   syncStatus: SyncStatus;
   lastSyncedAt: string | null;
+  weddingId: string | null;
+  inviteCode: string | null;
+  isPaired: boolean;
+  joinWedding: (code: string) => Promise<void>;
   updateProfile: (profile: Partial<CoupleProfile>) => void;
   initializePlanner: (profile: Omit<CoupleProfile, 'isInitialized'>) => void;
   setActiveTab: (tab: ActiveTab) => void;

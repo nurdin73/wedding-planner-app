@@ -1,5 +1,5 @@
 import React from 'react';
-import { PlusCircle, ReceiptText, RotateCcw, Share2, BookOpen } from 'lucide-react';
+import { PlusCircle, ReceiptText, RotateCcw, Share2, BookOpen, Heart } from 'lucide-react';
 import { CountdownCard } from './countdown-card';
 import { PillarBarometer } from './pillar-barometer';
 import { useWeddingPlanner } from '../../hooks/use-wedding-planner';
@@ -7,10 +7,15 @@ import { useWeddingPlanner } from '../../hooks/use-wedding-planner';
 interface HomeViewProps {
   onOpenStory?: () => void;
   onOpenJournal?: () => void;
+  onOpenInvite?: () => void;
 }
 
-export const HomeView: React.FC<HomeViewProps> = ({ onOpenStory, onOpenJournal }) => {
-  const { setActiveTab, resetAllData } = useWeddingPlanner();
+export const HomeView: React.FC<HomeViewProps> = ({
+  onOpenStory,
+  onOpenJournal,
+  onOpenInvite,
+}) => {
+  const { setActiveTab, resetAllData, isPaired } = useWeddingPlanner();
 
   const handleReset = () => {
     if (window.confirm('Apakah Anda yakin ingin mereset seluruh data perencanaan pernikahan ini?')) {
@@ -31,6 +36,42 @@ export const HomeView: React.FC<HomeViewProps> = ({ onOpenStory, onOpenJournal }
           — EverAfter Journal
         </span>
       </div>
+
+      {/* Partner Collaboration Card */}
+      {onOpenInvite && (
+        <div
+          data-testid="home-collab-card"
+          className="bg-white rounded-2xl p-4 border border-[#ECE5DE] shadow-ambient flex items-center justify-between gap-3"
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-full bg-rose-50 border border-rose-200 flex items-center justify-center text-rose-600 shrink-0">
+              <Heart className={`w-4 h-4 ${isPaired ? 'fill-rose-500 text-rose-500' : 'text-rose-600'}`} />
+            </div>
+            <div>
+              <h4 className="font-serif text-sm font-semibold text-[#3A302C]">
+                {isPaired ? 'Ruang Pasangan Terhubung' : 'Kolaborasi Bersama Pasangan'}
+              </h4>
+              <p className="text-[11px] text-[#A89B95]">
+                {isPaired
+                  ? 'Kalian merencanakan pernikahan ini bersama secara realtime'
+                  : 'Kelola checklist, anggaran & tamu berdua secara realtime'}
+              </p>
+            </div>
+          </div>
+          <button
+            type="button"
+            data-testid="button-home-collab"
+            onClick={onOpenInvite}
+            className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors cursor-pointer shrink-0 ${
+              isPaired
+                ? 'bg-rose-50 border-rose-200 text-rose-700 hover:bg-rose-100'
+                : 'bg-[#3A302C] hover:bg-[#2A221F] text-white border-transparent shadow-sm'
+            }`}
+          >
+            {isPaired ? 'Kelola' : 'Hubungkan'}
+          </button>
+        </div>
+      )}
 
       {/* Barometer */}
       <PillarBarometer />

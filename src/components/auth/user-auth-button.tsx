@@ -1,9 +1,15 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { LogOut, AlertCircle, Loader2 } from 'lucide-react';
+import { LogOut, AlertCircle, Loader2, Heart, CloudCheck, CloudOff, RefreshCw } from 'lucide-react';
 import { useAuth } from '../../hooks/use-auth';
+import { useWeddingPlanner } from '../../hooks/use-wedding-planner';
 
-export const UserAuthButton: React.FC = () => {
+interface UserAuthButtonProps {
+  onOpenInvite?: () => void;
+}
+
+export const UserAuthButton: React.FC<UserAuthButtonProps> = ({ onOpenInvite }) => {
   const { user, status, isConfigured, error, signInWithGoogle, signOutUser } = useAuth();
+  const { syncStatus, lastSyncedAt, isPaired } = useWeddingPlanner();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -33,9 +39,7 @@ export const UserAuthButton: React.FC = () => {
   }
 
   if (status === 'authenticated' && user) {
-    const initials = (user.displayName || user.email || 'U')
-      .slice(0, 2)
-      .toUpperCase();
+    const initials = (user.displayName || user.email || 'U').slice(0, 2).toUpperCase();
 
     return (
       <div className="relative" ref={dropdownRef}>
@@ -43,41 +47,114 @@ export const UserAuthButton: React.FC = () => {
           type="button"
           data-testid="button-auth-profile"
           onClick={() => setIsOpen((prev) => !prev)}
-          className="flex items-center gap-1.5 pl-1 pr-2.5 py-1 rounded-full bg-white hover:bg-[#FAF8F5] border border-[#ECE5DE] text-xs text-[#3A302C] shadow-sm cursor-pointer transition-colors"
+          className="flex items-center gap-1.5 pl-1.5 pr-2.5 py-1 rounded-full bg-white hover:bg-[#FAF8F5] border border-[#ECE5DE] text-xs text-[#3A302C] shadow-sm cursor-pointer transition-colors"
           title={user.displayName || user.email || 'Profil Akun'}
         >
-          {user.photoURL ? (
-            <img
-              data-testid="auth-user-avatar"
-              src={user.photoURL}
-              alt={user.displayName || 'User'}
-              className="w-5 h-5 rounded-full object-cover border border-[#ECE5DE]"
-              referrerPolicy="no-referrer"
+          <div className="relative">
+            {user.photoURL ? (
+              <img
+                data-testid="auth-user-avatar"
+                src={user.photoURL}
+                alt={user.displayName || 'User'}
+                className="w-5 h-5 rounded-full object-cover border border-[#ECE5DE]"
+                referrerPolicy="no-referrer"
+              />
+            ) : (
+              <div
+                data-testid="auth-user-initials"
+                className="w-5 h-5 rounded-full bg-[#FDF0EE] text-[#B86B70] text-[10px] font-semibold flex items-center justify-center border border-[#F2DFDC]"
+              >
+                {initials}
+              </div>
+            )}
+            {/* Sync Status Dot */}
+            <span
+              data-testid="auth-sync-dot"
+              className={`absolute -bottom-0.5 -right-0.5 w-2 h-2 rounded-full border border-white ${
+                syncStatus === 'syncing'
+                  ? 'bg-amber-400 animate-pulse'
+                  : syncStatus === 'error'
+                  ? 'bg-rose-500'
+                  : 'bg-emerald-500'
+              }`}
+              title={syncStatus === 'saved' ? 'Tersimpan di Cloud' : syncStatus}
             />
-          ) : (
-            <div
-              data-testid="auth-user-initials"
-              className="w-5 h-5 rounded-full bg-[#FDF0EE] text-[#B86B70] text-[10px] font-semibold flex items-center justify-center border border-[#F2DFDC]"
-            >
-              {initials}
-            </div>
-          )}
-          <span className="font-medium max-w-[80px] truncate">
+          </div>
+          <span className="font-medium max-w-[75px] truncate">
             {user.displayName?.split(' ')[0] || 'Akun'}
           </span>
+          {isPaired && <span className="text-[11px]" title="Terhubung berdua">💍</span>}
         </button>
 
         {isOpen && (
           <div
             data-testid="auth-user-dropdown"
-            className="absolute right-0 mt-1.5 w-56 rounded-xl bg-white border border-[#ECE5DE] shadow-lg p-2.5 z-50 text-xs animate-in fade-in zoom-in-95 duration-100"
+            className="absolute right-0 mt-1.5 w-60 rounded-xl bg-white border border-[#ECE5DE] shadow-lg p-2.5 z-50 text-xs animate-in fade-in zoom-in-95 duration-100"
           >
-            <div className="px-2 py-1.5 border-b border-[#F2EDE8] mb-1.5">
+            {/* User Identity */}
+            <div className="px-2 py-1.5 border-b border-[#F2EDE8] mb-2">
               <p className="font-semibold text-[#3A302C] truncate">
                 {user.displayName || 'Pengguna Janji Suci'}
               </p>
               <p className="text-[11px] text-[#A89B95] truncate">{user.email}</p>
             </div>
+
+            {/* Cloud Sync Status info */}
+            <div
+              data-testid="dropdown-sync-status"
+              className="px-2 py-1.5 rounded-lg bg-[#FAF8F5] border border-[#ECE5DE] mb-2 flex items-center justify-between"
+            >
+              <div className="flex items-center gap-1.5 text-[11px] text-[#73635C]">
+                {syncStatus === 'syncing' ? (
+                  <RefreshCw className="w-3.5 h-3.5 text-amber-600 animate-spin" />
+                ) : syncStatus === 'error' ? (
+                  <CloudOff className="w-3.5 h-3.5 text-rose-600" />
+                ) : (
+                  <CloudCheck className="w-3.5 h-3.5 text-emerald-600" />
+                )}
+                <span>
+                  {syncStatus === 'syncing'
+                    ? 'Menyinkronkan...'
+                    : syncStatus === 'error'
+                    ? 'Gagal Sinkron'
+                    : 'Tersimpan di Cloud'}
+                </span>
+              </div>
+              {lastSyncedAt && <span className="text-[10px] text-[#A89B95]">{lastSyncedAt}</span>}
+            </div>
+
+            {/* Partner Collaboration Entry */}
+            {onOpenInvite && (
+              <button
+                type="button"
+                data-testid="dropdown-partner-collab-btn"
+                onClick={() => {
+                  setIsOpen(false);
+                  onOpenInvite();
+                }}
+                className="w-full flex items-center justify-between px-2 py-2 rounded-lg hover:bg-rose-50/70 text-stone-700 hover:text-rose-800 transition-colors cursor-pointer mb-2 text-left"
+              >
+                <div className="flex items-center gap-2">
+                  <Heart
+                    className={`w-3.5 h-3.5 ${
+                      isPaired ? 'fill-rose-500 text-rose-500' : 'text-rose-600'
+                    }`}
+                  />
+                  <span className="font-medium text-xs">
+                    {isPaired ? 'Ruang Pasangan' : 'Ajak Pasangan'}
+                  </span>
+                </div>
+                <span
+                  className={`text-[10px] px-1.5 py-0.5 rounded-full border ${
+                    isPaired
+                      ? 'bg-rose-50 text-rose-700 border-rose-200'
+                      : 'bg-stone-100 text-stone-600 border-stone-200'
+                  }`}
+                >
+                  {isPaired ? 'Berdua 💕' : 'Hubungkan'}
+                </span>
+              </button>
+            )}
 
             <button
               type="button"
@@ -172,3 +249,4 @@ export const UserAuthButton: React.FC = () => {
     </div>
   );
 };
+

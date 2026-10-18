@@ -12,8 +12,11 @@ export function calculateTimeRemaining(targetDateIso: string): TimeRemaining {
     return { days: 0, hours: 0, minutes: 0, seconds: 0, isPassed: false, totalDays: 0 };
   }
 
-  // Treat date as beginning of the wedding day in local time
   const target = new Date(`${targetDateIso}T08:00:00`);
+  if (isNaN(target.getTime())) {
+    return { days: 0, hours: 0, minutes: 0, seconds: 0, isPassed: false, totalDays: 0 };
+  }
+
   const now = new Date();
   const diffMs = target.getTime() - now.getTime();
 

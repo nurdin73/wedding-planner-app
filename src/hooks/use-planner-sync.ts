@@ -1,11 +1,13 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import type { AuthUser } from '../types/auth.types';
 import type { WeddingPlannerState, SyncStatus } from '../types/wedding.types';
 import {
-  fetchCloudPlanner,
-  saveCloudPlanner,
-  subscribeCloudPlanner,
-} from '../services/firestore-sync.service';
+  getOrCreateWedding,
+  joinWeddingByCode,
+  saveWeddingState,
+  subscribeWeddingWorkspace,
+  type WeddingWorkspaceData,
+} from '../services/partner-collab.service';
 import { loadPlannerState, savePlannerState } from '../utils/storage.utils';
 
 interface UsePlannerSyncProps {
@@ -17,16 +19,22 @@ interface UsePlannerSyncProps {
 export function usePlannerSync({ user, state, setState }: UsePlannerSyncProps) {
   const [syncStatus, setSyncStatus] = useState<SyncStatus>('idle');
   const [lastSyncedAt, setLastSyncedAt] = useState<string | null>(null);
+  const [weddingId, setWeddingId] = useState<string | null>(null);
+  const [inviteCode, setInviteCode] = useState<string | null>(null);
+  const [isPaired, setIsPaired] = useState(false);
 
   const isRemoteUpdateRef = useRef(false);
   const isInitialMountRef = useRef(true);
   const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // 1. Initial cloud fetch or migration when user logs in / logs out
+  // 1. Initial workspace load or logout handling
   useEffect(() => {
     if (!user) {
       setSyncStatus('idle');
-      // When logged out, revert to guest state from local storage
+      setWeddingId(null);
+      setInviteCode(null);
+      setIsPaired(false);
+      // Revert to local guest state
       const guestState = loadPlannerState(null);
       isRemoteUpdateRef.current = true;
       setState(guestState);
@@ -36,68 +44,78 @@ export function usePlannerSync({ user, state, setState }: UsePlannerSyncProps) {
     let isSubscribed = true;
     setSyncStatus('syncing');
 
-    // Immediately load fast user cache if available
+    // Fast local user cache
     const cachedUserState = loadPlannerState(user.uid);
     if (cachedUserState.profile.isInitialized) {
       isRemoteUpdateRef.current = true;
       setState(cachedUserState);
     }
 
-    async function initializeCloudSync() {
+    async function initWorkspace() {
       if (!user) return;
       try {
-        const cloudData = await fetchCloudPlanner(user.uid);
-        if (!isSubscribed) return;
+        const workspace = await getOrCreateWedding(user, state);
+        if (!isSubscribed || !workspace) return;
 
-        if (cloudData) {
-          // Cloud data exists: sync down to local state and update local cache
+        setWeddingId(workspace.id);
+        setInviteCode(workspace.inviteCode);
+        setIsPaired(workspace.members.length > 1);
+
+        if (workspace.plannerState && workspace.plannerState.profile.isInitialized) {
           isRemoteUpdateRef.current = true;
-          setState(cloudData);
-          savePlannerState(cloudData, user.uid);
-          setSyncStatus('saved');
-          setLastSyncedAt(new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }));
-        } else {
-          // First-time login: migrate current state up to Firestore & save to user cache
-          await saveCloudPlanner(user.uid, state);
-          if (!isSubscribed) return;
-          savePlannerState(state, user.uid);
-          setSyncStatus('saved');
-          setLastSyncedAt(new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }));
+          setState(workspace.plannerState);
+          savePlannerState(workspace.plannerState, user.uid);
         }
+
+        setSyncStatus('saved');
+        setLastSyncedAt(
+          new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
+        );
       } catch (err) {
-        console.error('[Cloud Sync] Failed to initialize cloud data:', err);
+        console.error('[Collab] Workspace init error:', err);
         if (isSubscribed) setSyncStatus('error');
       }
     }
 
-    initializeCloudSync();
+    initWorkspace();
 
-    // 2. Real-time snapshot listener for changes made from another device
-    const unsubscribeSnapshot = subscribeCloudPlanner(
-      user.uid,
-      (remoteState) => {
+    return () => {
+      isSubscribed = false;
+    };
+  }, [user?.uid]);
+
+  // 2. Real-time subscription to shared wedding workspace
+  useEffect(() => {
+    if (!weddingId || !user) return;
+
+    const unsubscribe = subscribeWeddingWorkspace(
+      weddingId,
+      (workspace: WeddingWorkspaceData) => {
         isRemoteUpdateRef.current = true;
+        setInviteCode(workspace.inviteCode);
+        setIsPaired(workspace.members.length > 1);
+
         setState((prev) => ({
-          ...remoteState,
-          activeTab: prev.activeTab, // keep user's current local tab intact
+          ...workspace.plannerState,
+          activeTab: prev.activeTab, // keep current active tab
         }));
+
+        savePlannerState(workspace.plannerState, user.uid);
         setSyncStatus('saved');
-        setLastSyncedAt(new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }));
+        setLastSyncedAt(
+          new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
+        );
       },
       () => {
         setSyncStatus('error');
       }
     );
 
-    return () => {
-      isSubscribed = false;
-      unsubscribeSnapshot();
-    };
-  }, [user?.uid]);
+    return () => unsubscribe();
+  }, [weddingId, user?.uid]);
 
-  // 3. Debounced cloud save when state changes
+  // 3. Debounced save to shared Firestore wedding workspace
   useEffect(() => {
-    // Skip saving on very first render or when state update was from remote Firestore
     if (isInitialMountRef.current) {
       isInitialMountRef.current = false;
       return;
@@ -108,9 +126,7 @@ export function usePlannerSync({ user, state, setState }: UsePlannerSyncProps) {
       return;
     }
 
-    if (!user) {
-      return;
-    }
+    if (!user || !weddingId) return;
 
     setSyncStatus('syncing');
 
@@ -120,12 +136,14 @@ export function usePlannerSync({ user, state, setState }: UsePlannerSyncProps) {
 
     debounceTimerRef.current = setTimeout(async () => {
       try {
-        await saveCloudPlanner(user.uid, state);
+        await saveWeddingState(weddingId, state);
         savePlannerState(state, user.uid);
         setSyncStatus('saved');
-        setLastSyncedAt(new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }));
+        setLastSyncedAt(
+          new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
+        );
       } catch (err) {
-        console.error('[Cloud Sync] Failed to save state to Firestore:', err);
+        console.error('[Collab] Failed to save state to shared workspace:', err);
         setSyncStatus('error');
       }
     }, 1000);
@@ -135,7 +153,41 @@ export function usePlannerSync({ user, state, setState }: UsePlannerSyncProps) {
         clearTimeout(debounceTimerRef.current);
       }
     };
-  }, [state, user?.uid]);
+  }, [state, user?.uid, weddingId]);
 
-  return { syncStatus, lastSyncedAt };
+  // 4. Join a partner's wedding with a code
+  const joinWedding = useCallback(
+    async (code: string) => {
+      if (!user) throw new Error('Harap login terlebih dahulu untuk menghubungkan pasangan.');
+      setSyncStatus('syncing');
+      try {
+        const workspace = await joinWeddingByCode(user, code);
+        setWeddingId(workspace.id);
+        setInviteCode(workspace.inviteCode);
+        setIsPaired(workspace.members.length > 1);
+
+        isRemoteUpdateRef.current = true;
+        setState(workspace.plannerState);
+        savePlannerState(workspace.plannerState, user.uid);
+
+        setSyncStatus('saved');
+        setLastSyncedAt(
+          new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
+        );
+      } catch (err) {
+        setSyncStatus('error');
+        throw err;
+      }
+    },
+    [user]
+  );
+
+  return {
+    syncStatus,
+    lastSyncedAt,
+    weddingId,
+    inviteCode,
+    isPaired,
+    joinWedding,
+  };
 }
