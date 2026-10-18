@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { X } from 'lucide-react';
 import type { TimePhase } from '../../types/wedding.types';
+import { taskFormSchema } from '../../schemas/wedding-forms.schema';
 
 interface AddTaskDialogProps {
   isOpen: boolean;
@@ -27,13 +28,24 @@ export const AddTaskDialog: React.FC<AddTaskDialogProps> = ({
   const [title, setTitle] = useState('');
   const [phase, setPhase] = useState<Exclude<TimePhase, 'ALL'>>(defaultPhase);
   const [notes, setNotes] = useState('');
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   if (!isOpen) return null;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!title.trim()) return;
-    onAdd(title.trim(), phase, notes.trim() || undefined);
+    const result = taskFormSchema.safeParse({ title, phase, notes });
+    if (!result.success) {
+      const fieldErrors: Record<string, string> = {};
+      for (const issue of result.error.issues) {
+        if (issue.path[0]) fieldErrors[issue.path[0].toString()] = issue.message;
+      }
+      setErrors(fieldErrors);
+      return;
+    }
+
+    setErrors({});
+    onAdd(result.data.title, result.data.phase, result.data.notes?.trim() || undefined);
     setTitle('');
     setNotes('');
     onClose();
@@ -59,7 +71,7 @@ export const AddTaskDialog: React.FC<AddTaskDialogProps> = ({
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-3.5">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-3.5" noValidate>
           <div>
             <label className="block text-[11px] font-medium text-[#73635C] mb-1">
               Nama Tugas
@@ -69,11 +81,20 @@ export const AddTaskDialog: React.FC<AddTaskDialogProps> = ({
               type="text"
               placeholder="cth: Booking venue & tentukan tanggal"
               value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              className="w-full px-3 py-2 text-sm rounded-lg bg-[#FAF8F5] border border-[#ECE5DE] text-[#3A302C] placeholder-[#A89B95] focus:outline-none focus:border-[#B86B70]"
-              required
+              onChange={(e) => {
+                setTitle(e.target.value);
+                if (errors.title) setErrors((prev) => ({ ...prev, title: '' }));
+              }}
+              className={`w-full px-3 py-2 text-sm rounded-lg bg-[#FAF8F5] border text-[#3A302C] placeholder-[#A89B95] focus:outline-none ${
+                errors.title ? 'border-rose-400 focus:border-rose-500' : 'border-[#ECE5DE] focus:border-[#B86B70]'
+              }`}
               autoFocus
             />
+            {errors.title && (
+              <p data-testid="error-task-title" className="text-[11px] text-rose-600 mt-1">
+                {errors.title}
+              </p>
+            )}
           </div>
 
           <div>

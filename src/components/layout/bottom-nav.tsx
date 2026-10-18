@@ -30,15 +30,13 @@ export const BottomNav: React.FC = () => {
       id: 'guest' as ActiveTab,
       label: 'Tamu',
       icon: Users,
-      disabled: true,
-      badge: 'Fase 2',
+      disabled: false,
     },
     {
       id: 'vendor' as ActiveTab,
       label: 'Vendor',
       icon: Building2,
-      disabled: true,
-      badge: 'Fase 2',
+      disabled: false,
     },
   ];
 
@@ -71,11 +69,6 @@ export const BottomNav: React.FC = () => {
                   className={`w-5 h-5 transition-transform ${isActive ? 'scale-110' : ''}`}
                   strokeWidth={isActive ? 2 : 1.75}
                 />
-                {item.badge && (
-                  <span className="absolute -top-1.5 -right-5 text-[8px] px-1 py-0.2 rounded-full bg-[#F5EFEB] text-[#A89B95] border border-[#ECE5DE] font-medium scale-90">
-                    {item.badge}
-                  </span>
-                )}
               </div>
               <span
                 className={`text-[11px] mt-1 tracking-tight ${

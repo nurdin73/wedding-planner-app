@@ -5,7 +5,7 @@ import { calculatePercentage, formatCompactRupiah } from '../../utils/currency.u
 
 export const PillarBarometer: React.FC = () => {
   const { state } = useWeddingPlanner();
-  const { checklist, expenses, profile } = state;
+  const { checklist, expenses, guests, profile } = state;
 
   const totalTasks = checklist.length;
   const completedTasks = checklist.filter((t) => t.isCompleted).length;
@@ -13,6 +13,8 @@ export const PillarBarometer: React.FC = () => {
 
   const totalSpent = expenses.reduce((sum, item) => sum + item.actualPaid, 0);
   const budgetPercent = calculatePercentage(totalSpent, profile.targetBudget);
+
+  const totalPax = guests.reduce((sum, g) => sum + g.paxCount, 0);
 
   return (
     <div data-testid="pillar-barometer" className="w-full grid grid-cols-3 gap-2.5">
@@ -75,7 +77,7 @@ export const PillarBarometer: React.FC = () => {
         <div className="flex items-center justify-between text-[#DFB15B]">
           <Users className="w-4 h-4" strokeWidth={1.75} />
           <span className="text-[10px] font-semibold uppercase tracking-wider text-[#73635C]">
-            Tamu
+            Tamu / Pax
           </span>
         </div>
         <div className="my-2">
@@ -83,14 +85,17 @@ export const PillarBarometer: React.FC = () => {
             data-testid="barometer-guest-pax"
             className="font-sans text-xl font-bold text-[#3A302C] tabular-nums"
           >
-            {profile.guestCountTarget || '—'}
+            {totalPax}
           </span>
           <div className="w-full bg-[#FAF8F5] h-1.5 rounded-full overflow-hidden mt-1.5 border border-[#ECE5DE]/60">
-            <div className="bg-[#DFB15B] h-full rounded-full w-0" />
+            <div
+              className="bg-[#DFB15B] h-full rounded-full transition-all duration-500"
+              style={{ width: `${Math.min(totalPax > 0 ? (totalPax / (profile.guestCountTarget || 100)) * 100 : 0, 100)}%` }}
+            />
           </div>
         </div>
-        <span className="text-[10px] text-[#A89B95]">
-          Fase 2
+        <span className="text-[10px] text-[#A89B95] tabular-nums">
+          {guests.length} Undangan
         </span>
       </div>
     </div>

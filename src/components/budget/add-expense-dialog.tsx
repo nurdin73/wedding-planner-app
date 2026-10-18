@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import { X } from 'lucide-react';
 import type { BudgetCategory } from '../../types/wedding.types';
 import { CATEGORY_OPTIONS } from '../../constants/wedding.constants';
+import { expenseFormSchema } from '../../schemas/wedding-forms.schema';
+import { MaskedCurrencyInput } from '../ui/masked-currency-input';
+import { unmaskCurrency } from '../../utils/mask.utils';
 
 interface AddExpenseDialogProps {
   isOpen: boolean;
@@ -25,17 +28,35 @@ export const AddExpenseDialog: React.FC<AddExpenseDialogProps> = ({
   const [estimatedStr, setEstimatedStr] = useState('');
   const [paidStr, setPaidStr] = useState('');
   const [notes, setNotes] = useState('');
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   if (!isOpen) return null;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!title.trim()) return;
 
-    const estimated = parseInt(estimatedStr.replace(/\D/g, ''), 10) || 0;
-    const paid = parseInt(paidStr.replace(/\D/g, ''), 10) || 0;
+    const estimated = unmaskCurrency(estimatedStr);
+    const paid = unmaskCurrency(paidStr);
 
-    onAdd(title.trim(), category, estimated, paid, notes.trim() || undefined);
+    const result = expenseFormSchema.safeParse({
+      title,
+      category,
+      estimatedCost: estimated,
+      actualPaid: paid,
+      notes,
+    });
+
+    if (!result.success) {
+      const fieldErrors: Record<string, string> = {};
+      for (const issue of result.error.issues) {
+        if (issue.path[0]) fieldErrors[issue.path[0].toString()] = issue.message;
+      }
+      setErrors(fieldErrors);
+      return;
+    }
+
+    setErrors({});
+    onAdd(result.data.title, result.data.category, result.data.estimatedCost, result.data.actualPaid, result.data.notes?.trim() || undefined);
     setTitle('');
     setEstimatedStr('');
     setPaidStr('');
@@ -63,7 +84,7 @@ export const AddExpenseDialog: React.FC<AddExpenseDialogProps> = ({
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-3.5">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-3.5" noValidate>
           <div>
             <label className="block text-[11px] font-medium text-[#73635C] mb-1">
               Nama Pos Biaya
@@ -73,11 +94,20 @@ export const AddExpenseDialog: React.FC<AddExpenseDialogProps> = ({
               type="text"
               placeholder="cth: DP Gedung Pernikahan"
               value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              className="w-full px-3 py-2 text-sm rounded-lg bg-[#FAF8F5] border border-[#ECE5DE] text-[#3A302C] placeholder-[#A89B95] focus:outline-none focus:border-[#B86B70]"
-              required
+              onChange={(e) => {
+                setTitle(e.target.value);
+                if (errors.title) setErrors((prev) => ({ ...prev, title: '' }));
+              }}
+              className={`w-full px-3 py-2 text-sm rounded-lg bg-[#FAF8F5] border text-[#3A302C] placeholder-[#A89B95] focus:outline-none ${
+                errors.title ? 'border-rose-400 focus:border-rose-500' : 'border-[#ECE5DE] focus:border-[#B86B70]'
+              }`}
               autoFocus
             />
+            {errors.title && (
+              <p data-testid="error-expense-title" className="text-[11px] text-rose-600 mt-1">
+                {errors.title}
+              </p>
+            )}
           </div>
 
           <div>
@@ -101,29 +131,25 @@ export const AddExpenseDialog: React.FC<AddExpenseDialogProps> = ({
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="block text-[11px] font-medium text-[#73635C] mb-1">
-                Estimasi Total (Rp)
+                Estimasi Total
               </label>
-              <input
-                data-testid="input-expense-estimated"
-                type="text"
-                placeholder="cth: 30000000"
+              <MaskedCurrencyInput
+                dataTestId="input-expense-estimated"
+                placeholder="cth: 30.000.000"
                 value={estimatedStr}
-                onChange={(e) => setEstimatedStr(e.target.value)}
-                className="w-full px-3 py-2 text-sm rounded-lg bg-[#FAF8F5] border border-[#ECE5DE] text-[#3A302C] placeholder-[#A89B95] focus:outline-none focus:border-[#B86B70]"
+                onChange={(masked) => setEstimatedStr(masked)}
               />
             </div>
 
             <div>
               <label className="block text-[11px] font-medium text-[#73635C] mb-1">
-                Realisasi Terbayar (Rp)
+                Realisasi Terbayar
               </label>
-              <input
-                data-testid="input-expense-paid"
-                type="text"
-                placeholder="cth: 10000000"
+              <MaskedCurrencyInput
+                dataTestId="input-expense-paid"
+                placeholder="cth: 10.000.000"
                 value={paidStr}
-                onChange={(e) => setPaidStr(e.target.value)}
-                className="w-full px-3 py-2 text-sm rounded-lg bg-[#FAF8F5] border border-[#ECE5DE] text-[#3A302C] placeholder-[#A89B95] focus:outline-none focus:border-[#B86B70]"
+                onChange={(masked) => setPaidStr(masked)}
               />
             </div>
           </div>

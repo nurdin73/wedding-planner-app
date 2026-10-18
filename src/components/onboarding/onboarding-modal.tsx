@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
-import { HeartHandshake, Calendar, Wallet } from 'lucide-react';
+import { HeartHandshake, Calendar } from 'lucide-react';
 import { useWeddingPlanner } from '../../hooks/use-wedding-planner';
+import { onboardingFormSchema } from '../../schemas/wedding-forms.schema';
+import { MaskedCurrencyInput } from '../ui/masked-currency-input';
+import { unmaskCurrency } from '../../utils/mask.utils';
 
 export const OnboardingModal: React.FC = () => {
   const { state, initializePlanner } = useWeddingPlanner();
@@ -10,7 +13,7 @@ export const OnboardingModal: React.FC = () => {
   const [groomName, setGroomName] = useState('');
   const [weddingDate, setWeddingDate] = useState('');
   const [budgetStr, setBudgetStr] = useState('');
-  const [error, setError] = useState<string | null>(null);
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   if (profile.isInitialized) {
     return null;
@@ -18,23 +21,32 @@ export const OnboardingModal: React.FC = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!brideName.trim() || !groomName.trim()) {
-      setError('Mohon masukkan nama kedua calon mempelai.');
-      return;
-    }
-    if (!weddingDate) {
-      setError('Mohon tentukan tanggal pernikahan Anda.');
-      return;
-    }
 
-    const numericBudget = parseInt(budgetStr.replace(/\D/g, ''), 10) || 0;
-
-    initializePlanner({
-      brideName: brideName.trim(),
-      groomName: groomName.trim(),
+    const numericBudget = unmaskCurrency(budgetStr);
+    const result = onboardingFormSchema.safeParse({
+      brideName,
+      groomName,
       weddingDate,
       targetBudget: numericBudget,
       guestCountTarget: 0,
+    });
+
+    if (!result.success) {
+      const fieldErrors: Record<string, string> = {};
+      for (const issue of result.error.issues) {
+        if (issue.path[0]) fieldErrors[issue.path[0].toString()] = issue.message;
+      }
+      setErrors(fieldErrors);
+      return;
+    }
+
+    setErrors({});
+    initializePlanner({
+      brideName: result.data.brideName,
+      groomName: result.data.groomName,
+      weddingDate: result.data.weddingDate,
+      targetBudget: result.data.targetBudget,
+      guestCountTarget: result.data.guestCountTarget,
     });
   };
 
@@ -56,16 +68,7 @@ export const OnboardingModal: React.FC = () => {
           </p>
         </div>
 
-        {error && (
-          <div
-            data-testid="onboarding-error"
-            className="mb-4 px-3 py-2 rounded-lg bg-[#FDF0EE] border border-[#F2DFDC] text-xs text-[#B86B70]"
-          >
-            {error}
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4" noValidate>
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="block text-[11px] font-medium text-[#73635C] mb-1">
@@ -76,10 +79,19 @@ export const OnboardingModal: React.FC = () => {
                 type="text"
                 placeholder="cth: Sarah"
                 value={brideName}
-                onChange={(e) => setBrideName(e.target.value)}
-                className="w-full px-3 py-2 text-sm rounded-lg bg-[#FAF8F5] border border-[#ECE5DE] text-[#3A302C] placeholder-[#A89B95] focus:outline-none focus:border-[#B86B70]"
-                required
+                onChange={(e) => {
+                  setBrideName(e.target.value);
+                  if (errors.brideName) setErrors((prev) => ({ ...prev, brideName: '' }));
+                }}
+                className={`w-full px-3 py-2 text-sm rounded-lg bg-[#FAF8F5] border text-[#3A302C] placeholder-[#A89B95] focus:outline-none ${
+                  errors.brideName ? 'border-rose-400 focus:border-rose-500' : 'border-[#ECE5DE] focus:border-[#B86B70]'
+                }`}
               />
+              {errors.brideName && (
+                <p data-testid="error-bride-name" className="text-[10px] text-rose-600 mt-1">
+                  {errors.brideName}
+                </p>
+              )}
             </div>
             <div>
               <label className="block text-[11px] font-medium text-[#73635C] mb-1">
@@ -90,10 +102,19 @@ export const OnboardingModal: React.FC = () => {
                 type="text"
                 placeholder="cth: Dimas"
                 value={groomName}
-                onChange={(e) => setGroomName(e.target.value)}
-                className="w-full px-3 py-2 text-sm rounded-lg bg-[#FAF8F5] border border-[#ECE5DE] text-[#3A302C] placeholder-[#A89B95] focus:outline-none focus:border-[#B86B70]"
-                required
+                onChange={(e) => {
+                  setGroomName(e.target.value);
+                  if (errors.groomName) setErrors((prev) => ({ ...prev, groomName: '' }));
+                }}
+                className={`w-full px-3 py-2 text-sm rounded-lg bg-[#FAF8F5] border text-[#3A302C] placeholder-[#A89B95] focus:outline-none ${
+                  errors.groomName ? 'border-rose-400 focus:border-rose-500' : 'border-[#ECE5DE] focus:border-[#B86B70]'
+                }`}
               />
+              {errors.groomName && (
+                <p data-testid="error-groom-name" className="text-[10px] text-rose-600 mt-1">
+                  {errors.groomName}
+                </p>
+              )}
             </div>
           </div>
 
@@ -106,29 +127,33 @@ export const OnboardingModal: React.FC = () => {
                 data-testid="input-wedding-date"
                 type="date"
                 value={weddingDate}
-                onChange={(e) => setWeddingDate(e.target.value)}
-                className="w-full px-3 py-2 text-sm rounded-lg bg-[#FAF8F5] border border-[#ECE5DE] text-[#3A302C] focus:outline-none focus:border-[#B86B70]"
-                required
+                onChange={(e) => {
+                  setWeddingDate(e.target.value);
+                  if (errors.weddingDate) setErrors((prev) => ({ ...prev, weddingDate: '' }));
+                }}
+                className={`w-full px-3 py-2 text-sm rounded-lg bg-[#FAF8F5] border text-[#3A302C] focus:outline-none ${
+                  errors.weddingDate ? 'border-rose-400 focus:border-rose-500' : 'border-[#ECE5DE] focus:border-[#B86B70]'
+                }`}
               />
               <Calendar className="w-4 h-4 text-[#A89B95] absolute right-3 top-2.5 pointer-events-none" strokeWidth={1.75} />
             </div>
+            {errors.weddingDate && (
+              <p data-testid="error-wedding-date" className="text-[10px] text-rose-600 mt-1">
+                {errors.weddingDate}
+              </p>
+            )}
           </div>
 
           <div>
             <label className="block text-[11px] font-medium text-[#73635C] mb-1">
-              Target Pagu Anggaran (Rp) <span className="text-[#A89B95]">(opsional)</span>
+              Target Pagu Anggaran <span className="text-[#A89B95]">(opsional)</span>
             </label>
-            <div className="relative">
-              <input
-                data-testid="input-target-budget"
-                type="text"
-                placeholder="cth: 150000000"
-                value={budgetStr}
-                onChange={(e) => setBudgetStr(e.target.value)}
-                className="w-full px-3 py-2 text-sm rounded-lg bg-[#FAF8F5] border border-[#ECE5DE] text-[#3A302C] placeholder-[#A89B95] focus:outline-none focus:border-[#B86B70]"
-              />
-              <Wallet className="w-4 h-4 text-[#A89B95] absolute right-3 top-2.5 pointer-events-none" strokeWidth={1.75} />
-            </div>
+            <MaskedCurrencyInput
+              dataTestId="input-target-budget"
+              placeholder="cth: 150.000.000"
+              value={budgetStr}
+              onChange={(masked) => setBudgetStr(masked)}
+            />
           </div>
 
           <button

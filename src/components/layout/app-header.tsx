@@ -1,8 +1,14 @@
 import React from 'react';
-import { Sparkles, UserCheck } from 'lucide-react';
+import { Sparkles, Share2 } from 'lucide-react';
 import { useWeddingPlanner } from '../../hooks/use-wedding-planner';
+import { UserAuthButton } from '../auth/user-auth-button';
+import { CloudSyncBadge } from './cloud-sync-badge';
 
-export const AppHeader: React.FC = () => {
+interface AppHeaderProps {
+  onOpenStory?: () => void;
+}
+
+export const AppHeader: React.FC<AppHeaderProps> = ({ onOpenStory }) => {
   const { state } = useWeddingPlanner();
   const { profile } = state;
 
@@ -34,12 +40,21 @@ export const AppHeader: React.FC = () => {
           </div>
         </div>
 
-        <div
-          data-testid="header-mode-badge"
-          className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#FAF8F5] border border-[#ECE5DE] text-[11px] font-medium text-[#73635C]"
-        >
-          <UserCheck className="w-3.5 h-3.5 text-[#58755E]" strokeWidth={1.75} />
-          <span>Tamu</span>
+        <div className="flex items-center gap-2">
+          {onOpenStory && (
+            <button
+              type="button"
+              data-testid="button-header-share-story"
+              onClick={onOpenStory}
+              className="p-1.5 rounded-full bg-white hover:bg-[#FAF8F5] border border-[#ECE5DE] text-[#B86B70] shadow-sm cursor-pointer transition-colors"
+              title="Bagikan Story Medsos"
+            >
+              <Share2 className="w-3.5 h-3.5" strokeWidth={1.75} />
+            </button>
+          )}
+
+          <CloudSyncBadge />
+          <UserAuthButton />
         </div>
       </div>
     </header>
