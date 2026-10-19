@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import type { AuthUser } from '../types/auth.types';
-import type { WeddingPlannerState, SyncStatus } from '../types/wedding.types';
+import type { WeddingPlannerState, SyncStatus, WorkspaceMemberInfo } from '../types/wedding.types';
 import {
   getOrCreateWedding,
   joinWeddingByCode,
@@ -22,6 +22,7 @@ export function usePlannerSync({ user, state, setState }: UsePlannerSyncProps) {
   const [weddingId, setWeddingId] = useState<string | null>(null);
   const [inviteCode, setInviteCode] = useState<string | null>(null);
   const [isPaired, setIsPaired] = useState(false);
+  const [membersInfo, setMembersInfo] = useState<WorkspaceMemberInfo[]>([]);
 
   const isRemoteUpdateRef = useRef(false);
   const isInitialMountRef = useRef(true);
@@ -34,6 +35,7 @@ export function usePlannerSync({ user, state, setState }: UsePlannerSyncProps) {
       setWeddingId(null);
       setInviteCode(null);
       setIsPaired(false);
+      setMembersInfo([]);
       // Revert to local guest state
       const guestState = loadPlannerState(null);
       isRemoteUpdateRef.current = true;
@@ -60,6 +62,9 @@ export function usePlannerSync({ user, state, setState }: UsePlannerSyncProps) {
         setWeddingId(workspace.id);
         setInviteCode(workspace.inviteCode);
         setIsPaired(workspace.members.length > 1);
+        if (workspace.membersInfo) {
+          setMembersInfo(workspace.membersInfo);
+        }
 
         if (workspace.plannerState && workspace.plannerState.profile.isInitialized) {
           isRemoteUpdateRef.current = true;
@@ -94,6 +99,9 @@ export function usePlannerSync({ user, state, setState }: UsePlannerSyncProps) {
         isRemoteUpdateRef.current = true;
         setInviteCode(workspace.inviteCode);
         setIsPaired(workspace.members.length > 1);
+        if (workspace.membersInfo) {
+          setMembersInfo(workspace.membersInfo);
+        }
 
         setState((prev) => ({
           ...workspace.plannerState,
@@ -165,6 +173,9 @@ export function usePlannerSync({ user, state, setState }: UsePlannerSyncProps) {
         setWeddingId(workspace.id);
         setInviteCode(workspace.inviteCode);
         setIsPaired(workspace.members.length > 1);
+        if (workspace.membersInfo) {
+          setMembersInfo(workspace.membersInfo);
+        }
 
         isRemoteUpdateRef.current = true;
         setState(workspace.plannerState);
@@ -188,6 +199,7 @@ export function usePlannerSync({ user, state, setState }: UsePlannerSyncProps) {
     weddingId,
     inviteCode,
     isPaired,
+    membersInfo,
     joinWedding,
   };
 }

@@ -25,7 +25,7 @@ import { usePlannerSync } from '../hooks/use-planner-sync';
 export const WeddingPlannerProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user } = useAuth();
   const [state, setState] = useState<WeddingPlannerState>(() => loadPlannerState());
-  const { syncStatus, lastSyncedAt, weddingId, inviteCode, isPaired, joinWedding } = usePlannerSync({
+  const { syncStatus, lastSyncedAt, weddingId, inviteCode, isPaired, membersInfo, joinWedding } = usePlannerSync({
     user,
     state,
     setState,
@@ -239,6 +239,7 @@ export const WeddingPlannerProvider: React.FC<{ children: React.ReactNode }> = (
     weddingId,
     inviteCode,
     isPaired,
+    membersInfo,
     joinWedding,
     updateProfile,
     initializePlanner,

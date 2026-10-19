@@ -127,6 +127,14 @@ export interface WeddingPlannerState {
   activeTab: ActiveTab;
 }
 
+export interface WorkspaceMemberInfo {
+  uid: string;
+  displayName: string | null;
+  email: string | null;
+  photoURL?: string | null;
+  joinedAt?: string;
+}
+
 export type SyncStatus = 'idle' | 'syncing' | 'saved' | 'error';
 
 export interface WeddingPlannerContextType {
@@ -136,6 +144,7 @@ export interface WeddingPlannerContextType {
   weddingId: string | null;
   inviteCode: string | null;
   isPaired: boolean;
+  membersInfo?: WorkspaceMemberInfo[];
   joinWedding: (code: string) => Promise<void>;
   updateProfile: (profile: Partial<CoupleProfile>) => void;
   initializePlanner: (profile: Omit<CoupleProfile, 'isInitialized'>) => void;

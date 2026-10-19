@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { X, Copy, Check, MessageCircle, Share2 } from 'lucide-react';
+import { X, Copy, Check, MessageCircle, Share2, Users } from 'lucide-react';
 import { useWeddingPlanner } from '../../hooks/use-wedding-planner';
 import { useAuth } from '../../hooks/use-auth';
+import { PairedPartnerInfo } from './paired-partner-info';
 
 interface InvitePartnerDialogProps {
   isOpen: boolean;
@@ -15,7 +16,14 @@ export const InvitePartnerDialog: React.FC<InvitePartnerDialogProps> = ({
   onOpenJoin,
 }) => {
   const { user } = useAuth();
-  const { inviteCode, isPaired } = useWeddingPlanner();
+  const {
+    state,
+    inviteCode,
+    isPaired,
+    membersInfo,
+    weddingId,
+    lastSyncedAt,
+  } = useWeddingPlanner();
   const [copied, setCopied] = useState(false);
 
   if (!isOpen) return null;
@@ -53,6 +61,9 @@ export const InvitePartnerDialog: React.FC<InvitePartnerDialogProps> = ({
         {/* Header */}
         <div className="flex items-center justify-between p-5 border-b border-stone-200 bg-white">
           <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-full bg-rose-50 border border-rose-200 flex items-center justify-center text-rose-700">
+              <Users className="w-4 h-4 text-rose-600" />
+            </div>
             <div>
               <h3 className="font-serif text-lg font-medium text-stone-800">
                 {isPaired ? 'Ruang Pasangan Terhubung' : 'Ajak Pasangan Kolaborasi'}
@@ -67,7 +78,7 @@ export const InvitePartnerDialog: React.FC<InvitePartnerDialogProps> = ({
           <button
             data-testid="collab-invite-close-btn"
             onClick={onClose}
-            className="p-1 rounded-lg text-stone-400 hover:text-stone-600 hover:bg-stone-100 transition-colors"
+            className="p-1 rounded-lg text-stone-400 hover:text-stone-600 hover:bg-stone-100 transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
@@ -85,6 +96,16 @@ export const InvitePartnerDialog: React.FC<InvitePartnerDialogProps> = ({
                 Silakan masuk dengan akun Google terlebih dahulu (melalui tombol di pojok kanan atas) agar ruang pernikahan dapat disimpan dan dibagikan dengan pasanganmu.
               </p>
             </div>
+          ) : isPaired ? (
+            <PairedPartnerInfo
+              user={user}
+              membersInfo={membersInfo}
+              plannerState={state}
+              weddingId={weddingId}
+              inviteCode={inviteCode}
+              lastSyncedAt={lastSyncedAt}
+              onClose={onClose}
+            />
           ) : (
             <>
               {/* Kode Undangan Box */}
@@ -103,7 +124,7 @@ export const InvitePartnerDialog: React.FC<InvitePartnerDialogProps> = ({
                     data-testid="collab-invite-copy-code-btn"
                     onClick={handleCopy}
                     disabled={!inviteCode}
-                    className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-rose-700 bg-rose-50 hover:bg-rose-100 rounded-lg transition-colors border border-rose-200"
+                    className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-rose-700 bg-rose-50 hover:bg-rose-100 rounded-lg transition-colors border border-rose-200 cursor-pointer"
                   >
                     {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
                     {copied ? 'Tersalin' : 'Salin Tautan'}
@@ -117,7 +138,7 @@ export const InvitePartnerDialog: React.FC<InvitePartnerDialogProps> = ({
                   data-testid="collab-invite-whatsapp-btn"
                   onClick={handleWhatsAppShare}
                   disabled={!inviteCode}
-                  className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-medium text-sm transition-all shadow-sm active:scale-[0.99] disabled:opacity-50"
+                  className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-medium text-sm transition-all shadow-sm active:scale-[0.99] disabled:opacity-50 cursor-pointer"
                 >
                   <MessageCircle className="w-4 h-4 fill-current" />
                   Kirim Undangan lewat WhatsApp
@@ -127,7 +148,7 @@ export const InvitePartnerDialog: React.FC<InvitePartnerDialogProps> = ({
                   data-testid="collab-invite-copy-link-btn"
                   onClick={handleCopy}
                   disabled={!inviteCode}
-                  className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-white hover:bg-stone-100 text-stone-700 font-medium text-sm transition-all border border-stone-300 active:scale-[0.99] disabled:opacity-50"
+                  className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-white hover:bg-stone-100 text-stone-700 font-medium text-sm transition-all border border-stone-300 active:scale-[0.99] disabled:opacity-50 cursor-pointer"
                 >
                   <Share2 className="w-4 h-4 text-stone-500" />
                   {copied ? 'Tautan Berhasil Disalin!' : 'Salin Tautan Gabung'}
@@ -146,7 +167,7 @@ export const InvitePartnerDialog: React.FC<InvitePartnerDialogProps> = ({
                     onClose();
                     onOpenJoin();
                   }}
-                  className="text-xs font-medium text-rose-700 hover:text-rose-800 underline underline-offset-4"
+                  className="text-xs font-medium text-rose-700 hover:text-rose-800 underline underline-offset-4 cursor-pointer"
                 >
                   Masukkan Kode Undangan Pasangan
                 </button>
@@ -158,3 +179,4 @@ export const InvitePartnerDialog: React.FC<InvitePartnerDialogProps> = ({
     </div>
   );
 };
+

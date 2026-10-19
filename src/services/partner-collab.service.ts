@@ -9,13 +9,14 @@ import {
 } from 'firebase/firestore';
 import { db } from '../config/firebase';
 import type { AuthUser } from '../types/auth.types';
-import type { WeddingPlannerState } from '../types/wedding.types';
+import type { WeddingPlannerState, WorkspaceMemberInfo } from '../types/wedding.types';
 import { sanitizeForFirestore } from './firestore-sync.service';
 
 export interface WeddingWorkspaceData {
   id: string;
   ownerUid: string;
   members: string[];
+  membersInfo?: WorkspaceMemberInfo[];
   inviteCode: string;
   plannerState: WeddingPlannerState;
   updatedAt: string;
@@ -49,8 +50,31 @@ export async function getOrCreateWedding(
     const weddingRef = doc(db, 'weddings', weddingId);
     const weddingSnap = await getDoc(weddingRef);
 
+    const currentUserMember: WorkspaceMemberInfo = {
+      uid: user.uid,
+      displayName: user.displayName || user.email?.split('@')[0] || 'Pasangan',
+      email: user.email,
+      photoURL: user.photoURL,
+      joinedAt: new Date().toISOString(),
+    };
+
     if (weddingSnap.exists()) {
       const data = weddingSnap.data() as WeddingWorkspaceData;
+      const existingMembersInfo = data.membersInfo || [];
+      const hasCurrent = existingMembersInfo.some((m) => m.uid === user.uid);
+      if (!hasCurrent || !data.membersInfo) {
+        const updatedMembers = hasCurrent
+          ? existingMembersInfo
+          : [...existingMembersInfo, currentUserMember];
+        try {
+          await updateDoc(weddingRef, {
+            membersInfo: updatedMembers,
+          });
+          data.membersInfo = updatedMembers;
+        } catch (err) {
+          console.warn('[Collab] Could not backfill membersInfo:', err);
+        }
+      }
       return data;
     }
 
@@ -60,6 +84,7 @@ export async function getOrCreateWedding(
       id: weddingId,
       ownerUid: user.uid,
       members: [user.uid],
+      membersInfo: [currentUserMember],
       inviteCode,
       plannerState: currentState,
       updatedAt: new Date().toISOString(),
@@ -123,9 +148,18 @@ export async function joinWeddingByCode(
   // restrict read access strictly to authenticated members of the wedding workspace.
   // By updating members first with arrayUnion, the write succeeds under the rule
   // (request.auth.uid in request.resource.data.members), and subsequent reads succeed.
+  const partnerMemberInfo: WorkspaceMemberInfo = {
+    uid: user.uid,
+    displayName: user.displayName || user.email?.split('@')[0] || 'Pasangan',
+    email: user.email,
+    photoURL: user.photoURL,
+    joinedAt: new Date().toISOString(),
+  };
+
   try {
     await updateDoc(weddingRef, {
       members: arrayUnion(user.uid),
+      membersInfo: arrayUnion(partnerMemberInfo),
       updatedAt: new Date().toISOString(),
     });
   } catch (error: unknown) {
