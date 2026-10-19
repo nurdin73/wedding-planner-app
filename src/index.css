@@ -4,6 +4,36 @@
   --font-serif: 'Cormorant Garamond', Georgia, serif;
   --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
 
+  /* Primary (Sage Green) - Action & CTA */
+  --color-primary: #58755E;
+  --color-primary-hover: #4B6350;
+  --color-primary-light: #E8F0EA;
+
+  /* Secondary (Dusty Rose) - Romantic Theme & Brand */
+  --color-secondary: #B86B70;
+  --color-secondary-hover: #A65D62;
+  --color-secondary-light: #FDF0EE;
+
+  /* Accent (Champagne Gold / Sand) */
+  --color-accent: #DFB15B;
+  --color-accent-light: #FAF3E0;
+
+  /* Text & Typography */
+  --color-text-main: #3A302C;
+  --color-text-muted: #73635C;
+  --color-text-subtle: #A89B95;
+
+  /* Surfaces & Background */
+  --color-background: #FAF8F5;
+  --color-surface: #FFFFFF;
+  --color-surface-muted: #F5EFEB;
+
+  /* Borders */
+  --color-border: #ECE5DE;
+  --color-border-secondary: #F2DFDC;
+  --color-secondary-border: #F2DFDC;
+
+  /* Backward Compatibility Aliases */
   --color-warm-linen: #FAF8F5;
   --color-card-white: #FFFFFF;
   --color-card-oat: #F5EFEB;

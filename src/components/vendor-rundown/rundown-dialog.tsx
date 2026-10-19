@@ -100,7 +100,7 @@ const RundownDialogForm: React.FC<RundownDialogProps> = ({
                   if (errors.time) setErrors((prev) => ({ ...prev, time: '' }));
                 }}
                 className={`w-full px-3 py-2 text-sm rounded-lg bg-[#FAF8F5] border text-[#3A302C] placeholder-[#A89B95] focus:outline-none tabular-nums ${
-                  errors.time ? 'border-rose-400 focus:border-rose-500' : 'border-[#ECE5DE] focus:border-[#B86B70]'
+                  errors.time ? 'border-rose-400 focus:border-rose-500' : 'border-[#ECE5DE] focus:border-secondary'
                 }`}
                 autoFocus
               />
@@ -125,7 +125,7 @@ const RundownDialogForm: React.FC<RundownDialogProps> = ({
                   if (errors.pic) setErrors((prev) => ({ ...prev, pic: '' }));
                 }}
                 className={`w-full px-3 py-2 text-sm rounded-lg bg-[#FAF8F5] border text-[#3A302C] placeholder-[#A89B95] focus:outline-none ${
-                  errors.pic ? 'border-rose-400 focus:border-rose-500' : 'border-[#ECE5DE] focus:border-[#B86B70]'
+                  errors.pic ? 'border-rose-400 focus:border-rose-500' : 'border-[#ECE5DE] focus:border-secondary'
                 }`}
               />
               {errors.pic && (
@@ -150,7 +150,7 @@ const RundownDialogForm: React.FC<RundownDialogProps> = ({
                 if (errors.activity) setErrors((prev) => ({ ...prev, activity: '' }));
               }}
               className={`w-full px-3 py-2 text-sm rounded-lg bg-[#FAF8F5] border text-[#3A302C] placeholder-[#A89B95] focus:outline-none ${
-                errors.activity ? 'border-rose-400 focus:border-rose-500' : 'border-[#ECE5DE] focus:border-[#B86B70]'
+                errors.activity ? 'border-rose-400 focus:border-rose-500' : 'border-[#ECE5DE] focus:border-secondary'
               }`}
             />
             {errors.activity && (
@@ -170,7 +170,7 @@ const RundownDialogForm: React.FC<RundownDialogProps> = ({
               placeholder="cth: Masjid Agung / Pelaminan Utama"
               value={location}
               onChange={(e) => setLocation(e.target.value)}
-              className="w-full px-3 py-2 text-sm rounded-lg bg-[#FAF8F5] border border-[#ECE5DE] text-[#3A302C] placeholder-[#A89B95] focus:outline-none focus:border-[#B86B70]"
+              className="w-full px-3 py-2 text-sm rounded-lg bg-[#FAF8F5] border border-[#ECE5DE] text-[#3A302C] placeholder-[#A89B95] focus:outline-none focus:border-secondary"
             />
           </div>
 
@@ -184,7 +184,7 @@ const RundownDialogForm: React.FC<RundownDialogProps> = ({
               placeholder="cth: Pastikan mahar, cincin, dan mic sudah siap"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              className="w-full px-3 py-2 text-sm rounded-lg bg-[#FAF8F5] border border-[#ECE5DE] text-[#3A302C] placeholder-[#A89B95] focus:outline-none focus:border-[#B86B70]"
+              className="w-full px-3 py-2 text-sm rounded-lg bg-[#FAF8F5] border border-[#ECE5DE] text-[#3A302C] placeholder-[#A89B95] focus:outline-none focus:border-secondary"
             />
           </div>
 
@@ -199,7 +199,7 @@ const RundownDialogForm: React.FC<RundownDialogProps> = ({
             <button
               data-testid="button-submit-rundown"
               type="submit"
-              className="flex-1 py-2 rounded-xl bg-[#B86B70] hover:bg-[#a65d62] text-xs font-medium text-white transition-colors cursor-pointer shadow-sm"
+              className="flex-1 py-2 rounded-xl bg-primary hover:bg-primary-hover text-xs font-medium text-white transition-colors cursor-pointer shadow-sm"
             >
               {rundownToEdit ? 'Simpan Perubahan' : 'Simpan Sesi'}
             </button>

@@ -20,7 +20,7 @@ export const PillarBarometer: React.FC = () => {
     <div data-testid="pillar-barometer" className="w-full grid grid-cols-3 gap-2.5">
       {/* Checklist Pillar */}
       <div className="bg-white p-3.5 rounded-2xl border border-[#ECE5DE] shadow-ambient flex flex-col justify-between">
-        <div className="flex items-center justify-between text-[#58755E]">
+        <div className="flex items-center justify-between text-primary">
           <CheckCircle2 className="w-4 h-4" strokeWidth={1.75} />
           <span className="text-[10px] font-semibold uppercase tracking-wider text-[#73635C]">
             Tugas
@@ -35,7 +35,7 @@ export const PillarBarometer: React.FC = () => {
           </span>
           <div className="w-full bg-[#FAF8F5] h-1.5 rounded-full overflow-hidden mt-1.5 border border-[#ECE5DE]/60">
             <div
-              className="bg-[#58755E] h-full rounded-full transition-all duration-500"
+              className="bg-primary h-full rounded-full transition-all duration-500"
               style={{ width: `${checklistPercent}%` }}
             />
           </div>
@@ -47,7 +47,7 @@ export const PillarBarometer: React.FC = () => {
 
       {/* Budget Pillar */}
       <div className="bg-white p-3.5 rounded-2xl border border-[#ECE5DE] shadow-ambient flex flex-col justify-between">
-        <div className="flex items-center justify-between text-[#B86B70]">
+        <div className="flex items-center justify-between text-secondary">
           <WalletCards className="w-4 h-4" strokeWidth={1.75} />
           <span className="text-[10px] font-semibold uppercase tracking-wider text-[#73635C]">
             Biaya
@@ -62,7 +62,7 @@ export const PillarBarometer: React.FC = () => {
           </span>
           <div className="w-full bg-[#FAF8F5] h-1.5 rounded-full overflow-hidden mt-1.5 border border-[#ECE5DE]/60">
             <div
-              className="bg-[#B86B70] h-full rounded-full transition-all duration-500"
+              className="bg-secondary h-full rounded-full transition-all duration-500"
               style={{ width: `${budgetPercent}%` }}
             />
           </div>

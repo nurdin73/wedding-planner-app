@@ -116,7 +116,7 @@ const ExpenseDialogForm: React.FC<ExpenseDialogProps> = ({
                 if (errors.title) setErrors((prev) => ({ ...prev, title: '' }));
               }}
               className={`w-full px-3 py-2 text-sm rounded-lg bg-[#FAF8F5] border text-[#3A302C] placeholder-[#A89B95] focus:outline-none ${
-                errors.title ? 'border-rose-400 focus:border-rose-500' : 'border-[#ECE5DE] focus:border-[#B86B70]'
+                errors.title ? 'border-rose-400 focus:border-rose-500' : 'border-[#ECE5DE] focus:border-secondary'
               }`}
               autoFocus
             />
@@ -135,7 +135,7 @@ const ExpenseDialogForm: React.FC<ExpenseDialogProps> = ({
               data-testid="select-expense-category"
               value={category}
               onChange={(e) => setCategory(e.target.value as BudgetCategory)}
-              className="w-full px-3 py-2 text-sm rounded-lg bg-[#FAF8F5] border border-[#ECE5DE] text-[#3A302C] focus:outline-none focus:border-[#B86B70]"
+              className="w-full px-3 py-2 text-sm rounded-lg bg-[#FAF8F5] border border-[#ECE5DE] text-[#3A302C] focus:outline-none focus:border-secondary"
             >
               {CATEGORY_OPTIONS.map((opt) => (
                 <option key={opt.id} value={opt.id}>
@@ -181,7 +181,7 @@ const ExpenseDialogForm: React.FC<ExpenseDialogProps> = ({
               placeholder="cth: Pelunasan H-14 di transfer via BCA"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              className="w-full px-3 py-2 text-sm rounded-lg bg-[#FAF8F5] border border-[#ECE5DE] text-[#3A302C] placeholder-[#A89B95] focus:outline-none focus:border-[#B86B70]"
+              className="w-full px-3 py-2 text-sm rounded-lg bg-[#FAF8F5] border border-[#ECE5DE] text-[#3A302C] placeholder-[#A89B95] focus:outline-none focus:border-secondary"
             />
           </div>
 
@@ -196,7 +196,7 @@ const ExpenseDialogForm: React.FC<ExpenseDialogProps> = ({
             <button
               data-testid="button-submit-expense"
               type="submit"
-              className="flex-1 py-2 rounded-xl bg-[#B86B70] hover:bg-[#a65d62] text-xs font-medium text-white transition-colors cursor-pointer shadow-sm"
+              className="flex-1 py-2 rounded-xl bg-primary hover:bg-primary-hover text-xs font-medium text-white transition-colors cursor-pointer shadow-sm"
             >
               {expenseToEdit ? 'Simpan Perubahan' : 'Simpan Pos'}
             </button>

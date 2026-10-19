@@ -30,9 +30,9 @@ export const CountdownCard: React.FC = () => {
       className="w-full bg-white rounded-2xl p-5 border border-[#ECE5DE] shadow-ambient relative overflow-hidden"
     >
       <div className="flex items-center justify-between gap-3 mb-3 overflow-hidden">
-        <div className="flex items-center gap-1.5 sm:gap-2 text-[#B86B70] min-w-0 shrink">
+        <div className="flex items-center gap-1.5 sm:gap-2 text-secondary min-w-0 shrink">
           <CalendarHeart className="w-4 h-4 shrink-0" strokeWidth={1.75} />
-          <span className="text-[11px] font-medium uppercase tracking-wider text-[#B86B70] whitespace-nowrap">
+          <span className="text-[11px] font-medium uppercase tracking-wider text-secondary whitespace-nowrap">
             Menuju Hari Bahagia
           </span>
         </div>
@@ -41,8 +41,8 @@ export const CountdownCard: React.FC = () => {
         </span>
       </div>
 
-      <div className="text-center my-2">
-        <h3 className="font-serif text-2xl font-semibold text-[#3A302C] tracking-wide">
+      <div className="text-center my-2 px-2">
+        <h3 className="font-serif text-2xl font-semibold text-[#3A302C] tracking-wide line-clamp-2 break-words [overflow-wrap:anywhere]">
           {profile.brideName} & {profile.groomName}
         </h3>
       </div>
@@ -81,7 +81,7 @@ export const CountdownCard: React.FC = () => {
         <div className="flex flex-col items-center p-2 rounded-xl bg-[#FAF8F5] border border-[#ECE5DE]/50">
           <span
             data-testid="countdown-seconds"
-            className="font-sans text-xl font-bold text-[#B86B70] tabular-nums"
+            className="font-sans text-xl font-bold text-secondary tabular-nums"
           >
             {String(remaining.seconds).padStart(2, '0')}
           </span>

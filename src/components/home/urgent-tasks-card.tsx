@@ -33,7 +33,7 @@ export const UrgentTasksCard: React.FC = () => {
         </div>
 
         {h7Tasks.length > 0 && (
-          <span className="text-xs font-semibold text-[#58755E] tabular-nums shrink-0">
+          <span className="text-xs font-semibold text-primary tabular-nums shrink-0">
             {completedCount}/{h7Tasks.length}
           </span>
         )}
@@ -43,7 +43,7 @@ export const UrgentTasksCard: React.FC = () => {
       {h7Tasks.length > 0 && (
         <div className="w-full bg-[#FAF8F5] h-1.5 rounded-full overflow-hidden border border-[#ECE5DE]/60">
           <div
-            className="bg-[#58755E] h-full rounded-full transition-all duration-500"
+            className="bg-primary h-full rounded-full transition-all duration-500"
             style={{ width: `${progressPercent}%` }}
           />
         </div>
@@ -60,7 +60,7 @@ export const UrgentTasksCard: React.FC = () => {
               className={`flex items-start gap-2.5 p-2 rounded-xl transition-colors cursor-pointer border ${
                 task.isCompleted
                   ? 'bg-[#FAF8F5]/60 border-transparent text-[#A89B95]'
-                  : 'bg-[#FAF8F5] border-[#ECE5DE]/70 text-[#3A302C] hover:border-[#B86B70]/40'
+                  : 'bg-[#FAF8F5] border-[#ECE5DE]/70 text-[#3A302C] hover:border-secondary/40'
               }`}
             >
               <button
@@ -69,21 +69,21 @@ export const UrgentTasksCard: React.FC = () => {
                 className="mt-0.5 shrink-0 transition-transform active:scale-90"
               >
                 {task.isCompleted ? (
-                  <CheckCircle2 className="w-4 h-4 text-[#58755E] fill-[#E8F0EA]" />
+                  <CheckCircle2 className="w-4 h-4 text-primary fill-primary-light" />
                 ) : (
-                  <Circle className="w-4 h-4 text-[#ECE5DE] hover:text-[#B86B70]" />
+                  <Circle className="w-4 h-4 text-[#ECE5DE] hover:text-secondary" />
                 )}
               </button>
               <div className="flex-1 min-w-0">
                 <span
-                  className={`block text-xs leading-snug break-words ${
+                  className={`block text-xs leading-snug line-clamp-2 break-words [overflow-wrap:anywhere] ${
                     task.isCompleted ? 'line-through text-[#A89B95]' : 'font-medium text-[#3A302C]'
                   }`}
                 >
                   {task.title}
                 </span>
                 {task.notes && (
-                  <span className="block text-[10px] text-[#A89B95] mt-0.5 truncate">
+                  <span className="block text-[10px] text-[#A89B95] mt-0.5 line-clamp-2 break-words [overflow-wrap:anywhere]">
                     {task.notes}
                   </span>
                 )}
@@ -95,7 +95,7 @@ export const UrgentTasksCard: React.FC = () => {
             type="button"
             data-testid="button-view-all-checklist"
             onClick={() => setActiveTab('checklist')}
-            className="flex items-center justify-center gap-1.5 text-xs text-[#73635C] hover:text-[#B86B70] font-medium pt-2 transition-colors cursor-pointer"
+            className="flex items-center justify-center gap-1.5 text-xs text-[#73635C] hover:text-secondary font-medium pt-2 transition-colors cursor-pointer"
           >
             <span>Lihat Seluruh Linimasa</span>
             <ArrowRight className="w-3.5 h-3.5" />
@@ -111,7 +111,7 @@ export const UrgentTasksCard: React.FC = () => {
             type="button"
             data-testid="button-add-h7-task"
             onClick={() => setActiveTab('checklist')}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium text-[#B86B70] hover:bg-[#FDF0EE] transition-colors cursor-pointer border border-[#B86B70]/20"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium text-secondary hover:bg-secondary-light transition-colors cursor-pointer border border-secondary/20"
           >
             <Plus className="w-3.5 h-3.5" />
             <span>Tambah Agenda di Linimasa</span>

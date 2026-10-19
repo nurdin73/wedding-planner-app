@@ -60,7 +60,7 @@ export const BottomNav: React.FC = () => {
                 item.disabled
                   ? 'opacity-40 cursor-not-allowed'
                   : isActive
-                  ? 'text-[#B86B70]'
+                  ? 'text-secondary'
                   : 'text-[#A89B95] hover:text-[#73635C]'
               }`}
             >
@@ -72,7 +72,7 @@ export const BottomNav: React.FC = () => {
               </div>
               <span
                 className={`text-[11px] mt-1 tracking-tight ${
-                  isActive ? 'font-semibold text-[#B86B70]' : 'font-normal'
+                  isActive ? 'font-semibold text-secondary' : 'font-normal'
                 }`}
               >
                 {item.label}

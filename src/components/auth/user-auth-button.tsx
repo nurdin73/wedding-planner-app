@@ -33,7 +33,7 @@ export const UserAuthButton: React.FC<UserAuthButtonProps> = ({ onOpenInvite, on
         data-testid="auth-loading-indicator"
         className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#FAF8F5] border border-[#ECE5DE] text-xs text-[#73635C]"
       >
-        <Loader2 className="w-3.5 h-3.5 animate-spin text-[#B86B70]" />
+        <Loader2 className="w-3.5 h-3.5 animate-spin text-secondary" />
         <span>Memuat...</span>
       </div>
     );
@@ -63,7 +63,7 @@ export const UserAuthButton: React.FC<UserAuthButtonProps> = ({ onOpenInvite, on
             ) : (
               <div
                 data-testid="auth-user-initials"
-                className="w-5 h-5 rounded-full bg-[#FDF0EE] text-[#B86B70] text-[10px] font-semibold flex items-center justify-center border border-[#F2DFDC]"
+                className="w-5 h-5 rounded-full bg-secondary-light text-secondary text-[10px] font-semibold flex items-center justify-center border border-secondary-border"
               >
                 {initials}
               </div>
@@ -166,9 +166,9 @@ export const UserAuthButton: React.FC<UserAuthButtonProps> = ({ onOpenInvite, on
                   setIsOpen(false);
                   onOpenReschedule();
                 }}
-                className="w-full flex items-center gap-2 px-2 py-2 rounded-lg hover:bg-stone-100 text-stone-700 hover:text-[#B86B70] transition-colors cursor-pointer text-left text-xs mb-1"
+                className="w-full flex items-center gap-2 px-2 py-2 rounded-lg hover:bg-stone-100 text-stone-700 hover:text-secondary transition-colors cursor-pointer text-left text-xs mb-1"
               >
-                <CalendarHeart className="w-3.5 h-3.5 text-[#B86B70]" />
+                <CalendarHeart className="w-3.5 h-3.5 text-secondary" />
                 <span className="font-medium">Sesuaikan Tanggal Bahagia</span>
               </button>
             )}

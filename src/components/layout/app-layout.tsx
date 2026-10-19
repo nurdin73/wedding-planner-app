@@ -17,7 +17,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
   return (
     <div
       data-testid="app-layout"
-      className="min-h-screen bg-[#FAF8F5] text-[#3A302C] flex flex-col justify-between selection:bg-[#FDF0EE] selection:text-[#B86B70]"
+      className="min-h-screen bg-[#FAF8F5] text-[#3A302C] flex flex-col justify-between selection:bg-secondary-light selection:text-secondary"
     >
       <div className="w-full max-w-md mx-auto min-h-screen bg-[#FAF8F5] flex flex-col relative border-x border-[#ECE5DE]/60 shadow-ambient pb-24">
         <AppHeader onOpenInvite={onOpenInvite} onOpenReschedule={onOpenReschedule} />

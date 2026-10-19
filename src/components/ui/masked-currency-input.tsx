@@ -31,7 +31,7 @@ export const MaskedCurrencyInput: React.FC<MaskedCurrencyInputProps> = ({
 
   return (
     <div className={`relative flex items-center rounded-lg bg-[#FAF8F5] border transition-colors ${
-      hasError ? 'border-rose-400 focus-within:border-rose-500' : 'border-[#ECE5DE] focus-within:border-[#B86B70]'
+      hasError ? 'border-rose-400 focus-within:border-rose-500' : 'border-[#ECE5DE] focus-within:border-secondary'
     } ${className}`}>
       <span className="pl-3 pr-1 text-xs font-semibold text-[#A89B95] select-none">
         Rp

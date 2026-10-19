@@ -57,8 +57,8 @@ export const OnboardingModal: React.FC = () => {
     >
       <div className="w-full max-w-sm bg-white rounded-2xl p-6 border border-[#ECE5DE] shadow-ambient">
         <div className="flex flex-col items-center text-center mb-6">
-          <div className="w-12 h-12 rounded-full bg-[#FDF0EE] flex items-center justify-center border border-[#F2DFDC] mb-3">
-            <HeartHandshake className="w-6 h-6 text-[#B86B70]" strokeWidth={1.75} />
+          <div className="w-12 h-12 rounded-full bg-secondary-light flex items-center justify-center border border-secondary-border mb-3">
+            <HeartHandshake className="w-6 h-6 text-secondary" strokeWidth={1.75} />
           </div>
           <h2 className="font-serif text-2xl font-semibold text-[#3A302C] tracking-tight">
             Janji Suci
@@ -84,7 +84,7 @@ export const OnboardingModal: React.FC = () => {
                   if (errors.brideName) setErrors((prev) => ({ ...prev, brideName: '' }));
                 }}
                 className={`w-full px-3 py-2 text-sm rounded-lg bg-[#FAF8F5] border text-[#3A302C] placeholder-[#A89B95] focus:outline-none ${
-                  errors.brideName ? 'border-rose-400 focus:border-rose-500' : 'border-[#ECE5DE] focus:border-[#B86B70]'
+                  errors.brideName ? 'border-rose-400 focus:border-rose-500' : 'border-[#ECE5DE] focus:border-secondary'
                 }`}
               />
               {errors.brideName && (
@@ -107,7 +107,7 @@ export const OnboardingModal: React.FC = () => {
                   if (errors.groomName) setErrors((prev) => ({ ...prev, groomName: '' }));
                 }}
                 className={`w-full px-3 py-2 text-sm rounded-lg bg-[#FAF8F5] border text-[#3A302C] placeholder-[#A89B95] focus:outline-none ${
-                  errors.groomName ? 'border-rose-400 focus:border-rose-500' : 'border-[#ECE5DE] focus:border-[#B86B70]'
+                  errors.groomName ? 'border-rose-400 focus:border-rose-500' : 'border-[#ECE5DE] focus:border-secondary'
                 }`}
               />
               {errors.groomName && (
@@ -132,7 +132,7 @@ export const OnboardingModal: React.FC = () => {
                   if (errors.weddingDate) setErrors((prev) => ({ ...prev, weddingDate: '' }));
                 }}
                 className={`w-full px-3 py-2 text-sm rounded-lg bg-[#FAF8F5] border text-[#3A302C] focus:outline-none ${
-                  errors.weddingDate ? 'border-rose-400 focus:border-rose-500' : 'border-[#ECE5DE] focus:border-[#B86B70]'
+                  errors.weddingDate ? 'border-rose-400 focus:border-rose-500' : 'border-[#ECE5DE] focus:border-secondary'
                 }`}
               />
               <Calendar className="w-4 h-4 text-[#A89B95] absolute right-3 top-2.5 pointer-events-none" strokeWidth={1.75} />
@@ -159,7 +159,7 @@ export const OnboardingModal: React.FC = () => {
           <button
             data-testid="button-start-planner"
             type="submit"
-            className="w-full mt-2 py-2.5 px-4 rounded-xl bg-[#B86B70] hover:bg-[#a65d62] text-white text-sm font-medium tracking-wide shadow-sm transition-colors cursor-pointer"
+            className="w-full mt-2 py-2.5 px-4 rounded-xl bg-primary hover:bg-primary-hover text-white text-sm font-medium tracking-wide shadow-sm transition-colors cursor-pointer"
           >
             Mulai Merencanakan
           </button>

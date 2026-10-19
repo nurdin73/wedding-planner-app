@@ -128,7 +128,7 @@ const VendorDialogForm: React.FC<VendorDialogProps> = ({
                 if (errors.name) setErrors((prev) => ({ ...prev, name: '' }));
               }}
               className={`w-full px-3 py-2 text-sm rounded-lg bg-[#FAF8F5] border text-[#3A302C] placeholder-[#A89B95] focus:outline-none ${
-                errors.name ? 'border-rose-400 focus:border-rose-500' : 'border-[#ECE5DE] focus:border-[#B86B70]'
+                errors.name ? 'border-rose-400 focus:border-rose-500' : 'border-[#ECE5DE] focus:border-secondary'
               }`}
               autoFocus
             />
@@ -148,7 +148,7 @@ const VendorDialogForm: React.FC<VendorDialogProps> = ({
                 data-testid="select-vendor-category"
                 value={category}
                 onChange={(e) => setCategory(e.target.value as VendorCategory)}
-                className="w-full px-3 py-2 text-sm rounded-lg bg-[#FAF8F5] border border-[#ECE5DE] text-[#3A302C] focus:outline-none focus:border-[#B86B70]"
+                className="w-full px-3 py-2 text-sm rounded-lg bg-[#FAF8F5] border border-[#ECE5DE] text-[#3A302C] focus:outline-none focus:border-secondary"
               >
                 {VENDOR_CATEGORY_OPTIONS.map((opt) => (
                   <option key={opt.id} value={opt.id}>
@@ -166,7 +166,7 @@ const VendorDialogForm: React.FC<VendorDialogProps> = ({
                 data-testid="select-vendor-status"
                 value={status}
                 onChange={(e) => setStatus(e.target.value as VendorStatus)}
-                className="w-full px-3 py-2 text-sm rounded-lg bg-[#FAF8F5] border border-[#ECE5DE] text-[#3A302C] focus:outline-none focus:border-[#B86B70]"
+                className="w-full px-3 py-2 text-sm rounded-lg bg-[#FAF8F5] border border-[#ECE5DE] text-[#3A302C] focus:outline-none focus:border-secondary"
               >
                 {VENDOR_STATUS_OPTIONS.map((opt) => (
                   <option key={opt.id} value={opt.id}>
@@ -200,7 +200,7 @@ const VendorDialogForm: React.FC<VendorDialogProps> = ({
                 placeholder="cth: 0812-3456-7890"
                 value={whatsapp}
                 onChange={(e) => setWhatsapp(maskPhoneNumber(e.target.value))}
-                className="w-full px-3 py-2 text-sm rounded-lg bg-[#FAF8F5] border border-[#ECE5DE] text-[#3A302C] placeholder-[#A89B95] focus:outline-none focus:border-[#B86B70] tabular-nums"
+                className="w-full px-3 py-2 text-sm rounded-lg bg-[#FAF8F5] border border-[#ECE5DE] text-[#3A302C] placeholder-[#A89B95] focus:outline-none focus:border-secondary tabular-nums"
               />
             </div>
 
@@ -214,7 +214,7 @@ const VendorDialogForm: React.FC<VendorDialogProps> = ({
                 placeholder="cth: luminaphoto"
                 value={instagram}
                 onChange={(e) => setInstagram(e.target.value)}
-                className="w-full px-3 py-2 text-sm rounded-lg bg-[#FAF8F5] border border-[#ECE5DE] text-[#3A302C] placeholder-[#A89B95] focus:outline-none focus:border-[#B86B70]"
+                className="w-full px-3 py-2 text-sm rounded-lg bg-[#FAF8F5] border border-[#ECE5DE] text-[#3A302C] placeholder-[#A89B95] focus:outline-none focus:border-secondary"
               />
             </div>
           </div>
@@ -229,7 +229,7 @@ const VendorDialogForm: React.FC<VendorDialogProps> = ({
               placeholder="cth: Termasuk album cetak 20 halaman & video teaser"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              className="w-full px-3 py-2 text-sm rounded-lg bg-[#FAF8F5] border border-[#ECE5DE] text-[#3A302C] placeholder-[#A89B95] focus:outline-none focus:border-[#B86B70]"
+              className="w-full px-3 py-2 text-sm rounded-lg bg-[#FAF8F5] border border-[#ECE5DE] text-[#3A302C] placeholder-[#A89B95] focus:outline-none focus:border-secondary"
             />
           </div>
 
@@ -244,7 +244,7 @@ const VendorDialogForm: React.FC<VendorDialogProps> = ({
             <button
               data-testid="button-submit-vendor"
               type="submit"
-              className="flex-1 py-2 rounded-xl bg-[#58755E] hover:bg-[#4b6350] text-xs font-medium text-white transition-colors cursor-pointer shadow-sm"
+              className="flex-1 py-2 rounded-xl bg-primary hover:bg-primary-hover text-xs font-medium text-white transition-colors cursor-pointer shadow-sm"
             >
               {vendorToEdit ? 'Simpan Perubahan' : 'Simpan Vendor'}
             </button>

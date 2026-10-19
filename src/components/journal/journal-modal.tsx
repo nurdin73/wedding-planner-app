@@ -63,7 +63,7 @@ export const JournalModal: React.FC<JournalModalProps> = ({ isOpen, onClose }) =
             type="button"
             data-testid="button-open-add-journal"
             onClick={() => setIsAddOpen(true)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#58755E] hover:bg-[#4b6350] text-white text-xs font-medium transition-colors shadow-sm cursor-pointer"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-primary hover:bg-primary-hover text-white text-xs font-medium transition-colors shadow-sm cursor-pointer"
           >
             <Plus className="w-3.5 h-3.5" strokeWidth={2} />
             <span>Tulis Cerita</span>
@@ -77,7 +77,7 @@ export const JournalModal: React.FC<JournalModalProps> = ({ isOpen, onClose }) =
               data-testid="journal-empty-state"
               className="py-10 text-center flex flex-col items-center justify-center"
             >
-              <div className="w-12 h-12 rounded-full bg-[#FDF0EE] flex items-center justify-center text-[#B86B70] mb-3">
+              <div className="w-12 h-12 rounded-full bg-secondary-light flex items-center justify-center text-secondary mb-3">
                 <CalendarHeart className="w-6 h-6" strokeWidth={1.75} />
               </div>
               <h4 className="font-serif text-base font-semibold text-[#3A302C]">
@@ -103,24 +103,24 @@ export const JournalModal: React.FC<JournalModalProps> = ({ isOpen, onClose }) =
                 className="bg-[#FAF8F5] p-3.5 rounded-xl border border-[#ECE5DE] flex flex-col gap-1.5"
               >
                 <div className="flex items-start justify-between gap-2">
-                  <div>
+                  <div className="min-w-0 flex-1">
                     <span className="text-[10px] text-[#A89B95] block">
                       {formatIndonesianDate(item.date)}
                     </span>
-                    <h4 className="font-serif text-sm font-semibold text-[#3A302C] mt-0.5">
+                    <h4 className="font-serif text-sm font-semibold text-[#3A302C] mt-0.5 line-clamp-2 break-words [overflow-wrap:anywhere]">
                       {item.title}
                     </h4>
                   </div>
 
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-[9px] px-2 py-0.5 rounded-full bg-white text-[#B86B70] border border-[#F2DFDC] font-medium">
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    <span className="text-[9px] px-2 py-0.5 rounded-full bg-white text-secondary border border-secondary-border font-medium shrink-0">
                       {getCategoryLabel(item.category)}
                     </span>
                     <button
                       type="button"
                       data-testid={`button-delete-journal-${item.id}`}
                       onClick={() => deleteJournalEntry(item.id)}
-                      className="opacity-40 hover:opacity-100 hover:text-[#B86B70] text-[#A89B95] p-1 rounded-md transition-opacity cursor-pointer"
+                      className="opacity-40 hover:opacity-100 hover:text-secondary text-[#A89B95] p-1 rounded-md transition-opacity cursor-pointer"
                       aria-label="Hapus catatan"
                     >
                       <Trash2 className="w-3.5 h-3.5" strokeWidth={1.75} />
@@ -128,7 +128,7 @@ export const JournalModal: React.FC<JournalModalProps> = ({ isOpen, onClose }) =
                   </div>
                 </div>
 
-                <p className="text-xs text-[#73635C] leading-relaxed mt-1 whitespace-pre-wrap">
+                <p className="text-xs text-[#73635C] leading-relaxed mt-1 whitespace-pre-wrap break-words [overflow-wrap:anywhere]">
                   {item.content}
                 </p>
               </div>

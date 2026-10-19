@@ -74,7 +74,7 @@ export const JournalEntryDialog: React.FC<JournalEntryDialogProps> = ({ isOpen, 
                 if (errors.title) setErrors((prev) => ({ ...prev, title: '' }));
               }}
               className={`w-full px-3 py-2 text-sm rounded-lg bg-[#FAF8F5] border text-[#3A302C] placeholder-[#A89B95] focus:outline-none ${
-                errors.title ? 'border-rose-400 focus:border-rose-500' : 'border-[#ECE5DE] focus:border-[#B86B70]'
+                errors.title ? 'border-rose-400 focus:border-rose-500' : 'border-[#ECE5DE] focus:border-secondary'
               }`}
               autoFocus
             />
@@ -94,7 +94,7 @@ export const JournalEntryDialog: React.FC<JournalEntryDialogProps> = ({ isOpen, 
                 data-testid="select-journal-category"
                 value={category}
                 onChange={(e) => setCategory(e.target.value as JournalCategory)}
-                className="w-full px-3 py-2 text-sm rounded-lg bg-[#FAF8F5] border border-[#ECE5DE] text-[#3A302C] focus:outline-none focus:border-[#B86B70]"
+                className="w-full px-3 py-2 text-sm rounded-lg bg-[#FAF8F5] border border-[#ECE5DE] text-[#3A302C] focus:outline-none focus:border-secondary"
               >
                 {JOURNAL_CATEGORY_OPTIONS.map((opt) => (
                   <option key={opt.id} value={opt.id}>
@@ -117,7 +117,7 @@ export const JournalEntryDialog: React.FC<JournalEntryDialogProps> = ({ isOpen, 
                   if (errors.date) setErrors((prev) => ({ ...prev, date: '' }));
                 }}
                 className={`w-full px-3 py-2 text-sm rounded-lg bg-[#FAF8F5] border text-[#3A302C] focus:outline-none ${
-                  errors.date ? 'border-rose-400 focus:border-rose-500' : 'border-[#ECE5DE] focus:border-[#B86B70]'
+                  errors.date ? 'border-rose-400 focus:border-rose-500' : 'border-[#ECE5DE] focus:border-secondary'
                 }`}
               />
               {errors.date && (
@@ -142,7 +142,7 @@ export const JournalEntryDialog: React.FC<JournalEntryDialogProps> = ({ isOpen, 
                 if (errors.content) setErrors((prev) => ({ ...prev, content: '' }));
               }}
               className={`w-full px-3 py-2 text-sm rounded-lg bg-[#FAF8F5] border text-[#3A302C] placeholder-[#A89B95] focus:outline-none resize-none leading-relaxed ${
-                errors.content ? 'border-rose-400 focus:border-rose-500' : 'border-[#ECE5DE] focus:border-[#B86B70]'
+                errors.content ? 'border-rose-400 focus:border-rose-500' : 'border-[#ECE5DE] focus:border-secondary'
               }`}
             />
             {errors.content && (
@@ -163,7 +163,7 @@ export const JournalEntryDialog: React.FC<JournalEntryDialogProps> = ({ isOpen, 
             <button
               data-testid="button-submit-journal"
               type="submit"
-              className="flex-1 py-2 rounded-xl bg-[#58755E] hover:bg-[#4b6350] text-xs font-medium text-white transition-colors cursor-pointer shadow-sm"
+              className="flex-1 py-2 rounded-xl bg-primary hover:bg-primary-hover text-xs font-medium text-white transition-colors cursor-pointer shadow-sm"
             >
               Simpan Cerita
             </button>

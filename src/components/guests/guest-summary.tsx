@@ -38,7 +38,7 @@ export const GuestSummary: React.FC<GuestSummaryProps> = ({ guests }) => {
         <span
           data-testid="guest-sent-status"
           title={`Undangan Terkirim: ${sentPercent}%`}
-          className="text-[11px] font-medium text-[#58755E] tabular-nums flex items-center gap-1 shrink-0 bg-[#E8F0EA] px-2 py-0.5 rounded-full whitespace-nowrap"
+          className="text-[11px] font-medium text-primary tabular-nums flex items-center gap-1 shrink-0 bg-primary-light px-2 py-0.5 rounded-full whitespace-nowrap"
         >
           <MailCheck className="w-3 h-3 shrink-0" strokeWidth={1.75} />
           <span>{sentCount}/{totalInvitations} Terkirim</span>
@@ -66,7 +66,7 @@ export const GuestSummary: React.FC<GuestSummaryProps> = ({ guests }) => {
           </span>
           <span
             data-testid="guest-total-pax"
-            className="block text-xl font-bold text-[#B86B70] tabular-nums mt-0.5"
+            className="block text-xl font-bold text-secondary tabular-nums mt-0.5"
           >
             {totalPax}
           </span>
@@ -83,7 +83,7 @@ export const GuestSummary: React.FC<GuestSummaryProps> = ({ guests }) => {
           </div>
           <div className="w-full bg-[#E5E4E7] h-2 rounded-full overflow-hidden flex">
             <div
-              className="bg-[#B86B70] h-full transition-all duration-500"
+              className="bg-secondary h-full transition-all duration-500"
               style={{ width: `${brideRatio}%` }}
               title={`Pihak Wanita: ${brideRatio}%`}
             />

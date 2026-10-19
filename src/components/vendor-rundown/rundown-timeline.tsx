@@ -78,23 +78,23 @@ export const RundownTimeline: React.FC<RundownTimelineProps> = ({
       {/* Top Banner Copy WA */}
       <div className="flex justify-between items-center bg-white p-3 rounded-xl border border-[#ECE5DE] shadow-ambient">
         <span className="text-xs text-[#73635C] font-medium flex items-center gap-1.5">
-          <Milestone className="w-3.5 h-3.5 text-[#B86B70]" strokeWidth={1.75} />
+          <Milestone className="w-3.5 h-3.5 text-secondary" strokeWidth={1.75} />
           {rundown.length} Sesi Terjadwal
         </span>
         <button
           type="button"
           data-testid="button-copy-rundown-wa"
           onClick={handleCopyWhatsApp}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#E8F0EA] hover:bg-[#d6e5d9] text-[#58755E] text-xs font-semibold transition-colors cursor-pointer"
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary-light hover:bg-[#d6e5d9] text-primary text-xs font-semibold transition-colors cursor-pointer"
         >
           {copied ? (
             <>
-              <Check className="w-3.5 h-3.5 text-[#58755E]" strokeWidth={2.5} />
+              <Check className="w-3.5 h-3.5 text-primary" strokeWidth={2.5} />
               <span>Tersalin!</span>
             </>
           ) : (
             <>
-              <Copy className="w-3.5 h-3.5 text-[#58755E]" strokeWidth={1.75} />
+              <Copy className="w-3.5 h-3.5 text-primary" strokeWidth={1.75} />
               <span>Salin Teks WA</span>
             </>
           )}
@@ -110,14 +110,14 @@ export const RundownTimeline: React.FC<RundownTimelineProps> = ({
             className="relative bg-white p-3.5 rounded-xl border border-[#ECE5DE] shadow-ambient flex flex-col gap-1.5"
           >
             {/* Timeline node dot */}
-            <div className="absolute -left-[18.5px] top-4 w-2.5 h-2.5 rounded-full bg-[#B86B70] ring-4 ring-[#FAF8F5]" />
+            <div className="absolute -left-[18.5px] top-4 w-2.5 h-2.5 rounded-full bg-secondary ring-4 ring-[#FAF8F5]" />
 
             <div className="flex items-start justify-between gap-2">
-              <div>
-                <span className="text-xs font-bold text-[#B86B70] tabular-nums tracking-tight">
+              <div className="min-w-0 flex-1">
+                <span className="text-xs font-bold text-secondary tabular-nums tracking-tight">
                   {item.time}
                 </span>
-                <h4 className="font-serif text-sm font-semibold text-[#3A302C] mt-0.5">
+                <h4 className="font-serif text-sm font-semibold text-[#3A302C] mt-0.5 line-clamp-2 break-words [overflow-wrap:anywhere]">
                   {idx + 1}. {item.activity}
                 </h4>
               </div>
@@ -128,7 +128,7 @@ export const RundownTimeline: React.FC<RundownTimelineProps> = ({
                     type="button"
                     data-testid={`button-edit-rundown-${item.id}`}
                     onClick={() => onEdit(item)}
-                    className="opacity-40 hover:opacity-100 hover:text-[#58755E] text-[#A89B95] p-1 rounded-md transition-opacity cursor-pointer"
+                    className="opacity-40 hover:opacity-100 hover:text-primary text-[#A89B95] p-1 rounded-md transition-opacity cursor-pointer"
                     aria-label="Edit sesi"
                   >
                     <Pencil className="w-4 h-4" strokeWidth={1.75} />
@@ -138,7 +138,7 @@ export const RundownTimeline: React.FC<RundownTimelineProps> = ({
                   type="button"
                   data-testid={`button-delete-rundown-${item.id}`}
                   onClick={() => onDelete(item.id)}
-                  className="opacity-40 hover:opacity-100 hover:text-[#B86B70] text-[#A89B95] p-1 rounded-md transition-opacity cursor-pointer"
+                  className="opacity-40 hover:opacity-100 hover:text-secondary text-[#A89B95] p-1 rounded-md transition-opacity cursor-pointer"
                   aria-label="Hapus sesi"
                 >
                   <Trash2 className="w-4 h-4" strokeWidth={1.75} />
@@ -147,20 +147,20 @@ export const RundownTimeline: React.FC<RundownTimelineProps> = ({
             </div>
 
             <div className="flex items-center gap-3 text-[10px] text-[#73635C] flex-wrap mt-0.5">
-              <span className="flex items-center gap-1 bg-[#FAF8F5] px-2 py-0.5 rounded-md border border-[#ECE5DE]">
-                <UserCheck className="w-3 h-3 text-[#58755E]" strokeWidth={1.75} />
-                <span>PIC: {item.pic}</span>
+              <span className="flex items-center gap-1 bg-[#FAF8F5] px-2 py-0.5 rounded-md border border-[#ECE5DE] max-w-full">
+                <UserCheck className="w-3 h-3 text-primary shrink-0" strokeWidth={1.75} />
+                <span className="line-clamp-1 break-words [overflow-wrap:anywhere]">PIC: {item.pic}</span>
               </span>
               {item.location && (
-                <span className="flex items-center gap-1 bg-[#FAF8F5] px-2 py-0.5 rounded-md border border-[#ECE5DE]">
-                  <MapPin className="w-3 h-3 text-[#B86B70]" strokeWidth={1.75} />
-                  <span>{item.location}</span>
+                <span className="flex items-center gap-1 bg-[#FAF8F5] px-2 py-0.5 rounded-md border border-[#ECE5DE] max-w-full">
+                  <MapPin className="w-3 h-3 text-secondary shrink-0" strokeWidth={1.75} />
+                  <span className="line-clamp-1 break-words [overflow-wrap:anywhere]">{item.location}</span>
                 </span>
               )}
             </div>
 
             {item.notes && (
-              <p className="text-[11px] text-[#A89B95] italic mt-1 leading-relaxed">
+              <p className="text-[11px] text-[#A89B95] italic mt-1 leading-relaxed line-clamp-2 break-words [overflow-wrap:anywhere]">
                 &ldquo;{item.notes}&rdquo;
               </p>
             )}

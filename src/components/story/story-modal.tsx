@@ -115,15 +115,15 @@ export const StoryModal: React.FC<StoryModalProps> = ({ isOpen, onClose }) => {
             className="flex-1 py-2.5 px-3 rounded-xl bg-white hover:bg-[#FAF8F5] text-[#3A302C] text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer shadow-md disabled:opacity-50"
           >
             {isExporting ? (
-              <Loader2 className="w-4 h-4 animate-spin text-[#B86B70]" />
+              <Loader2 className="w-4 h-4 animate-spin text-secondary" />
             ) : downloadSuccess ? (
               <>
-                <Check className="w-4 h-4 text-[#58755E]" strokeWidth={2.5} />
-                <span className="text-[#58755E]">Tersimpan!</span>
+                <Check className="w-4 h-4 text-primary" strokeWidth={2.5} />
+                <span className="text-primary">Tersimpan!</span>
               </>
             ) : (
               <>
-                <Download className="w-4 h-4 text-[#B86B70]" strokeWidth={1.75} />
+                <Download className="w-4 h-4 text-secondary" strokeWidth={1.75} />
                 <span>Unduh Gambar</span>
               </>
             )}
@@ -134,7 +134,7 @@ export const StoryModal: React.FC<StoryModalProps> = ({ isOpen, onClose }) => {
             data-testid="button-share-story"
             onClick={handleShare}
             disabled={isExporting}
-            className="flex-1 py-2.5 px-3 rounded-xl bg-[#B86B70] hover:bg-[#a65d62] text-white text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer shadow-md disabled:opacity-50"
+            className="flex-1 py-2.5 px-3 rounded-xl bg-secondary hover:bg-secondary-hover text-white text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer shadow-md disabled:opacity-50"
           >
             <Share2 className="w-4 h-4" strokeWidth={1.75} />
             <span>Bagikan Story</span>

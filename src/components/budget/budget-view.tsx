@@ -72,8 +72,8 @@ export const BudgetView: React.FC = () => {
           onClick={() => setSelectedCategory('ALL')}
           className={`px-3 py-1.5 rounded-full text-xs whitespace-nowrap transition-all cursor-pointer border ${
             selectedCategory === 'ALL'
-              ? 'bg-[#B86B70] text-white border-[#B86B70] shadow-sm font-medium'
-              : 'bg-white text-[#73635C] border-[#ECE5DE] hover:border-[#B86B70]/40'
+              ? 'bg-secondary text-white border-secondary shadow-sm font-medium'
+              : 'bg-white text-[#73635C] border-[#ECE5DE] hover:border-secondary/40'
           }`}
         >
           Semua
@@ -87,8 +87,8 @@ export const BudgetView: React.FC = () => {
               onClick={() => setSelectedCategory(cat.id)}
               className={`px-3 py-1.5 rounded-full text-xs whitespace-nowrap transition-all cursor-pointer border ${
                 isActive
-                  ? 'bg-[#B86B70] text-white border-[#B86B70] shadow-sm font-medium'
-                  : 'bg-white text-[#73635C] border-[#ECE5DE] hover:border-[#B86B70]/40'
+                  ? 'bg-secondary text-white border-secondary shadow-sm font-medium'
+                  : 'bg-white text-[#73635C] border-[#ECE5DE] hover:border-secondary/40'
               }`}
             >
               {cat.label}
@@ -109,7 +109,7 @@ export const BudgetView: React.FC = () => {
               className="text-[10px] text-[#A89B95] tabular-nums mt-0.5"
             >
               Est: <strong className="text-[#3A302C] font-semibold">{formatRupiah(filteredEstimated)}</strong> • Bayar:{' '}
-              <strong className="text-[#58755E] font-semibold">{formatRupiah(filteredPaid)}</strong>
+              <strong className="text-primary font-semibold">{formatRupiah(filteredPaid)}</strong>
             </span>
           )}
         </div>
@@ -117,7 +117,7 @@ export const BudgetView: React.FC = () => {
           type="button"
           data-testid="button-open-add-expense"
           onClick={handleOpenAdd}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#B86B70] hover:bg-[#a65d62] text-white text-xs font-medium transition-colors shadow-sm cursor-pointer shrink-0"
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-primary hover:bg-primary-hover text-white text-xs font-medium transition-colors shadow-sm cursor-pointer shrink-0"
         >
           <Plus className="w-3.5 h-3.5" strokeWidth={2} />
           <span>Tambah Pos</span>
@@ -130,7 +130,7 @@ export const BudgetView: React.FC = () => {
           data-testid="budget-empty-state"
           className="bg-white rounded-2xl p-8 border border-[#ECE5DE] text-center flex flex-col items-center justify-center shadow-ambient"
         >
-          <div className="w-12 h-12 rounded-full bg-[#FDF0EE] flex items-center justify-center text-[#B86B70] mb-3">
+          <div className="w-12 h-12 rounded-full bg-secondary-light flex items-center justify-center text-secondary mb-3">
             <Coins className="w-6 h-6" strokeWidth={1.75} />
           </div>
           <h4 className="font-serif text-base font-semibold text-[#3A302C]">
@@ -156,22 +156,22 @@ export const BudgetView: React.FC = () => {
               data-testid={`expense-item-${item.id}`}
               className="bg-white p-3.5 rounded-xl border border-[#ECE5DE] shadow-ambient flex items-start justify-between"
             >
-              <div className="flex items-start gap-3">
-                <div className="w-8 h-8 rounded-lg bg-[#FAF8F5] border border-[#ECE5DE] flex items-center justify-center text-[#73635C] mt-0.5">
+              <div className="flex items-start gap-3 min-w-0 flex-1 pr-2">
+                <div className="w-8 h-8 rounded-lg bg-[#FAF8F5] border border-[#ECE5DE] flex items-center justify-center text-[#73635C] mt-0.5 shrink-0">
                   <Receipt className="w-4 h-4" strokeWidth={1.75} />
                 </div>
-                <div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs font-semibold text-[#3A302C]">
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-start gap-2">
+                    <span className="text-xs font-semibold text-[#3A302C] line-clamp-2 break-words [overflow-wrap:anywhere] flex-1">
                       {item.title}
                     </span>
-                    <span className="text-[9px] px-2 py-0.5 rounded-full bg-[#F5EFEB] text-[#73635C] border border-[#ECE5DE]">
+                    <span className="text-[9px] px-2 py-0.5 rounded-full bg-[#F5EFEB] text-[#73635C] border border-[#ECE5DE] shrink-0 mt-0.5">
                       {getCategoryLabel(item.category)}
                     </span>
                   </div>
 
                   <div className="flex items-center gap-3 mt-1 text-[11px] tabular-nums">
-                    <span className="text-[#58755E] font-medium">
+                    <span className="text-primary font-medium">
                       Terbayar: {formatRupiah(item.actualPaid)}
                     </span>
                     {item.estimatedCost > 0 && (
@@ -182,7 +182,7 @@ export const BudgetView: React.FC = () => {
                   </div>
 
                   {item.notes && (
-                    <span className="block text-[10px] text-[#A89B95] mt-1">
+                    <span className="block text-[10px] text-[#A89B95] mt-1 line-clamp-2 break-words [overflow-wrap:anywhere]">
                       {item.notes}
                     </span>
                   )}
@@ -194,7 +194,7 @@ export const BudgetView: React.FC = () => {
                   type="button"
                   data-testid={`button-edit-expense-${item.id}`}
                   onClick={() => handleOpenEdit(item)}
-                  className="opacity-40 hover:opacity-100 hover:text-[#58755E] text-[#A89B95] p-1 rounded-md transition-opacity cursor-pointer"
+                  className="opacity-40 hover:opacity-100 hover:text-primary text-[#A89B95] p-1 rounded-md transition-opacity cursor-pointer"
                   aria-label="Edit pos"
                 >
                   <Pencil className="w-4 h-4" strokeWidth={1.75} />
@@ -203,7 +203,7 @@ export const BudgetView: React.FC = () => {
                   type="button"
                   data-testid={`button-delete-expense-${item.id}`}
                   onClick={() => deleteExpense(item.id)}
-                  className="opacity-40 hover:opacity-100 hover:text-[#B86B70] text-[#A89B95] p-1 rounded-md transition-opacity cursor-pointer"
+                  className="opacity-40 hover:opacity-100 hover:text-secondary text-[#A89B95] p-1 rounded-md transition-opacity cursor-pointer"
                   aria-label="Hapus pos"
                 >
                   <Trash2 className="w-4 h-4" strokeWidth={1.75} />

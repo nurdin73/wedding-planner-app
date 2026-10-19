@@ -92,7 +92,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
             onClick={onOpenStory}
             className="flex items-center gap-2 p-2.5 rounded-xl bg-[#FAF8F5] hover:bg-[#F5EFEB] border border-[#ECE5DE] text-left transition-colors cursor-pointer"
           >
-            <div className="w-7 h-7 rounded-lg bg-[#FDF0EE] flex items-center justify-center text-[#B86B70]">
+            <div className="w-7 h-7 rounded-lg bg-secondary-light flex items-center justify-center text-secondary">
               <Share2 className="w-4 h-4" strokeWidth={1.75} />
             </div>
             <div>
@@ -129,7 +129,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
             onClick={() => setActiveTab('checklist')}
             className="flex items-center gap-2 p-2.5 rounded-xl bg-[#FAF8F5] hover:bg-[#F5EFEB] border border-[#ECE5DE] text-left transition-colors cursor-pointer"
           >
-            <div className="w-7 h-7 rounded-lg bg-[#E8F0EA] flex items-center justify-center text-[#58755E]">
+            <div className="w-7 h-7 rounded-lg bg-primary-light flex items-center justify-center text-primary">
               <PlusCircle className="w-4 h-4" strokeWidth={1.75} />
             </div>
             <div>
@@ -143,7 +143,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
             onClick={() => setActiveTab('budget')}
             className="flex items-center gap-2 p-2.5 rounded-xl bg-[#FAF8F5] hover:bg-[#F5EFEB] border border-[#ECE5DE] text-left transition-colors cursor-pointer"
           >
-            <div className="w-7 h-7 rounded-lg bg-[#FDF0EE] flex items-center justify-center text-[#B86B70]">
+            <div className="w-7 h-7 rounded-lg bg-secondary-light flex items-center justify-center text-secondary">
               <ReceiptText className="w-4 h-4" strokeWidth={1.75} />
             </div>
             <div>
@@ -159,7 +159,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
         <button
           data-testid="button-reset-planner"
           onClick={handleReset}
-          className="flex items-center gap-1.5 text-[11px] text-[#A89B95] hover:text-[#B86B70] transition-colors py-1 px-3 rounded-full hover:bg-white border border-transparent hover:border-[#ECE5DE]"
+          className="flex items-center gap-1.5 text-[11px] text-[#A89B95] hover:text-secondary transition-colors py-1 px-3 rounded-full hover:bg-white border border-transparent hover:border-[#ECE5DE]"
         >
           <RotateCcw className="w-3 h-3" strokeWidth={1.75} />
           <span>Atur Ulang Perencanaan</span>

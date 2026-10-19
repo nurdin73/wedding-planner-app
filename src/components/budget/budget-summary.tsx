@@ -26,14 +26,14 @@ export const BudgetSummary: React.FC<BudgetSummaryProps> = ({
     >
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
-          <WalletCards className="w-4 h-4 text-[#B86B70]" strokeWidth={1.75} />
+          <WalletCards className="w-4 h-4 text-secondary" strokeWidth={1.75} />
           <h3 className="font-serif text-lg font-semibold text-[#3A302C]">
             Ringkasan Anggaran
           </h3>
         </div>
         <span
           data-testid="budget-percent-used"
-          className="text-xs font-semibold text-[#B86B70] tabular-nums"
+          className="text-xs font-semibold text-secondary tabular-nums"
         >
           {percentUsed}% Terpakai
         </span>
@@ -43,7 +43,7 @@ export const BudgetSummary: React.FC<BudgetSummaryProps> = ({
       <div className="w-full bg-[#FAF8F5] h-2 rounded-full overflow-hidden mb-4 border border-[#ECE5DE]/60">
         <div
           className={`h-full rounded-full transition-all duration-500 ${
-            isOverBudget ? 'bg-red-500' : 'bg-[#B86B70]'
+            isOverBudget ? 'bg-red-500' : 'bg-secondary'
           }`}
           style={{ width: `${Math.min(percentUsed, 100)}%` }}
         />
@@ -85,7 +85,7 @@ export const BudgetSummary: React.FC<BudgetSummaryProps> = ({
           </span>
           <span
             data-testid="budget-figure-paid"
-            className="block text-xs sm:text-sm font-bold text-[#58755E] tabular-nums mt-0.5 truncate"
+            className="block text-xs sm:text-sm font-bold text-primary tabular-nums mt-0.5 truncate"
             title={formatRupiah(totalPaid)}
           >
             {formatRupiah(totalPaid)}

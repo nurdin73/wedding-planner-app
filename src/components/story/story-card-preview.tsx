@@ -62,7 +62,7 @@ export const StoryCardPreview = forwardRef<HTMLDivElement, StoryCardPreviewProps
           {/* Big Countdown Days */}
           <div className="mt-4 flex flex-col items-center">
             <div className="w-20 h-20 rounded-2xl bg-white border border-[#F2DFDC] shadow-sm flex flex-col items-center justify-center">
-              <span className="text-3xl font-extrabold text-[#B86B70] tabular-nums leading-none">
+              <span className="text-3xl font-extrabold text-secondary tabular-nums leading-none">
                 {remaining.days}
               </span>
               <span className="text-[10px] uppercase tracking-widest text-[#A89B95] mt-1">
@@ -79,7 +79,7 @@ export const StoryCardPreview = forwardRef<HTMLDivElement, StoryCardPreviewProps
           </span>
           <div className="grid grid-cols-3 gap-2 text-center">
             <div className="p-1.5 rounded-xl bg-[#FAF8F5] border border-[#ECE5DE]/60">
-              <CheckCircle2 className="w-3.5 h-3.5 text-[#58755E] mx-auto mb-0.5" strokeWidth={1.75} />
+              <CheckCircle2 className="w-3.5 h-3.5 text-primary mx-auto mb-0.5" strokeWidth={1.75} />
               <span className="block text-xs font-bold text-[#3A302C] tabular-nums">
                 {checklistPercent}%
               </span>
@@ -87,7 +87,7 @@ export const StoryCardPreview = forwardRef<HTMLDivElement, StoryCardPreviewProps
             </div>
 
             <div className="p-1.5 rounded-xl bg-[#FAF8F5] border border-[#ECE5DE]/60">
-              <WalletCards className="w-3.5 h-3.5 text-[#B86B70] mx-auto mb-0.5" strokeWidth={1.75} />
+              <WalletCards className="w-3.5 h-3.5 text-secondary mx-auto mb-0.5" strokeWidth={1.75} />
               <span className="block text-xs font-bold text-[#3A302C] tabular-nums">
                 {budgetPercent}%
               </span>
@@ -113,7 +113,7 @@ export const StoryCardPreview = forwardRef<HTMLDivElement, StoryCardPreviewProps
             &ldquo;Dua jiwa dengan satu keteguhan, merajut cinta menuju keabadian.&rdquo;
           </p>
           <div className="flex items-center justify-center gap-1 mt-2 text-[9px] text-[#A89B95] uppercase tracking-widest">
-            <CalendarHeart className="w-3 h-3 text-[#B86B70]" strokeWidth={1.75} />
+            <CalendarHeart className="w-3 h-3 text-secondary" strokeWidth={1.75} />
             <span>Janji Suci Planner</span>
           </div>
         </div>

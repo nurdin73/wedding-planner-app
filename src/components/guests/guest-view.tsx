@@ -64,7 +64,7 @@ export const GuestView: React.FC = () => {
             placeholder="Cari nama tamu / keluarga..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-3 py-2 text-xs rounded-xl bg-white border border-[#ECE5DE] text-[#3A302C] placeholder-[#A89B95] focus:outline-none focus:border-[#B86B70] shadow-sm"
+            className="w-full pl-9 pr-3 py-2 text-xs rounded-xl bg-white border border-[#ECE5DE] text-[#3A302C] placeholder-[#A89B95] focus:outline-none focus:border-secondary shadow-sm"
           />
           <Search className="w-3.5 h-3.5 text-[#A89B95] absolute left-3 top-2.5 pointer-events-none" strokeWidth={1.75} />
         </div>
@@ -84,8 +84,8 @@ export const GuestView: React.FC = () => {
                 onClick={() => setFilterType(pill.id as typeof filterType)}
                 className={`px-3 py-1.5 rounded-full text-xs whitespace-nowrap transition-all cursor-pointer border ${
                   isActive
-                    ? 'bg-[#B86B70] text-white border-[#B86B70] shadow-sm font-medium'
-                    : 'bg-white text-[#73635C] border-[#ECE5DE] hover:border-[#B86B70]/40'
+                    ? 'bg-secondary text-white border-secondary shadow-sm font-medium'
+                    : 'bg-white text-[#73635C] border-[#ECE5DE] hover:border-secondary/40'
                 }`}
               >
                 {pill.label}
@@ -104,7 +104,7 @@ export const GuestView: React.FC = () => {
           type="button"
           data-testid="button-open-add-guest"
           onClick={handleOpenAdd}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#B86B70] hover:bg-[#a65d62] text-white text-xs font-medium transition-colors shadow-sm cursor-pointer"
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-primary hover:bg-primary-hover text-white text-xs font-medium transition-colors shadow-sm cursor-pointer"
         >
           <UserPlus className="w-3.5 h-3.5" strokeWidth={2} />
           <span>Tambah Tamu</span>

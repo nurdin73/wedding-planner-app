@@ -70,7 +70,7 @@ export const VendorRundownView: React.FC = () => {
               : 'text-[#73635C] hover:text-[#3A302C]'
           }`}
         >
-          <Store className="w-3.5 h-3.5 text-[#58755E]" strokeWidth={1.75} />
+          <Store className="w-3.5 h-3.5 text-primary" strokeWidth={1.75} />
           <span>Rekanan Vendor ({vendors.length})</span>
         </button>
 
@@ -84,7 +84,7 @@ export const VendorRundownView: React.FC = () => {
               : 'text-[#73635C] hover:text-[#3A302C]'
           }`}
         >
-          <Clock className="w-3.5 h-3.5 text-[#B86B70]" strokeWidth={1.75} />
+          <Clock className="w-3.5 h-3.5 text-secondary" strokeWidth={1.75} />
           <span>Rundown Hari-H ({rundown.length})</span>
         </button>
       </div>
@@ -100,7 +100,7 @@ export const VendorRundownView: React.FC = () => {
             type="button"
             data-testid="button-open-add-vendor"
             onClick={handleOpenAddVendor}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#58755E] hover:bg-[#4b6350] text-white text-xs font-medium transition-colors shadow-sm cursor-pointer"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-primary hover:bg-primary-hover text-white text-xs font-medium transition-colors shadow-sm cursor-pointer"
           >
             <Plus className="w-3.5 h-3.5" strokeWidth={2} />
             <span>Tambah Vendor</span>
@@ -110,7 +110,7 @@ export const VendorRundownView: React.FC = () => {
             type="button"
             data-testid="button-open-add-rundown"
             onClick={handleOpenAddRundown}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#B86B70] hover:bg-[#a65d62] text-white text-xs font-medium transition-colors shadow-sm cursor-pointer"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-primary hover:bg-primary-hover text-white text-xs font-medium transition-colors shadow-sm cursor-pointer"
           >
             <Plus className="w-3.5 h-3.5" strokeWidth={2} />
             <span>Tambah Sesi</span>

@@ -27,7 +27,7 @@ export const VendorList: React.FC<VendorListProps> = ({
     switch (status) {
       case 'PAID':
       case 'COMPLETED':
-        return 'bg-[#E8F0EA] text-[#58755E] border-[#58755E]/30';
+        return 'bg-primary-light text-primary border-primary/30';
       case 'DP':
         return 'bg-[#FAF5E8] text-[#DFB15B] border-[#DFB15B]/40';
       default:
@@ -41,7 +41,7 @@ export const VendorList: React.FC<VendorListProps> = ({
         data-testid="vendor-empty-state"
         className="bg-white rounded-2xl p-8 border border-[#ECE5DE] text-center flex flex-col items-center justify-center shadow-ambient"
       >
-        <div className="w-12 h-12 rounded-full bg-[#E8F0EA] flex items-center justify-center text-[#58755E] mb-3">
+        <div className="w-12 h-12 rounded-full bg-primary-light flex items-center justify-center text-primary mb-3">
           <Store className="w-6 h-6" strokeWidth={1.75} />
         </div>
         <h4 className="font-serif text-base font-semibold text-[#3A302C]">
@@ -71,23 +71,23 @@ export const VendorList: React.FC<VendorListProps> = ({
           className="bg-white p-3.5 rounded-xl border border-[#ECE5DE] shadow-ambient flex flex-col gap-2"
         >
           <div className="flex items-start justify-between gap-2">
-            <div>
+            <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2 flex-wrap">
-                <span className="text-xs font-semibold text-[#3A302C]">
+                <span className="text-xs font-semibold text-[#3A302C] line-clamp-2 break-words [overflow-wrap:anywhere]">
                   {vendor.name}
                 </span>
-                <span className="text-[9px] px-2 py-0.5 rounded-full bg-[#FAF8F5] text-[#73635C] border border-[#ECE5DE]">
+                <span className="text-[9px] px-2 py-0.5 rounded-full bg-[#FAF8F5] text-[#73635C] border border-[#ECE5DE] shrink-0">
                   {getCategoryLabel(vendor.category)}
                 </span>
               </div>
               {vendor.cost > 0 && (
-                <span className="block text-xs font-semibold text-[#B86B70] tabular-nums mt-0.5">
+                <span className="block text-xs font-semibold text-secondary tabular-nums mt-0.5">
                   {formatRupiah(vendor.cost)}
                 </span>
               )}
             </div>
 
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center gap-1.5 shrink-0">
               <select
                 data-testid={`select-vendor-status-${vendor.id}`}
                 value={vendor.status}
@@ -108,7 +108,7 @@ export const VendorList: React.FC<VendorListProps> = ({
                   type="button"
                   data-testid={`button-edit-vendor-${vendor.id}`}
                   onClick={() => onEdit(vendor)}
-                  className="opacity-40 hover:opacity-100 hover:text-[#58755E] text-[#A89B95] p-1 rounded-md transition-opacity cursor-pointer"
+                  className="opacity-40 hover:opacity-100 hover:text-primary text-[#A89B95] p-1 rounded-md transition-opacity cursor-pointer"
                   aria-label="Edit vendor"
                 >
                   <Pencil className="w-4 h-4" strokeWidth={1.75} />
@@ -119,7 +119,7 @@ export const VendorList: React.FC<VendorListProps> = ({
                 type="button"
                 data-testid={`button-delete-vendor-${vendor.id}`}
                 onClick={() => onDelete(vendor.id)}
-                className="opacity-40 hover:opacity-100 hover:text-[#B86B70] text-[#A89B95] p-1 rounded-md transition-opacity cursor-pointer"
+                className="opacity-40 hover:opacity-100 hover:text-secondary text-[#A89B95] p-1 rounded-md transition-opacity cursor-pointer"
                 aria-label="Hapus vendor"
               >
                 <Trash2 className="w-4 h-4" strokeWidth={1.75} />
@@ -128,7 +128,7 @@ export const VendorList: React.FC<VendorListProps> = ({
           </div>
 
           {vendor.notes && (
-            <p className="text-[11px] text-[#73635C] bg-[#FAF8F5] p-2 rounded-lg border border-[#ECE5DE]/60 leading-relaxed">
+            <p className="text-[11px] text-[#73635C] bg-[#FAF8F5] p-2 rounded-lg border border-[#ECE5DE]/60 leading-relaxed line-clamp-2 break-words [overflow-wrap:anywhere]">
               {vendor.notes}
             </p>
           )}
@@ -139,7 +139,7 @@ export const VendorList: React.FC<VendorListProps> = ({
                 href={`https://wa.me/${vendor.whatsapp.replace(/\D/g, '')}`}
                 target="_blank"
                 rel="noreferrer"
-                className="flex items-center gap-1 text-[#58755E] hover:underline"
+                className="flex items-center gap-1 text-primary hover:underline"
               >
                 <MessageCircle className="w-3.5 h-3.5" strokeWidth={1.75} />
                 <span>WhatsApp</span>
@@ -150,7 +150,7 @@ export const VendorList: React.FC<VendorListProps> = ({
                 href={`https://instagram.com/${vendor.instagram.replace('@', '')}`}
                 target="_blank"
                 rel="noreferrer"
-                className="flex items-center gap-1 text-[#B86B70] hover:underline"
+                className="flex items-center gap-1 text-secondary hover:underline"
               >
                 <Camera className="w-3.5 h-3.5" strokeWidth={1.75} />
                 <span>@{vendor.instagram.replace('@', '')}</span>
