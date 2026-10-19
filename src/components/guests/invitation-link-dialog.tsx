@@ -1,49 +1,75 @@
 import React, { useState } from 'react';
 import { X, Globe, ExternalLink, Check, Info } from 'lucide-react';
 import { invitationUrlSchema } from '../../schemas/wedding-forms.schema';
+import { getPersonalizedInvitationUrl } from '../../utils/invitation.utils';
 
 interface InvitationLinkDialogProps {
   isOpen: boolean;
   onClose: () => void;
   currentUrl?: string;
-  onSave: (url: string | undefined) => void;
+  currentParamKey?: string;
+  onSave: (url: string | undefined, paramKey?: string) => void;
 }
+
+const PRESET_PARAM_KEYS = [
+  { id: 'to', label: '?to= (Satumomen / Standar)' },
+  { id: 'u', label: '?u= (Viding)' },
+  { id: 'tamu', label: '?tamu=' },
+  { id: 'guest', label: '?guest=' },
+  { id: 'custom', label: 'Kustom' },
+];
 
 const InvitationLinkForm: React.FC<Omit<InvitationLinkDialogProps, 'isOpen'>> = ({
   onClose,
   currentUrl = '',
+  currentParamKey = 'to',
   onSave,
 }) => {
   const [url, setUrl] = useState(currentUrl);
+  const initialIsPreset = ['to', 'u', 'tamu', 'guest'].includes(currentParamKey);
+  const [paramKeyType, setParamKeyType] = useState<string>(initialIsPreset ? currentParamKey : 'custom');
+  const [customKey, setCustomKey] = useState<string>(initialIsPreset ? '' : currentParamKey);
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
+
+  const effectiveParamKey = paramKeyType === 'custom' ? (customKey.trim() || 'to') : paramKeyType;
+
+  const hasTemplatePlaceholder =
+    url.includes('{nama}') || url.includes('{name}') || url.includes('{tamu}') || url.includes('{guest}');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const trimmed = url.trim();
 
     if (!trimmed) {
-      onSave(undefined);
+      onSave(undefined, undefined);
       setSaved(true);
       setTimeout(() => onClose(), 400);
       return;
     }
 
-    const result = invitationUrlSchema.safeParse({ invitationUrl: trimmed });
+    // If URL contains placeholder, strip placeholder for zod url validation test
+    const testUrl = trimmed
+      .replace(/\{nama\}/gi, 'dummy')
+      .replace(/\{name\}/gi, 'dummy')
+      .replace(/\{tamu\}/gi, 'dummy')
+      .replace(/\{guest\}/gi, 'dummy');
+
+    const result = invitationUrlSchema.safeParse({ invitationUrl: testUrl });
     if (!result.success) {
       const issue = result.error.issues[0];
-      setError(issue ? issue.message : 'Format URL tidak valid');
+      setError(issue ? issue.message : 'Format URL tidak valid (harus diawali http:// atau https://)');
       return;
     }
 
     setError(null);
-    onSave(trimmed);
+    onSave(trimmed, effectiveParamKey);
     setSaved(true);
     setTimeout(() => onClose(), 400);
   };
 
   const previewSampleUrl = url.trim()
-    ? `${url.trim()}${url.includes('?') ? '&' : '?'}to=Budi+Santoso`
+    ? getPersonalizedInvitationUrl(url.trim(), undefined, 'Budi Santoso', effectiveParamKey)
     : null;
 
   return (
@@ -68,7 +94,7 @@ const InvitationLinkForm: React.FC<Omit<InvitationLinkDialogProps, 'isOpen'>> = 
                 Tautan Undangan Online Acara
               </h3>
               <p className="text-[11px] text-[#A89B95]">
-                Platform eksternal (Viding, Satumomen, Our-Wedding, dll.)
+                Dukungan fleksibel untuk semua vendor web undangan
               </p>
             </div>
           </div>
@@ -87,12 +113,12 @@ const InvitationLinkForm: React.FC<Omit<InvitationLinkDialogProps, 'isOpen'>> = 
         <form onSubmit={handleSubmit} className="p-4 flex flex-col gap-4">
           <div className="flex flex-col gap-1.5">
             <label className="text-xs font-semibold text-[#3A302C]">
-              Tautan Website Undangan (Base URL)
+              Tautan Website Undangan
             </label>
             <input
-              type="url"
+              type="text"
               data-testid="input-invitation-base-url"
-              placeholder="https://satumomen.com/sarah-david"
+              placeholder="https://viding.co/sarah-david atau dengan {nama}"
               value={url}
               onChange={(e) => {
                 setUrl(e.target.value);
@@ -109,13 +135,63 @@ const InvitationLinkForm: React.FC<Omit<InvitationLinkDialogProps, 'isOpen'>> = 
             )}
           </div>
 
+          {/* Format Parameter Key Selector (Only shown if no inline template placeholder {nama}) */}
+          {!hasTemplatePlaceholder && (
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs font-semibold text-[#3A302C]">
+                Parameter Nama Tamu (Query Param)
+              </label>
+              <div className="flex flex-wrap gap-1.5">
+                {PRESET_PARAM_KEYS.map((opt) => {
+                  const isSelected = paramKeyType === opt.id;
+                  return (
+                    <button
+                      key={opt.id}
+                      type="button"
+                      data-testid={`param-key-${opt.id}`}
+                      onClick={() => setParamKeyType(opt.id)}
+                      className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-all cursor-pointer border ${
+                        isSelected
+                          ? 'bg-secondary text-white border-secondary shadow-xs'
+                          : 'bg-white text-[#73635C] border-[#ECE5DE] hover:border-secondary/40'
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {paramKeyType === 'custom' && (
+                <div className="mt-1">
+                  <input
+                    type="text"
+                    data-testid="input-custom-param-key"
+                    placeholder="Nama parameter (cth: penerima)"
+                    value={customKey}
+                    onChange={(e) => setCustomKey(e.target.value)}
+                    className="w-full px-3 py-1.5 text-xs rounded-lg bg-white border border-[#ECE5DE] text-[#3A302C] placeholder-[#A89B95] focus:outline-none focus:border-secondary"
+                  />
+                </div>
+              )}
+            </div>
+          )}
+
           {/* Explanation Info */}
           <div className="p-3 rounded-xl bg-amber-50/70 border border-amber-200/60 flex items-start gap-2.5 text-[11px] text-[#73635C] leading-relaxed">
             <Info className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" strokeWidth={1.75} />
             <div>
-              <p className="font-medium text-[#3A302C]">Personalisasi Otomatis per Tamu</p>
+              <p className="font-medium text-[#3A302C]">Fleksibilitas Template</p>
               <p className="mt-0.5">
-                Setiap kali Anda menekan tombol <strong>Kirim WA</strong> pada tamu, sistem akan otomatis menambahkan parameter nama tamu (misal: <code className="text-amber-800 bg-white/70 px-1 py-0.5 rounded">?to=Nama+Tamu</code>).
+                {hasTemplatePlaceholder ? (
+                  <>
+                    Format template <code className="text-amber-900 bg-amber-100/70 px-1 py-0.5 rounded font-mono font-semibold">&#123;nama&#125;</code> terdeteksi. Sistem akan menggantikan token tersebut langsung dengan nama tamu di setiap link WA.
+                  </>
+                ) : (
+                  <>
+                    Pilih parameter yang sesuai dengan vendor Anda (misal <strong>u</strong> untuk Viding, <strong>to</strong> untuk Satumomen), atau gunakan placeholder <code className="text-amber-900 bg-amber-100/70 px-1 py-0.5 rounded font-mono">&#123;nama&#125;</code> langsung di dalam URL.
+                  </>
+                )}
               </p>
             </div>
           </div>
@@ -124,7 +200,7 @@ const InvitationLinkForm: React.FC<Omit<InvitationLinkDialogProps, 'isOpen'>> = 
           {previewSampleUrl && (
             <div className="p-2.5 rounded-xl bg-[#FAF8F5] border border-[#ECE5DE] text-[11px]">
               <span className="block text-[10px] text-[#A89B95] uppercase tracking-wider font-semibold">
-                Contoh Tautan Tamu:
+                Hasil Pratinjau Tautan Tamu:
               </span>
               <a
                 href={previewSampleUrl}
@@ -146,7 +222,7 @@ const InvitationLinkForm: React.FC<Omit<InvitationLinkDialogProps, 'isOpen'>> = 
                 data-testid="button-clear-invitation-url"
                 onClick={() => {
                   setUrl('');
-                  onSave(undefined);
+                  onSave(undefined, undefined);
                   setSaved(true);
                   setTimeout(() => onClose(), 400);
                 }}
@@ -189,5 +265,5 @@ const InvitationLinkForm: React.FC<Omit<InvitationLinkDialogProps, 'isOpen'>> = 
 
 export const InvitationLinkDialog: React.FC<InvitationLinkDialogProps> = (props) => {
   if (!props.isOpen) return null;
-  return <InvitationLinkForm key={props.currentUrl ?? 'new'} {...props} />;
+  return <InvitationLinkForm key={`${props.currentUrl ?? 'new'}-${props.currentParamKey ?? 'to'}`} {...props} />;
 };

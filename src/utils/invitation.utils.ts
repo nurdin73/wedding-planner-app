@@ -15,7 +15,8 @@ export interface WhatsAppMessageParams {
 export function getPersonalizedInvitationUrl(
   baseUrl: string | undefined,
   customUrl: string | undefined,
-  guestName: string
+  guestName: string,
+  paramKey?: string
 ): string | undefined {
   if (customUrl && customUrl.trim()) {
     return customUrl.trim();
@@ -26,13 +27,33 @@ export function getPersonalizedInvitationUrl(
   }
 
   const trimmedBase = baseUrl.trim();
+  const trimmedName = guestName.trim();
+  const encodedName = encodeURIComponent(trimmedName);
+
+  // 1. Template Placeholder Strategy: {nama}, {name}, or {tamu}
+  if (
+    trimmedBase.includes('{nama}') ||
+    trimmedBase.includes('{name}') ||
+    trimmedBase.includes('{tamu}') ||
+    trimmedBase.includes('{guest}')
+  ) {
+    return trimmedBase
+      .replace(/\{nama\}/gi, encodedName)
+      .replace(/\{name\}/gi, encodedName)
+      .replace(/\{tamu\}/gi, encodedName)
+      .replace(/\{guest\}/gi, encodedName);
+  }
+
+  // 2. Dynamic Query Param Key Strategy (default: 'to', customizable to 'u', 'guest', etc.)
+  const effectiveKey = paramKey?.trim() || 'to';
+
   try {
     const url = new URL(trimmedBase);
-    url.searchParams.set('to', guestName.trim());
+    url.searchParams.set(effectiveKey, trimmedName);
     return url.toString();
   } catch {
     const separator = trimmedBase.includes('?') ? '&' : '?';
-    return `${trimmedBase}${separator}to=${encodeURIComponent(guestName.trim())}`;
+    return `${trimmedBase}${separator}${effectiveKey}=${encodedName}`;
   }
 }
 

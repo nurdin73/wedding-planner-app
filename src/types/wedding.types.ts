@@ -83,6 +83,7 @@ export interface CoupleProfile {
   targetBudget: number;
   guestCountTarget: number;
   invitationUrl?: string;
+  invitationParamKey?: string;
   isInitialized: boolean;
 }
 

@@ -154,6 +154,7 @@ export const GuestView: React.FC = () => {
               key={guest.id}
               guest={guest}
               baseInvitationUrl={profile.invitationUrl}
+              invitationParamKey={profile.invitationParamKey}
               brideName={profile.brideName}
               groomName={profile.groomName}
               weddingDate={profile.weddingDate}
@@ -179,7 +180,8 @@ export const GuestView: React.FC = () => {
         isOpen={isLinkDialogOpen}
         onClose={() => setIsLinkDialogOpen(false)}
         currentUrl={profile.invitationUrl}
-        onSave={(url) => updateProfile({ invitationUrl: url })}
+        currentParamKey={profile.invitationParamKey}
+        onSave={(url, paramKey) => updateProfile({ invitationUrl: url, invitationParamKey: paramKey })}
       />
 
       {/* Delete Confirmation Modal */}

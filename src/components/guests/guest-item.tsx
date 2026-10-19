@@ -25,6 +25,7 @@ interface GuestItemProps {
   onDelete: (id: string) => void;
   onEdit?: (guest: GuestItemType) => void;
   baseInvitationUrl?: string;
+  invitationParamKey?: string;
   brideName?: string;
   groomName?: string;
   weddingDate?: string;
@@ -36,6 +37,7 @@ export const GuestItem: React.FC<GuestItemProps> = ({
   onDelete,
   onEdit,
   baseInvitationUrl,
+  invitationParamKey,
   brideName = '',
   groomName = '',
   weddingDate,
@@ -47,7 +49,8 @@ export const GuestItem: React.FC<GuestItemProps> = ({
   const personalizedUrl = getPersonalizedInvitationUrl(
     baseInvitationUrl,
     guest.customInvitationUrl,
-    guest.name
+    guest.name,
+    invitationParamKey
   );
 
   const handleSendWhatsApp = () => {
