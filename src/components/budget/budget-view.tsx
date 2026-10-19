@@ -28,6 +28,15 @@ export const BudgetView: React.FC = () => {
     return expenses.filter((item) => item.category === selectedCategory);
   }, [expenses, selectedCategory]);
 
+  const filteredEstimated = useMemo(
+    () => filteredExpenses.reduce((sum, item) => sum + item.estimatedCost, 0),
+    [filteredExpenses]
+  );
+  const filteredPaid = useMemo(
+    () => filteredExpenses.reduce((sum, item) => sum + item.actualPaid, 0),
+    [filteredExpenses]
+  );
+
   const getCategoryLabel = (cat: BudgetCategory): string => {
     return CATEGORY_OPTIONS.find((c) => c.id === cat)?.label || cat;
   };
@@ -73,15 +82,26 @@ export const BudgetView: React.FC = () => {
       </div>
 
       {/* Action Header */}
-      <div className="flex justify-between items-center">
-        <span className="text-xs text-[#73635C] font-medium">
-          Daftar Pos Pengeluaran ({filteredExpenses.length})
-        </span>
+      <div className="flex justify-between items-center gap-2">
+        <div className="flex flex-col">
+          <span className="text-xs text-[#73635C] font-medium">
+            Daftar Pos Pengeluaran ({filteredExpenses.length})
+          </span>
+          {filteredExpenses.length > 0 && (
+            <span
+              data-testid="budget-filtered-subtotal"
+              className="text-[10px] text-[#A89B95] tabular-nums mt-0.5"
+            >
+              Est: <strong className="text-[#3A302C] font-semibold">{formatRupiah(filteredEstimated)}</strong> • Bayar:{' '}
+              <strong className="text-[#58755E] font-semibold">{formatRupiah(filteredPaid)}</strong>
+            </span>
+          )}
+        </div>
         <button
           type="button"
           data-testid="button-open-add-expense"
           onClick={() => setIsAddOpen(true)}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#B86B70] hover:bg-[#a65d62] text-white text-xs font-medium transition-colors shadow-sm cursor-pointer"
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#B86B70] hover:bg-[#a65d62] text-white text-xs font-medium transition-colors shadow-sm cursor-pointer shrink-0"
         >
           <Plus className="w-3.5 h-3.5" strokeWidth={2} />
           <span>Tambah Pos</span>

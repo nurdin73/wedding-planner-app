@@ -1,5 +1,5 @@
 import React from 'react';
-import { WalletCards } from 'lucide-react';
+import { WalletCards, AlertCircle } from 'lucide-react';
 import { formatRupiah, calculatePercentage } from '../../utils/currency.utils';
 
 interface BudgetSummaryProps {
@@ -16,6 +16,8 @@ export const BudgetSummary: React.FC<BudgetSummaryProps> = ({
   const remaining = targetBudget - totalPaid;
   const percentUsed = calculatePercentage(totalPaid, targetBudget);
   const isOverBudget = remaining < 0;
+  const isOverEstimated = targetBudget > 0 && totalEstimated > targetBudget;
+  const overEstimatedAmount = totalEstimated - targetBudget;
 
   return (
     <div
@@ -47,42 +49,57 @@ export const BudgetSummary: React.FC<BudgetSummaryProps> = ({
         />
       </div>
 
-      {/* Figures Grid */}
-      <div className="grid grid-cols-3 gap-2 pt-1 border-t border-[#ECE5DE]/60 text-center">
-        <div className="p-2 rounded-xl bg-[#FAF8F5] border border-[#ECE5DE]/40">
-          <span className="block text-[10px] text-[#A89B95] uppercase tracking-wider">
+      {/* Figures Grid 2x2 */}
+      <div className="grid grid-cols-2 gap-2 pt-1 border-t border-[#ECE5DE]/60">
+        <div className="p-2.5 rounded-xl bg-[#FAF8F5] border border-[#ECE5DE]/60">
+          <span className="block text-[10px] text-[#A89B95] uppercase tracking-wider font-medium">
             Pagu Target
           </span>
           <span
             data-testid="budget-figure-target"
-            className="block text-xs font-bold text-[#3A302C] tabular-nums mt-0.5 truncate"
+            className="block text-xs sm:text-sm font-bold text-[#3A302C] tabular-nums mt-0.5 truncate"
             title={formatRupiah(targetBudget)}
           >
             {formatRupiah(targetBudget)}
           </span>
         </div>
 
-        <div className="p-2 rounded-xl bg-[#FAF8F5] border border-[#ECE5DE]/40">
-          <span className="block text-[10px] text-[#A89B95] uppercase tracking-wider">
+        <div className="p-2.5 rounded-xl bg-[#FAF8F5] border border-[#ECE5DE]/60">
+          <span className="block text-[10px] text-[#A89B95] uppercase tracking-wider font-medium">
+            Estimasi Total
+          </span>
+          <span
+            data-testid="budget-figure-estimated"
+            className={`block text-xs sm:text-sm font-bold tabular-nums mt-0.5 truncate ${
+              isOverEstimated ? 'text-amber-700' : 'text-[#3A302C]'
+            }`}
+            title={formatRupiah(totalEstimated)}
+          >
+            {formatRupiah(totalEstimated)}
+          </span>
+        </div>
+
+        <div className="p-2.5 rounded-xl bg-[#FAF8F5] border border-[#ECE5DE]/60">
+          <span className="block text-[10px] text-[#A89B95] uppercase tracking-wider font-medium">
             Terbayar
           </span>
           <span
             data-testid="budget-figure-paid"
-            className="block text-xs font-bold text-[#58755E] tabular-nums mt-0.5 truncate"
+            className="block text-xs sm:text-sm font-bold text-[#58755E] tabular-nums mt-0.5 truncate"
             title={formatRupiah(totalPaid)}
           >
             {formatRupiah(totalPaid)}
           </span>
         </div>
 
-        <div className="p-2 rounded-xl bg-[#FAF8F5] border border-[#ECE5DE]/40">
-          <span className="block text-[10px] text-[#A89B95] uppercase tracking-wider">
-            Sisa Dana
+        <div className="p-2.5 rounded-xl bg-[#FAF8F5] border border-[#ECE5DE]/60">
+          <span className="block text-[10px] text-[#A89B95] uppercase tracking-wider font-medium">
+            Sisa Pagu
           </span>
           <span
             data-testid="budget-figure-remaining"
-            className={`block text-xs font-bold tabular-nums mt-0.5 truncate ${
-              isOverBudget ? 'text-red-500' : 'text-[#3A302C]'
+            className={`block text-xs sm:text-sm font-bold tabular-nums mt-0.5 truncate ${
+              isOverBudget ? 'text-rose-600' : 'text-[#3A302C]'
             }`}
             title={formatRupiah(remaining)}
           >
@@ -91,13 +108,20 @@ export const BudgetSummary: React.FC<BudgetSummaryProps> = ({
         </div>
       </div>
 
-      {totalEstimated > 0 && (
-        <div className="mt-3 text-center">
-          <span className="text-[11px] text-[#73635C]">
-            Total Proyeksi Komitmen: <strong className="tabular-nums font-semibold">{formatRupiah(totalEstimated)}</strong>
+      {/* Warning if total estimated exceeds target budget */}
+      {isOverEstimated && (
+        <div
+          data-testid="budget-warning-overcommit"
+          className="mt-3 p-2.5 rounded-xl bg-amber-50 border border-amber-200/80 flex items-center gap-2 text-amber-800 text-[11px]"
+        >
+          <AlertCircle className="w-3.5 h-3.5 shrink-0 text-amber-600" />
+          <span>
+            Total estimasi melebihi pagu target sebesar{' '}
+            <strong className="font-semibold tabular-nums">{formatRupiah(overEstimatedAmount)}</strong>.
           </span>
         </div>
       )}
     </div>
   );
 };
+
