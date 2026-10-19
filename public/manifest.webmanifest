@@ -25,16 +25,16 @@
   ],
   "screenshots": [
     {
-      "src": "/screenshots/desktop.jpg",
+      "src": "/screenshots/desktop.webp",
       "sizes": "1376x768",
-      "type": "image/jpeg",
+      "type": "image/webp",
       "form_factor": "wide",
       "label": "Tampilan Desktop Janji Suci Wedding Planner"
     },
     {
-      "src": "/screenshots/mobile.jpg",
+      "src": "/screenshots/mobile.webp",
       "sizes": "768x1376",
-      "type": "image/jpeg",
+      "type": "image/webp",
       "form_factor": "narrow",
       "label": "Tampilan Mobile Janji Suci Wedding Planner"
     }

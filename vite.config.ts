@@ -18,8 +18,8 @@ export default defineConfig({
         'icon-192.png',
         'icon-512.png',
         'icons.svg',
-        'screenshots/desktop.jpg',
-        'screenshots/mobile.jpg',
+        'screenshots/desktop.webp',
+        'screenshots/mobile.webp',
       ],
       manifest: false,
       workbox: {
