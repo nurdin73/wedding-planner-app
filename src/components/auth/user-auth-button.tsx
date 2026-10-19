@@ -1,13 +1,14 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { LogOut, AlertCircle, Loader2, Heart, CloudCheck, CloudOff, RefreshCw } from 'lucide-react';
+import { LogOut, AlertCircle, Loader2, Heart, CloudCheck, CloudOff, RefreshCw, CalendarHeart } from 'lucide-react';
 import { useAuth } from '../../hooks/use-auth';
 import { useWeddingPlanner } from '../../hooks/use-wedding-planner';
 
 interface UserAuthButtonProps {
   onOpenInvite?: () => void;
+  onOpenReschedule?: () => void;
 }
 
-export const UserAuthButton: React.FC<UserAuthButtonProps> = ({ onOpenInvite }) => {
+export const UserAuthButton: React.FC<UserAuthButtonProps> = ({ onOpenInvite, onOpenReschedule }) => {
   const { user, status, isConfigured, error, signInWithGoogle, signOutUser } = useAuth();
   const { syncStatus, lastSyncedAt, isPaired } = useWeddingPlanner();
   const [isOpen, setIsOpen] = useState(false);
@@ -155,6 +156,24 @@ export const UserAuthButton: React.FC<UserAuthButtonProps> = ({ onOpenInvite }) 
                 </span>
               </button>
             )}
+
+            {/* Sesuaikan Tanggal Bahagia */}
+            {onOpenReschedule && (
+              <button
+                type="button"
+                data-testid="dropdown-reschedule-date-btn"
+                onClick={() => {
+                  setIsOpen(false);
+                  onOpenReschedule();
+                }}
+                className="w-full flex items-center gap-2 px-2 py-2 rounded-lg hover:bg-stone-100 text-stone-700 hover:text-[#B86B70] transition-colors cursor-pointer text-left text-xs mb-1"
+              >
+                <CalendarHeart className="w-3.5 h-3.5 text-[#B86B70]" />
+                <span className="font-medium">Sesuaikan Tanggal Bahagia</span>
+              </button>
+            )}
+
+            <div className="border-t border-[#ECE5DE]/80 my-1" />
 
             <button
               type="button"

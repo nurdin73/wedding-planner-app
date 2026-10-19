@@ -1,10 +1,10 @@
 # Product Requirement Document (PRD)
 
-## Aplikasi Web Wedding Planner: "Janji Suci" (EverAfter Planner)
+## Aplikasi Web Wedding Planner: "Janji Suci"
 
 | Metadata | Keterangan | 
 | ----- | ----- | 
-| **Nama Proyek** | Janji Suci Web App (EverAfter Planner) | 
+| **Nama Proyek** | Janji Suci Web App | 
 | **Kategori** | Productivity, Event Planning & Social Experience Web App | 
 | **Platform Target** | Web App (Mobile-First Responsive Web / PWA-ready) | 
 | **Versi Dokumen** | 2.0.0 (Modern Editorial Aesthetic & Clean Minimalist) | 

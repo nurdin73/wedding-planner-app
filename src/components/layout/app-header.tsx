@@ -4,16 +4,18 @@ import { UserAuthButton } from '../auth/user-auth-button';
 
 interface AppHeaderProps {
   onOpenInvite?: () => void;
+  onOpenReschedule?: () => void;
 }
 
-export const AppHeader: React.FC<AppHeaderProps> = ({ onOpenInvite }) => {
+export const AppHeader: React.FC<AppHeaderProps> = ({ onOpenInvite, onOpenReschedule }) => {
   const { state } = useWeddingPlanner();
   const { profile } = state;
 
-  const coupleTitle =
-    profile.brideName && profile.groomName
-      ? `${profile.brideName} & ${profile.groomName}`
-      : 'Janji Suci';
+  const hasCoupleNames = Boolean(profile.brideName && profile.groomName);
+  const coupleTitle = hasCoupleNames
+    ? `${profile.brideName} & ${profile.groomName}`
+    : 'Janji Suci';
+  const subtitle = hasCoupleNames ? 'Janji Suci Planner' : 'Wedding Planner';
 
   return (
     <header
@@ -37,14 +39,14 @@ export const AppHeader: React.FC<AppHeaderProps> = ({ onOpenInvite }) => {
               {coupleTitle}
             </span>
             <span className="text-[10px] uppercase tracking-widest text-[#A89B95] block -mt-0.5">
-              EverAfter Planner
+              {subtitle}
             </span>
           </div>
         </div>
 
         {/* Right side: Clean Unified Account & Workspace Menu */}
         <div className="flex items-center gap-2">
-          <UserAuthButton onOpenInvite={onOpenInvite} />
+          <UserAuthButton onOpenInvite={onOpenInvite} onOpenReschedule={onOpenReschedule} />
         </div>
       </div>
     </header>

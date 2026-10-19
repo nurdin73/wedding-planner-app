@@ -28,19 +28,20 @@ export const GuestSummary: React.FC<GuestSummaryProps> = ({ guests }) => {
       data-testid="guest-summary-card"
       className="bg-white rounded-2xl p-4 border border-[#ECE5DE] shadow-ambient flex flex-col gap-3"
     >
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Users className="w-4 h-4 text-[#DFB15B]" strokeWidth={1.75} />
-          <h3 className="font-serif text-lg font-semibold text-[#3A302C]">
-            Alokasi Tamu & Pax Katering
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center gap-1.5 min-w-0">
+          <Users className="w-4 h-4 text-[#DFB15B] shrink-0" strokeWidth={1.75} />
+          <h3 className="font-serif text-sm sm:text-base font-semibold text-[#3A302C] truncate">
+            Alokasi Tamu & Katering
           </h3>
         </div>
         <span
           data-testid="guest-sent-status"
-          className="text-xs font-semibold text-[#58755E] tabular-nums flex items-center gap-1"
+          title={`Undangan Terkirim: ${sentPercent}%`}
+          className="text-[11px] font-medium text-[#58755E] tabular-nums flex items-center gap-1 shrink-0 bg-[#E8F0EA] px-2 py-0.5 rounded-full whitespace-nowrap"
         >
-          <MailCheck className="w-3.5 h-3.5" strokeWidth={1.75} />
-          {sentCount}/{totalInvitations} Terkirim ({sentPercent}%)
+          <MailCheck className="w-3 h-3 shrink-0" strokeWidth={1.75} />
+          <span>{sentCount}/{totalInvitations} Terkirim</span>
         </span>
       </div>
 

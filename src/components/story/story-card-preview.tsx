@@ -114,7 +114,7 @@ export const StoryCardPreview = forwardRef<HTMLDivElement, StoryCardPreviewProps
           </p>
           <div className="flex items-center justify-center gap-1 mt-2 text-[9px] text-[#A89B95] uppercase tracking-widest">
             <CalendarHeart className="w-3 h-3 text-[#B86B70]" strokeWidth={1.75} />
-            <span>Janji Suci • EverAfter Planner</span>
+            <span>Janji Suci Planner</span>
           </div>
         </div>
       </div>

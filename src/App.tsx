@@ -14,6 +14,7 @@ import { JournalModal } from './components/journal/journal-modal';
 import { InvitePartnerDialog } from './components/collab/invite-partner-dialog';
 import { JoinPartnerDialog } from './components/collab/join-partner-dialog';
 import { AcceptInviteDialog } from './components/collab/accept-invite-dialog';
+import { RescheduleDateModal } from './components/home/reschedule-date-modal';
 
 const AppContent: React.FC = () => {
   const { state } = useWeddingPlanner();
@@ -23,6 +24,7 @@ const AppContent: React.FC = () => {
   const [isJournalOpen, setIsJournalOpen] = useState(false);
   const [isInviteOpen, setIsInviteOpen] = useState(false);
   const [isJoinOpen, setIsJoinOpen] = useState(false);
+  const [isRescheduleOpen, setIsRescheduleOpen] = useState(false);
 
   // Detect ?invite=SUCI-XXXX query param from URL
   const [pendingInviteCode, setPendingInviteCode] = useState<string | null>(() => {
@@ -43,7 +45,10 @@ const AppContent: React.FC = () => {
   };
 
   return (
-    <AppLayout onOpenInvite={() => setIsInviteOpen(true)}>
+    <AppLayout
+      onOpenInvite={() => setIsInviteOpen(true)}
+      onOpenReschedule={() => setIsRescheduleOpen(true)}
+    >
       <OnboardingModal />
 
       {activeTab === 'home' && (
@@ -60,6 +65,10 @@ const AppContent: React.FC = () => {
 
       <StoryModal isOpen={isStoryOpen} onClose={() => setIsStoryOpen(false)} />
       <JournalModal isOpen={isJournalOpen} onClose={() => setIsJournalOpen(false)} />
+      <RescheduleDateModal
+        isOpen={isRescheduleOpen}
+        onClose={() => setIsRescheduleOpen(false)}
+      />
       <InvitePartnerDialog
         isOpen={isInviteOpen}
         onClose={() => setIsInviteOpen(false)}

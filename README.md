@@ -1,6 +1,6 @@
 <div align="center">
   <img src="public/icon-192.png" alt="Janji Suci Logo" width="100" style="border-radius: 50%;" />
-  <h1>Janji Suci — EverAfter Wedding Planner</h1>
+  <h1>Janji Suci — Wedding Planner</h1>
   <p><strong>Aplikasi Web Perencana Pernikahan Modern Editorial Soft Minimalist dengan Kolaborasi Pasangan Real-time.</strong></p>
 
   <p>
@@ -69,7 +69,7 @@ Aplikasi ini mengedepankan pengalaman bebas stres bagi calon mempelai melalui ar
 - Menampilkan nama mempelai, hitung mundur hari, dan persentase kesiapan dengan logo resmi Janji Suci.
 - Siap diunduh sebagai gambar (*PNG export*) untuk dibagikan ke Instagram Story atau WhatsApp Status.
 
-### 8. 📖 Jurnal Kisah (EverAfter Journal)
+### 8. 📖 Jurnal Kisah (Janji Suci Journal)
 - Ruang catatan kenangan dan refleksi emosional perjalanan cinta menuju ikatan suci.
 
 ---
@@ -201,5 +201,5 @@ Proyek ini dilisensikan di bawah [MIT License](LICENSE).
 
 <div align="center">
   <p>Dibuat dengan segenap cinta untuk mendampingi langkah suci Anda menuju keabadian. ✨</p>
-  <p><strong>Janji Suci • EverAfter Planner</strong></p>
+  <p><strong>Janji Suci • Wedding Planner</strong></p>
 </div>

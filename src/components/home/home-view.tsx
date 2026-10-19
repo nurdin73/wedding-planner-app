@@ -34,7 +34,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
           &ldquo;Dua jiwa dengan satu keteguhan, merajut langkah menuju satu ikatan suci yang abadi.&rdquo;
         </p>
         <span className="block text-[10px] uppercase tracking-widest text-[#A89B95] mt-1">
-          — EverAfter Journal
+          — Janji Suci
         </span>
       </div>
 
