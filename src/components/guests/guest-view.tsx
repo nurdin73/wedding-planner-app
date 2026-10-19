@@ -4,16 +4,18 @@ import { useWeddingPlanner } from '../../hooks/use-wedding-planner';
 import { GuestSummary } from './guest-summary';
 import { GuestItem } from './guest-item';
 import { GuestDialog } from './guest-dialog';
+import { InvitationLinkDialog } from './invitation-link-dialog';
 import { ConfirmDialog } from '../ui/confirm-dialog';
 import type { GuestItem as GuestItemType } from '../../types/wedding.types';
 
 export const GuestView: React.FC = () => {
-  const { state, addGuest, updateGuest, toggleInvitationStatus, deleteGuest } = useWeddingPlanner();
-  const { guests } = state;
+  const { state, updateProfile, addGuest, updateGuest, toggleInvitationStatus, deleteGuest } = useWeddingPlanner();
+  const { guests, profile } = state;
 
   const [filterType, setFilterType] = useState<'ALL' | 'BRIDE' | 'GROOM' | 'VIP'>('ALL');
   const [searchQuery, setSearchQuery] = useState('');
   const [isAddOpen, setIsAddOpen] = useState(false);
+  const [isLinkDialogOpen, setIsLinkDialogOpen] = useState(false);
   const [guestToEdit, setGuestToEdit] = useState<GuestItemType | null>(null);
   const [guestToDelete, setGuestToDelete] = useState<GuestItemType | null>(null);
 
@@ -55,7 +57,11 @@ export const GuestView: React.FC = () => {
 
   return (
     <div data-testid="guest-view" className="flex flex-col gap-4 animate-fade-in">
-      <GuestSummary guests={guests} />
+      <GuestSummary
+        guests={guests}
+        invitationUrl={profile.invitationUrl}
+        onOpenLinkDialog={() => setIsLinkDialogOpen(true)}
+      />
 
       {/* Filter and Search Bar */}
       <div className="flex flex-col gap-2">
@@ -147,6 +153,10 @@ export const GuestView: React.FC = () => {
             <GuestItem
               key={guest.id}
               guest={guest}
+              baseInvitationUrl={profile.invitationUrl}
+              brideName={profile.brideName}
+              groomName={profile.groomName}
+              weddingDate={profile.weddingDate}
               onToggleStatus={toggleInvitationStatus}
               onDelete={() => setGuestToDelete(guest)}
               onEdit={handleOpenEdit}
@@ -162,6 +172,14 @@ export const GuestView: React.FC = () => {
         onAdd={addGuest}
         onUpdate={updateGuest}
         guestToEdit={guestToEdit}
+      />
+
+      {/* Online Invitation Link Dialog */}
+      <InvitationLinkDialog
+        isOpen={isLinkDialogOpen}
+        onClose={() => setIsLinkDialogOpen(false)}
+        currentUrl={profile.invitationUrl}
+        onSave={(url) => updateProfile({ invitationUrl: url })}
       />
 
       {/* Delete Confirmation Modal */}

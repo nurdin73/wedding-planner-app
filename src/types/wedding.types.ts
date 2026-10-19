@@ -37,6 +37,7 @@ export interface GuestItem {
   invitationStatus: InvitationStatus;
   contactInfo?: string;
   notes?: string;
+  customInvitationUrl?: string;
   createdAt: string;
 }
 
@@ -81,6 +82,7 @@ export interface CoupleProfile {
   weddingDate: string; // YYYY-MM-DD
   targetBudget: number;
   guestCountTarget: number;
+  invitationUrl?: string;
   isInitialized: boolean;
 }
 
@@ -168,7 +170,8 @@ export interface WeddingPlannerContextType {
     category: GuestCategory,
     paxCount: number,
     contactInfo?: string,
-    notes?: string
+    notes?: string,
+    customInvitationUrl?: string
   ) => void;
   updateGuest: (id: string, updates: Partial<Omit<GuestItem, 'id' | 'createdAt'>>) => void;
   toggleInvitationStatus: (id: string) => void;

@@ -1,13 +1,18 @@
-import React from 'react';
-import { Users, MailCheck } from 'lucide-react';
+import { Users, MailCheck, Globe, Link as LinkIcon } from 'lucide-react';
 import type { GuestItem } from '../../types/wedding.types';
 import { calculatePercentage } from '../../utils/currency.utils';
 
 interface GuestSummaryProps {
   guests: GuestItem[];
+  invitationUrl?: string;
+  onOpenLinkDialog?: () => void;
 }
 
-export const GuestSummary: React.FC<GuestSummaryProps> = ({ guests }) => {
+export const GuestSummary: React.FC<GuestSummaryProps> = ({
+  guests,
+  invitationUrl,
+  onOpenLinkDialog,
+}) => {
   const totalInvitations = guests.length;
   const totalPax = guests.reduce((sum, g) => sum + g.paxCount, 0);
 
@@ -93,6 +98,47 @@ export const GuestSummary: React.FC<GuestSummaryProps> = ({ guests }) => {
               title={`Pihak Pria: ${100 - brideRatio}%`}
             />
           </div>
+        </div>
+      )}
+
+      {/* Online Invitation Link Banner */}
+      {onOpenLinkDialog && (
+        <div
+          data-testid="guest-invitation-link-bar"
+          className="pt-2.5 border-t border-[#ECE5DE]/60 flex items-center justify-between gap-2 text-xs"
+        >
+          <div className="flex items-center gap-2 min-w-0 flex-1">
+            <div className="w-6 h-6 rounded-full bg-amber-50 border border-amber-200 flex items-center justify-center text-amber-700 shrink-0">
+              <Globe className="w-3.5 h-3.5" strokeWidth={1.75} />
+            </div>
+            <div className="flex flex-col min-w-0">
+              <span className="text-[10px] text-[#A89B95] uppercase font-semibold tracking-wider">
+                Tautan Undangan Web
+              </span>
+              {invitationUrl ? (
+                <span
+                  title={invitationUrl}
+                  className="text-[11px] text-[#3A302C] font-medium truncate max-w-[200px] sm:max-w-[280px]"
+                >
+                  {invitationUrl}
+                </span>
+              ) : (
+                <span className="text-[11px] text-[#A89B95] italic">
+                  Belum ditautkan (klik untuk atur)
+                </span>
+              )}
+            </div>
+          </div>
+
+          <button
+            type="button"
+            data-testid="button-open-invitation-link-dialog"
+            onClick={onOpenLinkDialog}
+            className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#FAF8F5] hover:bg-[#F5EFEB] border border-[#ECE5DE] text-[11px] font-medium text-[#3A302C] transition-colors shrink-0 cursor-pointer"
+          >
+            <LinkIcon className="w-3 h-3 text-[#73635C]" />
+            <span>{invitationUrl ? 'Ubah' : 'Tautkan Web'}</span>
+          </button>
         </div>
       )}
     </div>

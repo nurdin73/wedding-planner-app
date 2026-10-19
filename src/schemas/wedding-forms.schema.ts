@@ -36,8 +36,23 @@ export const guestFormSchema = z.object({
     .min(1, 'Jumlah pax minimal 1 orang'),
   contactInfo: z.string().optional(),
   notes: z.string().optional(),
+  customInvitationUrl: z
+    .string()
+    .trim()
+    .url('Format tautan tidak valid (harus diawali http:// atau https://)')
+    .optional()
+    .or(z.literal('')),
 });
 export type GuestFormValues = z.infer<typeof guestFormSchema>;
+
+export const invitationUrlSchema = z.object({
+  invitationUrl: z
+    .string()
+    .trim()
+    .url('Format tautan tidak valid (harus diawali http:// atau https://)')
+    .or(z.literal('')),
+});
+export type InvitationUrlFormValues = z.infer<typeof invitationUrlSchema>;
 
 // 4. Vendor Form Schema
 export const vendorFormSchema = z.object({

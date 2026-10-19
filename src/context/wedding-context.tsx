@@ -125,7 +125,15 @@ export const WeddingPlannerProvider: React.FC<{ children: React.ReactNode }> = (
 
   // Guest operations
   const addGuest = useCallback(
-    (name: string, side: GuestSide, category: GuestCategory, paxCount: number, contactInfo?: string, notes?: string) => {
+    (
+      name: string,
+      side: GuestSide,
+      category: GuestCategory,
+      paxCount: number,
+      contactInfo?: string,
+      notes?: string,
+      customInvitationUrl?: string
+    ) => {
       const newGuest: GuestItem = {
         id: `guest_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
         name: name.trim(),
@@ -135,6 +143,7 @@ export const WeddingPlannerProvider: React.FC<{ children: React.ReactNode }> = (
         invitationStatus: 'NOT_SENT',
         contactInfo: contactInfo?.trim(),
         notes: notes?.trim(),
+        customInvitationUrl: customInvitationUrl?.trim() || undefined,
         createdAt: new Date().toISOString(),
       };
       setState((prev) => ({ ...prev, guests: [newGuest, ...prev.guests] }));

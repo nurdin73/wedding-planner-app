@@ -14,7 +14,8 @@ interface GuestDialogProps {
     category: GuestCategory,
     paxCount: number,
     contactInfo?: string,
-    notes?: string
+    notes?: string,
+    customInvitationUrl?: string
   ) => void;
   onUpdate?: (id: string, updates: Partial<Omit<GuestItem, 'id' | 'createdAt'>>) => void;
   guestToEdit?: GuestItem | null;
@@ -32,6 +33,7 @@ const GuestDialogForm: React.FC<GuestDialogProps> = ({
   const [paxCount, setPaxCount] = useState<number>(guestToEdit?.paxCount ?? 2);
   const [contactInfo, setContactInfo] = useState(guestToEdit?.contactInfo ?? '');
   const [notes, setNotes] = useState(guestToEdit?.notes ?? '');
+  const [customInvitationUrl, setCustomInvitationUrl] = useState(guestToEdit?.customInvitationUrl ?? '');
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -43,6 +45,7 @@ const GuestDialogForm: React.FC<GuestDialogProps> = ({
       paxCount,
       contactInfo,
       notes,
+      customInvitationUrl,
     });
 
     if (!result.success) {
@@ -63,6 +66,7 @@ const GuestDialogForm: React.FC<GuestDialogProps> = ({
         paxCount: result.data.paxCount,
         contactInfo: result.data.contactInfo?.trim() || undefined,
         notes: result.data.notes?.trim() || undefined,
+        customInvitationUrl: result.data.customInvitationUrl?.trim() || undefined,
       });
     } else {
       onAdd(
@@ -71,7 +75,8 @@ const GuestDialogForm: React.FC<GuestDialogProps> = ({
         result.data.category,
         result.data.paxCount,
         result.data.contactInfo?.trim() || undefined,
-        result.data.notes?.trim() || undefined
+        result.data.notes?.trim() || undefined,
+        result.data.customInvitationUrl?.trim() || undefined
       );
     }
 
@@ -79,6 +84,7 @@ const GuestDialogForm: React.FC<GuestDialogProps> = ({
     setPaxCount(2);
     setContactInfo('');
     setNotes('');
+    setCustomInvitationUrl('');
     onClose();
   };
 
@@ -201,6 +207,31 @@ const GuestDialogForm: React.FC<GuestDialogProps> = ({
               onChange={(e) => setContactInfo(maskPhoneNumber(e.target.value))}
               className="w-full px-3 py-2 text-sm rounded-lg bg-[#FAF8F5] border border-[#ECE5DE] text-[#3A302C] placeholder-[#A89B95] focus:outline-none focus:border-secondary tabular-nums"
             />
+          </div>
+
+          <div>
+            <label className="block text-[11px] font-medium text-[#73635C] mb-1">
+              Tautan Undangan Khusus (opsional)
+            </label>
+            <input
+              data-testid="input-guest-custom-url"
+              type="url"
+              placeholder="cth: https://undangan.me/khusus-budi"
+              value={customInvitationUrl}
+              onChange={(e) => setCustomInvitationUrl(e.target.value)}
+              className={`w-full px-3 py-2 text-sm rounded-lg bg-[#FAF8F5] border ${
+                errors.customInvitationUrl ? 'border-red-500' : 'border-[#ECE5DE]'
+              } text-[#3A302C] placeholder-[#A89B95] focus:outline-none focus:border-secondary`}
+            />
+            {errors.customInvitationUrl ? (
+              <span className="text-[10px] text-red-600 mt-0.5 block">
+                {errors.customInvitationUrl}
+              </span>
+            ) : (
+              <span className="text-[10px] text-[#A89B95] mt-0.5 block">
+                Kosongkan jika ingin memakai tautan undangan utama acara secara otomatis.
+              </span>
+            )}
           </div>
 
           <div className="flex gap-2.5 mt-2">
