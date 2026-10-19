@@ -5,6 +5,7 @@ import { VendorList } from './vendor-list';
 import { VendorDialog } from './vendor-dialog';
 import { RundownTimeline } from './rundown-timeline';
 import { RundownDialog } from './rundown-dialog';
+import { ConfirmDialog } from '../ui/confirm-dialog';
 import type { VendorItem, RundownItem } from '../../types/wedding.types';
 
 export const VendorRundownView: React.FC = () => {
@@ -25,6 +26,8 @@ export const VendorRundownView: React.FC = () => {
   const [isAddRundownOpen, setIsAddRundownOpen] = useState(false);
   const [vendorToEdit, setVendorToEdit] = useState<VendorItem | null>(null);
   const [rundownToEdit, setRundownToEdit] = useState<RundownItem | null>(null);
+  const [vendorToDelete, setVendorToDelete] = useState<VendorItem | null>(null);
+  const [rundownToDelete, setRundownToDelete] = useState<RundownItem | null>(null);
 
   const handleOpenAddVendor = () => {
     setVendorToEdit(null);
@@ -54,6 +57,16 @@ export const VendorRundownView: React.FC = () => {
   const handleCloseRundownDialog = () => {
     setIsAddRundownOpen(false);
     setRundownToEdit(null);
+  };
+
+  const handleDeleteVendorClick = (id: string) => {
+    const target = vendors.find((v) => v.id === id);
+    if (target) setVendorToDelete(target);
+  };
+
+  const handleDeleteRundownClick = (id: string) => {
+    const target = rundown.find((r) => r.id === id);
+    if (target) setRundownToDelete(target);
   };
 
   return (
@@ -123,7 +136,7 @@ export const VendorRundownView: React.FC = () => {
         <VendorList
           vendors={vendors}
           onUpdateStatus={updateVendorStatus}
-          onDelete={deleteVendor}
+          onDelete={handleDeleteVendorClick}
           onEdit={handleOpenEditVendor}
           onOpenAdd={handleOpenAddVendor}
         />
@@ -131,7 +144,7 @@ export const VendorRundownView: React.FC = () => {
         <RundownTimeline
           rundown={rundown}
           profile={profile}
-          onDelete={deleteRundownItem}
+          onDelete={handleDeleteRundownClick}
           onEdit={handleOpenEditRundown}
           onOpenAdd={handleOpenAddRundown}
         />
@@ -152,6 +165,42 @@ export const VendorRundownView: React.FC = () => {
         onAdd={addRundownItem}
         onUpdate={updateRundownItem}
         rundownToEdit={rundownToEdit}
+      />
+
+      {/* Delete Vendor Confirmation Modal */}
+      <ConfirmDialog
+        isOpen={vendorToDelete !== null}
+        title="Hapus Rekanan Vendor?"
+        description="Vendor ini akan dihapus dari daftar mitra pernikahan Anda."
+        itemName={vendorToDelete?.name}
+        confirmLabel="Hapus Vendor"
+        cancelLabel="Batal"
+        testIdPrefix="confirm-delete-vendor"
+        onConfirm={() => {
+          if (vendorToDelete) {
+            deleteVendor(vendorToDelete.id);
+            setVendorToDelete(null);
+          }
+        }}
+        onClose={() => setVendorToDelete(null)}
+      />
+
+      {/* Delete Rundown Item Confirmation Modal */}
+      <ConfirmDialog
+        isOpen={rundownToDelete !== null}
+        title="Hapus Sesi Acara?"
+        description="Sesi acara ini akan dihapus dari susunan rundown hari-H Anda."
+        itemName={rundownToDelete ? `${rundownToDelete.time} - ${rundownToDelete.activity}` : undefined}
+        confirmLabel="Hapus Sesi"
+        cancelLabel="Batal"
+        testIdPrefix="confirm-delete-rundown"
+        onConfirm={() => {
+          if (rundownToDelete) {
+            deleteRundownItem(rundownToDelete.id);
+            setRundownToDelete(null);
+          }
+        }}
+        onClose={() => setRundownToDelete(null)}
       />
     </div>
   );

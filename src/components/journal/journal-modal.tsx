@@ -2,8 +2,10 @@ import React, { useState } from 'react';
 import { X, BookOpen, Plus, Trash2, CalendarHeart } from 'lucide-react';
 import { useWeddingPlanner } from '../../hooks/use-wedding-planner';
 import { JournalEntryDialog } from './journal-entry-dialog';
+import { ConfirmDialog } from '../ui/confirm-dialog';
 import { formatIndonesianDate } from '../../utils/date.utils';
 import { JOURNAL_CATEGORY_OPTIONS } from '../../constants/wedding.constants';
+import type { JournalEntry } from '../../types/wedding.types';
 
 interface JournalModalProps {
   isOpen: boolean;
@@ -15,6 +17,7 @@ export const JournalModal: React.FC<JournalModalProps> = ({ isOpen, onClose }) =
   const { journal } = state;
 
   const [isAddOpen, setIsAddOpen] = useState(false);
+  const [entryToDelete, setEntryToDelete] = useState<JournalEntry | null>(null);
 
   if (!isOpen) return null;
 
@@ -119,7 +122,7 @@ export const JournalModal: React.FC<JournalModalProps> = ({ isOpen, onClose }) =
                     <button
                       type="button"
                       data-testid={`button-delete-journal-${item.id}`}
-                      onClick={() => deleteJournalEntry(item.id)}
+                      onClick={() => setEntryToDelete(item)}
                       className="opacity-40 hover:opacity-100 hover:text-secondary text-[#A89B95] p-1 rounded-md transition-opacity cursor-pointer"
                       aria-label="Hapus catatan"
                     >
@@ -141,6 +144,24 @@ export const JournalModal: React.FC<JournalModalProps> = ({ isOpen, onClose }) =
         isOpen={isAddOpen}
         onClose={() => setIsAddOpen(false)}
         onAdd={addJournalEntry}
+      />
+
+      {/* Delete Journal Entry Confirmation Modal */}
+      <ConfirmDialog
+        isOpen={entryToDelete !== null}
+        title="Hapus Catatan Jurnal?"
+        description="Momen ini akan dihapus secara permanen dari jurnal kenangan Anda."
+        itemName={entryToDelete?.title}
+        confirmLabel="Hapus Catatan"
+        cancelLabel="Batal"
+        testIdPrefix="confirm-delete-journal"
+        onConfirm={() => {
+          if (entryToDelete) {
+            deleteJournalEntry(entryToDelete.id);
+            setEntryToDelete(null);
+          }
+        }}
+        onClose={() => setEntryToDelete(null)}
       />
     </div>
   );

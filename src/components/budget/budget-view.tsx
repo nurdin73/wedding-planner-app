@@ -3,6 +3,7 @@ import { Plus, Trash2, Coins, Receipt, Pencil } from 'lucide-react';
 import { useWeddingPlanner } from '../../hooks/use-wedding-planner';
 import { BudgetSummary } from './budget-summary';
 import { ExpenseDialog } from './expense-dialog';
+import { ConfirmDialog } from '../ui/confirm-dialog';
 import { CATEGORY_OPTIONS } from '../../constants/wedding.constants';
 import type { BudgetCategory, BudgetItem } from '../../types/wedding.types';
 import { formatRupiah } from '../../utils/currency.utils';
@@ -14,6 +15,7 @@ export const BudgetView: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<BudgetCategory | 'ALL'>('ALL');
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [expenseToEdit, setExpenseToEdit] = useState<BudgetItem | null>(null);
+  const [expenseToDelete, setExpenseToDelete] = useState<BudgetItem | null>(null);
 
   const totalEstimated = useMemo(
     () => expenses.reduce((sum, item) => sum + item.estimatedCost, 0),
@@ -202,7 +204,7 @@ export const BudgetView: React.FC = () => {
                 <button
                   type="button"
                   data-testid={`button-delete-expense-${item.id}`}
-                  onClick={() => deleteExpense(item.id)}
+                  onClick={() => setExpenseToDelete(item)}
                   className="opacity-40 hover:opacity-100 hover:text-secondary text-[#A89B95] p-1 rounded-md transition-opacity cursor-pointer"
                   aria-label="Hapus pos"
                 >
@@ -221,6 +223,24 @@ export const BudgetView: React.FC = () => {
         onAdd={addExpense}
         onUpdate={updateExpense}
         expenseToEdit={expenseToEdit}
+      />
+
+      {/* Delete Confirmation Modal */}
+      <ConfirmDialog
+        isOpen={expenseToDelete !== null}
+        title="Hapus Pos Anggaran?"
+        description="Pos pengeluaran ini akan dihapus dari kalkulasi anggaran pernikahan Anda."
+        itemName={expenseToDelete?.title}
+        confirmLabel="Hapus Pos"
+        cancelLabel="Batal"
+        testIdPrefix="confirm-delete-expense"
+        onConfirm={() => {
+          if (expenseToDelete) {
+            deleteExpense(expenseToDelete.id);
+            setExpenseToDelete(null);
+          }
+        }}
+        onClose={() => setExpenseToDelete(null)}
       />
     </div>
   );

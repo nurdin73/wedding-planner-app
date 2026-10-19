@@ -1,5 +1,5 @@
 import React from 'react';
-import { Cloud, CloudCheck, RefreshCw, CloudOff } from 'lucide-react';
+import { Cloud, CloudCheck, RefreshCw, CloudOff, WifiOff } from 'lucide-react';
 import { useWeddingPlanner } from '../../hooks/use-wedding-planner';
 import { useAuth } from '../../hooks/use-auth';
 
@@ -17,6 +17,19 @@ export const CloudSyncBadge: React.FC = () => {
       >
         <Cloud className="w-3 h-3 text-[#A89B95]" />
         <span>Lokal</span>
+      </div>
+    );
+  }
+
+  if (syncStatus === 'offline') {
+    return (
+      <div
+        data-testid="cloud-sync-badge"
+        className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#FAF8F5] border border-[#D5CBC2] text-[10px] text-[#786B64]"
+        title="Offline: Perubahan tersimpan di perangkat ini dan akan otomatis disinkronkan saat online kembali."
+      >
+        <WifiOff className="w-3 h-3 text-[#8C7E77]" />
+        <span className="hidden sm:inline">Offline (Lokal)</span>
       </div>
     );
   }

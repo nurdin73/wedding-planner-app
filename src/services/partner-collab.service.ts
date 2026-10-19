@@ -165,7 +165,7 @@ export async function joinWeddingByCode(
   } catch (error: unknown) {
     const err = error as { code?: string; message?: string };
     if (err?.code === 'not-found') {
-      throw new Error('Lembar kerja rencana pernikahan tidak ditemukan.');
+      throw new Error('Lembar kerja rencana pernikahan tidak ditemukan.', { cause: error });
     }
     console.error('[Collab] Failed to join wedding members:', error);
     throw error;

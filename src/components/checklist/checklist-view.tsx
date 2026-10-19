@@ -3,6 +3,7 @@ import { Plus, ListTodo, CheckCircle2 } from 'lucide-react';
 import { useWeddingPlanner } from '../../hooks/use-wedding-planner';
 import { ChecklistItem } from './checklist-item';
 import { TaskDialog } from './task-dialog';
+import { ConfirmDialog } from '../ui/confirm-dialog';
 import type { TimePhase, ChecklistItem as ChecklistItemType } from '../../types/wedding.types';
 import { TIME_PHASES } from '../../constants/wedding.constants';
 import { calculatePercentage } from '../../utils/currency.utils';
@@ -14,6 +15,7 @@ export const ChecklistView: React.FC = () => {
   const [selectedPhase, setSelectedPhase] = useState<TimePhase>('ALL');
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [taskToEdit, setTaskToEdit] = useState<ChecklistItemType | null>(null);
+  const [taskToDelete, setTaskToDelete] = useState<ChecklistItemType | null>(null);
 
   const filteredTasks = useMemo(() => {
     if (selectedPhase === 'ALL') return checklist;
@@ -131,7 +133,7 @@ export const ChecklistView: React.FC = () => {
               key={task.id}
               item={task}
               onToggle={toggleTask}
-              onDelete={deleteTask}
+              onDelete={() => setTaskToDelete(task)}
               onEdit={handleOpenEdit}
             />
           ))}
@@ -146,6 +148,24 @@ export const ChecklistView: React.FC = () => {
         onUpdate={updateTask}
         taskToEdit={taskToEdit}
         initialPhase={selectedPhase}
+      />
+
+      {/* Delete Confirmation Modal */}
+      <ConfirmDialog
+        isOpen={taskToDelete !== null}
+        title="Hapus Tugas Persiapan?"
+        description="Tugas ini akan dihapus dari checklist linimasa pernikahan Anda."
+        itemName={taskToDelete?.title}
+        confirmLabel="Hapus Tugas"
+        cancelLabel="Batal"
+        testIdPrefix="confirm-delete-task"
+        onConfirm={() => {
+          if (taskToDelete) {
+            deleteTask(taskToDelete.id);
+            setTaskToDelete(null);
+          }
+        }}
+        onClose={() => setTaskToDelete(null)}
       />
     </div>
   );

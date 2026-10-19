@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { LogOut, AlertCircle, Loader2, Heart, CloudCheck, CloudOff, RefreshCw, CalendarHeart } from 'lucide-react';
+import { LogOut, AlertCircle, Loader2, Heart, CloudCheck, CloudOff, RefreshCw, CalendarHeart, WifiOff } from 'lucide-react';
 import { useAuth } from '../../hooks/use-auth';
 import { useWeddingPlanner } from '../../hooks/use-wedding-planner';
 
@@ -74,11 +74,19 @@ export const UserAuthButton: React.FC<UserAuthButtonProps> = ({ onOpenInvite, on
               className={`absolute -bottom-0.5 -right-0.5 w-2 h-2 rounded-full border border-white ${
                 syncStatus === 'syncing'
                   ? 'bg-amber-400 animate-pulse'
+                  : syncStatus === 'offline'
+                  ? 'bg-[#8C7E77]'
                   : syncStatus === 'error'
                   ? 'bg-rose-500'
                   : 'bg-emerald-500'
               }`}
-              title={syncStatus === 'saved' ? 'Tersimpan di Cloud' : syncStatus}
+              title={
+                syncStatus === 'saved'
+                  ? 'Tersimpan di Cloud'
+                  : syncStatus === 'offline'
+                  ? 'Offline (Tersimpan Lokal)'
+                  : syncStatus
+              }
             />
           </div>
           <span className="font-medium max-w-[75px] truncate">
@@ -108,6 +116,8 @@ export const UserAuthButton: React.FC<UserAuthButtonProps> = ({ onOpenInvite, on
               <div className="flex items-center gap-1.5 text-[11px] text-[#73635C]">
                 {syncStatus === 'syncing' ? (
                   <RefreshCw className="w-3.5 h-3.5 text-amber-600 animate-spin" />
+                ) : syncStatus === 'offline' ? (
+                  <WifiOff className="w-3.5 h-3.5 text-[#8C7E77]" />
                 ) : syncStatus === 'error' ? (
                   <CloudOff className="w-3.5 h-3.5 text-rose-600" />
                 ) : (
@@ -116,6 +126,8 @@ export const UserAuthButton: React.FC<UserAuthButtonProps> = ({ onOpenInvite, on
                 <span>
                   {syncStatus === 'syncing'
                     ? 'Menyinkronkan...'
+                    : syncStatus === 'offline'
+                    ? 'Offline (Tersimpan Lokal)'
                     : syncStatus === 'error'
                     ? 'Gagal Sinkron'
                     : 'Tersimpan di Cloud'}

@@ -135,7 +135,7 @@ export interface WorkspaceMemberInfo {
   joinedAt?: string;
 }
 
-export type SyncStatus = 'idle' | 'syncing' | 'saved' | 'error';
+export type SyncStatus = 'idle' | 'syncing' | 'saved' | 'error' | 'offline';
 
 export interface WeddingPlannerContextType {
   state: WeddingPlannerState;

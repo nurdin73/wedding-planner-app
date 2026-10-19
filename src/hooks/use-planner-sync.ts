@@ -9,6 +9,8 @@ import {
   type WeddingWorkspaceData,
 } from '../services/partner-collab.service';
 import { loadPlannerState, savePlannerState } from '../utils/storage.utils';
+import { useNetworkStatus } from './use-network-status';
+import { reconcilePlannerStates } from '../utils/sync-reconciliation.utils';
 
 interface UsePlannerSyncProps {
   user: AuthUser | null;
@@ -17,46 +19,64 @@ interface UsePlannerSyncProps {
 }
 
 export function usePlannerSync({ user, state, setState }: UsePlannerSyncProps) {
-  const [syncStatus, setSyncStatus] = useState<SyncStatus>('idle');
+  const { isOnline } = useNetworkStatus();
+  const [cloudStatus, setCloudStatus] = useState<Exclude<SyncStatus, 'offline'>>('idle');
   const [lastSyncedAt, setLastSyncedAt] = useState<string | null>(null);
   const [weddingId, setWeddingId] = useState<string | null>(null);
   const [inviteCode, setInviteCode] = useState<string | null>(null);
   const [isPaired, setIsPaired] = useState(false);
   const [membersInfo, setMembersInfo] = useState<WorkspaceMemberInfo[]>([]);
 
+  // When offline, status is derived unconditionally as 'offline'
+  const syncStatus: SyncStatus = !isOnline ? 'offline' : cloudStatus;
+
   const isRemoteUpdateRef = useRef(false);
   const isInitialMountRef = useRef(true);
+  const hasPendingOfflineChangesRef = useRef(false);
   const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const stateRef = useRef(state);
+  stateRef.current = state;
+  const userRef = useRef(user);
+  userRef.current = user;
+  const setStateRef = useRef(setState);
+  setStateRef.current = setState;
 
   // 1. Initial workspace load or logout handling
   useEffect(() => {
     if (!user) {
-      setSyncStatus('idle');
-      setWeddingId(null);
-      setInviteCode(null);
-      setIsPaired(false);
-      setMembersInfo([]);
-      // Revert to local guest state
-      const guestState = loadPlannerState(null);
-      isRemoteUpdateRef.current = true;
-      setState(guestState);
-      return;
+      const timer = setTimeout(() => {
+        setCloudStatus('idle');
+        setWeddingId(null);
+        setInviteCode(null);
+        setIsPaired(false);
+        setMembersInfo([]);
+        const guestState = loadPlannerState(null);
+        isRemoteUpdateRef.current = true;
+        setStateRef.current(guestState);
+      }, 0);
+      return () => clearTimeout(timer);
     }
 
     let isSubscribed = true;
-    setSyncStatus('syncing');
 
     // Fast local user cache
     const cachedUserState = loadPlannerState(user.uid);
     if (cachedUserState.profile.isInitialized) {
       isRemoteUpdateRef.current = true;
-      setState(cachedUserState);
+      setStateRef.current(cachedUserState);
+    }
+
+    if (!isOnline) {
+      return;
     }
 
     async function initWorkspace() {
-      if (!user) return;
+      const currentUser = userRef.current;
+      if (!currentUser) return;
+      setCloudStatus('syncing');
       try {
-        const workspace = await getOrCreateWedding(user, state);
+        const workspace = await getOrCreateWedding(currentUser, stateRef.current);
         if (!isSubscribed || !workspace) return;
 
         setWeddingId(workspace.id);
@@ -68,17 +88,23 @@ export function usePlannerSync({ user, state, setState }: UsePlannerSyncProps) {
 
         if (workspace.plannerState && workspace.plannerState.profile.isInitialized) {
           isRemoteUpdateRef.current = true;
-          setState(workspace.plannerState);
-          savePlannerState(workspace.plannerState, user.uid);
+          // Reconcile with any offline modifications
+          const resolvedState = hasPendingOfflineChangesRef.current
+            ? reconcilePlannerStates(stateRef.current, workspace.plannerState)
+            : workspace.plannerState;
+          setStateRef.current(resolvedState);
+          savePlannerState(resolvedState, currentUser.uid);
         }
 
-        setSyncStatus('saved');
+        setCloudStatus('saved');
         setLastSyncedAt(
           new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
         );
       } catch (err) {
         console.error('[Collab] Workspace init error:', err);
-        if (isSubscribed) setSyncStatus('error');
+        if (isSubscribed) {
+          setCloudStatus('error');
+        }
       }
     }
 
@@ -87,11 +113,12 @@ export function usePlannerSync({ user, state, setState }: UsePlannerSyncProps) {
     return () => {
       isSubscribed = false;
     };
-  }, [user?.uid]);
+  }, [user?.uid, isOnline]);
 
   // 2. Real-time subscription to shared wedding workspace
   useEffect(() => {
-    if (!weddingId || !user) return;
+    const currentUser = userRef.current;
+    if (!weddingId || !currentUser || !isOnline) return;
 
     const unsubscribe = subscribeWeddingWorkspace(
       weddingId,
@@ -103,26 +130,30 @@ export function usePlannerSync({ user, state, setState }: UsePlannerSyncProps) {
           setMembersInfo(workspace.membersInfo);
         }
 
-        setState((prev) => ({
-          ...workspace.plannerState,
-          activeTab: prev.activeTab, // keep current active tab
+        const reconciled = hasPendingOfflineChangesRef.current
+          ? reconcilePlannerStates(stateRef.current, workspace.plannerState)
+          : workspace.plannerState;
+
+        setStateRef.current((prev) => ({
+          ...reconciled,
+          activeTab: prev.activeTab,
         }));
 
-        savePlannerState(workspace.plannerState, user.uid);
-        setSyncStatus('saved');
+        savePlannerState(reconciled, currentUser.uid);
+        setCloudStatus('saved');
         setLastSyncedAt(
           new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
         );
       },
       () => {
-        setSyncStatus('error');
+        setCloudStatus('error');
       }
     );
 
     return () => unsubscribe();
-  }, [weddingId, user?.uid]);
+  }, [weddingId, isOnline]);
 
-  // 3. Debounced save to shared Firestore wedding workspace
+  // 3. Debounced save or offline queuing
   useEffect(() => {
     if (isInitialMountRef.current) {
       isInitialMountRef.current = false;
@@ -134,25 +165,39 @@ export function usePlannerSync({ user, state, setState }: UsePlannerSyncProps) {
       return;
     }
 
-    if (!user || !weddingId) return;
+    if (!user) return;
 
-    setSyncStatus('syncing');
+    // Always persist to local device cache immediately
+    savePlannerState(state, user.uid);
+
+    // If currently offline, queue pending and defer cloud sync
+    if (!isOnline) {
+      hasPendingOfflineChangesRef.current = true;
+      return;
+    }
+
+    if (!weddingId) return;
 
     if (debounceTimerRef.current) {
       clearTimeout(debounceTimerRef.current);
     }
 
     debounceTimerRef.current = setTimeout(async () => {
+      setCloudStatus('syncing');
       try {
         await saveWeddingState(weddingId, state);
-        savePlannerState(state, user.uid);
-        setSyncStatus('saved');
+        hasPendingOfflineChangesRef.current = false;
+        setCloudStatus('saved');
         setLastSyncedAt(
           new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
         );
       } catch (err) {
         console.error('[Collab] Failed to save state to shared workspace:', err);
-        setSyncStatus('error');
+        if (!navigator.onLine) {
+          hasPendingOfflineChangesRef.current = true;
+        } else {
+          setCloudStatus('error');
+        }
       }
     }, 1000);
 
@@ -161,13 +206,39 @@ export function usePlannerSync({ user, state, setState }: UsePlannerSyncProps) {
         clearTimeout(debounceTimerRef.current);
       }
     };
-  }, [state, user?.uid, weddingId]);
+  }, [state, user?.uid, weddingId, isOnline]);
 
-  // 4. Join a partner's wedding with a code
+  // 4. Automatic reconnection sync flusher
+  useEffect(() => {
+    const currentUser = userRef.current;
+    if (isOnline && hasPendingOfflineChangesRef.current && currentUser && weddingId) {
+      const timer = setTimeout(() => {
+        setCloudStatus('syncing');
+        saveWeddingState(weddingId, stateRef.current)
+          .then(() => {
+            hasPendingOfflineChangesRef.current = false;
+            setCloudStatus('saved');
+            setLastSyncedAt(
+              new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
+            );
+          })
+          .catch((err) => {
+            console.error('[Collab] Auto-sync on reconnect error:', err);
+            if (navigator.onLine) {
+              setCloudStatus('error');
+            }
+          });
+      }, 0);
+      return () => clearTimeout(timer);
+    }
+  }, [isOnline, weddingId]);
+
+  // 5. Join a partner's wedding with a code
   const joinWedding = useCallback(
     async (code: string) => {
       if (!user) throw new Error('Harap login terlebih dahulu untuk menghubungkan pasangan.');
-      setSyncStatus('syncing');
+      if (!isOnline) throw new Error('Menghubungkan pasangan membutuhkan koneksi internet aktif.');
+      setCloudStatus('syncing');
       try {
         const workspace = await joinWeddingByCode(user, code);
         setWeddingId(workspace.id);
@@ -181,16 +252,16 @@ export function usePlannerSync({ user, state, setState }: UsePlannerSyncProps) {
         setState(workspace.plannerState);
         savePlannerState(workspace.plannerState, user.uid);
 
-        setSyncStatus('saved');
+        setCloudStatus('saved');
         setLastSyncedAt(
           new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
         );
       } catch (err) {
-        setSyncStatus('error');
+        setCloudStatus('error');
         throw err;
       }
     },
-    [user]
+    [user, isOnline, setState]
   );
 
   return {
@@ -203,3 +274,4 @@ export function usePlannerSync({ user, state, setState }: UsePlannerSyncProps) {
     joinWedding,
   };
 }
+

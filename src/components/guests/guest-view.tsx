@@ -4,6 +4,7 @@ import { useWeddingPlanner } from '../../hooks/use-wedding-planner';
 import { GuestSummary } from './guest-summary';
 import { GuestItem } from './guest-item';
 import { GuestDialog } from './guest-dialog';
+import { ConfirmDialog } from '../ui/confirm-dialog';
 import type { GuestItem as GuestItemType } from '../../types/wedding.types';
 
 export const GuestView: React.FC = () => {
@@ -14,6 +15,7 @@ export const GuestView: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [guestToEdit, setGuestToEdit] = useState<GuestItemType | null>(null);
+  const [guestToDelete, setGuestToDelete] = useState<GuestItemType | null>(null);
 
   const filteredGuests = useMemo(() => {
     return guests.filter((guest) => {
@@ -146,7 +148,7 @@ export const GuestView: React.FC = () => {
               key={guest.id}
               guest={guest}
               onToggleStatus={toggleInvitationStatus}
-              onDelete={deleteGuest}
+              onDelete={() => setGuestToDelete(guest)}
               onEdit={handleOpenEdit}
             />
           ))}
@@ -160,6 +162,24 @@ export const GuestView: React.FC = () => {
         onAdd={addGuest}
         onUpdate={updateGuest}
         guestToEdit={guestToEdit}
+      />
+
+      {/* Delete Confirmation Modal */}
+      <ConfirmDialog
+        isOpen={guestToDelete !== null}
+        title="Hapus Tamu Undangan?"
+        description="Data tamu ini akan dihapus dari daftar undangan pernikahan Anda."
+        itemName={guestToDelete?.name}
+        confirmLabel="Hapus Tamu"
+        cancelLabel="Batal"
+        testIdPrefix="confirm-delete-guest"
+        onConfirm={() => {
+          if (guestToDelete) {
+            deleteGuest(guestToDelete.id);
+            setGuestToDelete(null);
+          }
+        }}
+        onClose={() => setGuestToDelete(null)}
       />
     </div>
   );
