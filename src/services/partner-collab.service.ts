@@ -117,23 +117,34 @@ export async function joinWeddingByCode(
 
   const { weddingId } = inviteSnap.data() as { weddingId: string };
   const weddingRef = doc(db, 'weddings', weddingId);
-  const weddingSnap = await getDoc(weddingRef);
 
-  if (!weddingSnap.exists()) {
-    throw new Error('Lembar kerja rencana pernikahan tidak ditemukan.');
+  // Add user to wedding members directly.
+  // We avoid calling getDoc(weddingRef) prior to this because Firestore Security Rules
+  // restrict read access strictly to authenticated members of the wedding workspace.
+  // By updating members first with arrayUnion, the write succeeds under the rule
+  // (request.auth.uid in request.resource.data.members), and subsequent reads succeed.
+  try {
+    await updateDoc(weddingRef, {
+      members: arrayUnion(user.uid),
+      updatedAt: new Date().toISOString(),
+    });
+  } catch (error: unknown) {
+    const err = error as { code?: string; message?: string };
+    if (err?.code === 'not-found') {
+      throw new Error('Lembar kerja rencana pernikahan tidak ditemukan.');
+    }
+    console.error('[Collab] Failed to join wedding members:', error);
+    throw error;
   }
-
-  // Add user to wedding members
-  await updateDoc(weddingRef, {
-    members: arrayUnion(user.uid),
-    updatedAt: new Date().toISOString(),
-  });
 
   // Link weddingId to user's profile
   const userRef = doc(db, 'users', user.uid);
   await setDoc(userRef, { activeWeddingId: weddingId }, { merge: true });
 
   const updatedSnap = await getDoc(weddingRef);
+  if (!updatedSnap.exists()) {
+    throw new Error('Gagal memuat data lembar kerja rencana pernikahan.');
+  }
   return updatedSnap.data() as WeddingWorkspaceData;
 }
 
