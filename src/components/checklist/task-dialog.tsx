@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { X } from 'lucide-react';
-import type { TimePhase } from '../../types/wedding.types';
+import type { TimePhase, ChecklistItem } from '../../types/wedding.types';
 import { taskFormSchema } from '../../schemas/wedding-forms.schema';
 
-interface AddTaskDialogProps {
+interface TaskDialogProps {
   isOpen: boolean;
   onClose: () => void;
   onAdd: (title: string, phase: Exclude<TimePhase, 'ALL'>, notes?: string) => void;
+  onUpdate?: (id: string, updates: Partial<Omit<ChecklistItem, 'id' | 'createdAt'>>) => void;
+  taskToEdit?: ChecklistItem | null;
   initialPhase?: TimePhase;
 }
 
@@ -18,19 +20,18 @@ const PHASE_OPTIONS: { id: Exclude<TimePhase, 'ALL'>; label: string }[] = [
   { id: 'WEDDING_DAY', label: 'Hari-H' },
 ];
 
-export const AddTaskDialog: React.FC<AddTaskDialogProps> = ({
-  isOpen,
+const TaskDialogForm: React.FC<TaskDialogProps> = ({
   onClose,
   onAdd,
+  onUpdate,
+  taskToEdit,
   initialPhase = 'H_12_6_MONTHS',
 }) => {
   const defaultPhase = initialPhase === 'ALL' ? 'H_12_6_MONTHS' : initialPhase;
-  const [title, setTitle] = useState('');
-  const [phase, setPhase] = useState<Exclude<TimePhase, 'ALL'>>(defaultPhase);
-  const [notes, setNotes] = useState('');
+  const [title, setTitle] = useState(taskToEdit?.title ?? '');
+  const [phase, setPhase] = useState<Exclude<TimePhase, 'ALL'>>(taskToEdit?.phase ?? defaultPhase);
+  const [notes, setNotes] = useState(taskToEdit?.notes ?? '');
   const [errors, setErrors] = useState<Record<string, string>>({});
-
-  if (!isOpen) return null;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -45,21 +46,27 @@ export const AddTaskDialog: React.FC<AddTaskDialogProps> = ({
     }
 
     setErrors({});
-    onAdd(result.data.title, result.data.phase, result.data.notes?.trim() || undefined);
-    setTitle('');
-    setNotes('');
+    if (taskToEdit && onUpdate) {
+      onUpdate(taskToEdit.id, {
+        title: result.data.title,
+        phase: result.data.phase,
+        notes: result.data.notes?.trim() || undefined,
+      });
+    } else {
+      onAdd(result.data.title, result.data.phase, result.data.notes?.trim() || undefined);
+    }
     onClose();
   };
 
   return (
     <div
-      data-testid="add-task-dialog"
+      data-testid="task-dialog"
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#3A302C]/40 backdrop-blur-sm"
     >
       <div className="w-full max-w-sm bg-white rounded-2xl p-5 border border-[#ECE5DE] shadow-ambient">
         <div className="flex items-center justify-between mb-4">
           <h3 className="font-serif text-lg font-semibold text-[#3A302C]">
-            Tambah Tugas Persiapan
+            {taskToEdit ? 'Edit Tugas Persiapan' : 'Tambah Tugas Persiapan'}
           </h3>
           <button
             type="button"
@@ -142,7 +149,7 @@ export const AddTaskDialog: React.FC<AddTaskDialogProps> = ({
               type="submit"
               className="flex-1 py-2 rounded-xl bg-[#B86B70] hover:bg-[#a65d62] text-xs font-medium text-white transition-colors cursor-pointer shadow-sm"
             >
-              Simpan Tugas
+              {taskToEdit ? 'Simpan Perubahan' : 'Simpan Tugas'}
             </button>
           </div>
         </form>
@@ -150,3 +157,11 @@ export const AddTaskDialog: React.FC<AddTaskDialogProps> = ({
     </div>
   );
 };
+
+export const TaskDialog: React.FC<TaskDialogProps> = (props) => {
+  if (!props.isOpen) return null;
+  return <TaskDialogForm key={props.taskToEdit?.id ?? 'create'} {...props} />;
+};
+
+export const AddTaskDialog = TaskDialog;
+

@@ -3,15 +3,17 @@ import { UserPlus, Users, Search } from 'lucide-react';
 import { useWeddingPlanner } from '../../hooks/use-wedding-planner';
 import { GuestSummary } from './guest-summary';
 import { GuestItem } from './guest-item';
-import { AddGuestDialog } from './add-guest-dialog';
+import { GuestDialog } from './guest-dialog';
+import type { GuestItem as GuestItemType } from '../../types/wedding.types';
 
 export const GuestView: React.FC = () => {
-  const { state, addGuest, toggleInvitationStatus, deleteGuest } = useWeddingPlanner();
+  const { state, addGuest, updateGuest, toggleInvitationStatus, deleteGuest } = useWeddingPlanner();
   const { guests } = state;
 
   const [filterType, setFilterType] = useState<'ALL' | 'BRIDE' | 'GROOM' | 'VIP'>('ALL');
   const [searchQuery, setSearchQuery] = useState('');
   const [isAddOpen, setIsAddOpen] = useState(false);
+  const [guestToEdit, setGuestToEdit] = useState<GuestItemType | null>(null);
 
   const filteredGuests = useMemo(() => {
     return guests.filter((guest) => {
@@ -33,6 +35,21 @@ export const GuestView: React.FC = () => {
       return true;
     });
   }, [guests, filterType, searchQuery]);
+
+  const handleOpenAdd = () => {
+    setGuestToEdit(null);
+    setIsAddOpen(true);
+  };
+
+  const handleOpenEdit = (guest: GuestItemType) => {
+    setGuestToEdit(guest);
+    setIsAddOpen(true);
+  };
+
+  const handleCloseDialog = () => {
+    setIsAddOpen(false);
+    setGuestToEdit(null);
+  };
 
   return (
     <div data-testid="guest-view" className="flex flex-col gap-4 animate-fade-in">
@@ -86,7 +103,7 @@ export const GuestView: React.FC = () => {
         <button
           type="button"
           data-testid="button-open-add-guest"
-          onClick={() => setIsAddOpen(true)}
+          onClick={handleOpenAdd}
           className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#B86B70] hover:bg-[#a65d62] text-white text-xs font-medium transition-colors shadow-sm cursor-pointer"
         >
           <UserPlus className="w-3.5 h-3.5" strokeWidth={2} />
@@ -115,7 +132,7 @@ export const GuestView: React.FC = () => {
             <button
               type="button"
               data-testid="button-empty-add-guest"
-              onClick={() => setIsAddOpen(true)}
+              onClick={handleOpenAdd}
               className="mt-4 px-4 py-2 rounded-xl bg-[#FAF8F5] hover:bg-[#F5EFEB] border border-[#ECE5DE] text-xs font-medium text-[#3A302C] transition-colors cursor-pointer"
             >
               + Catat Tamu Pertama
@@ -130,16 +147,19 @@ export const GuestView: React.FC = () => {
               guest={guest}
               onToggleStatus={toggleInvitationStatus}
               onDelete={deleteGuest}
+              onEdit={handleOpenEdit}
             />
           ))}
         </div>
       )}
 
-      {/* Add Dialog */}
-      <AddGuestDialog
+      {/* Add / Edit Dialog */}
+      <GuestDialog
         isOpen={isAddOpen}
-        onClose={() => setIsAddOpen(false)}
+        onClose={handleCloseDialog}
         onAdd={addGuest}
+        onUpdate={updateGuest}
+        guestToEdit={guestToEdit}
       />
     </div>
   );

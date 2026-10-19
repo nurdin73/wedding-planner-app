@@ -150,6 +150,7 @@ export interface WeddingPlannerContextType {
   initializePlanner: (profile: Omit<CoupleProfile, 'isInitialized'>) => void;
   setActiveTab: (tab: ActiveTab) => void;
   addTask: (title: string, phase: Exclude<TimePhase, 'ALL'>, notes?: string) => void;
+  updateTask: (id: string, updates: Partial<Omit<ChecklistItem, 'id' | 'createdAt'>>) => void;
   toggleTask: (id: string) => void;
   deleteTask: (id: string) => void;
   addExpense: (
@@ -169,6 +170,7 @@ export interface WeddingPlannerContextType {
     contactInfo?: string,
     notes?: string
   ) => void;
+  updateGuest: (id: string, updates: Partial<Omit<GuestItem, 'id' | 'createdAt'>>) => void;
   toggleInvitationStatus: (id: string) => void;
   deleteGuest: (id: string) => void;
   addVendor: (
@@ -180,6 +182,7 @@ export interface WeddingPlannerContextType {
     instagram?: string,
     notes?: string
   ) => void;
+  updateVendor: (id: string, updates: Partial<Omit<VendorItem, 'id' | 'createdAt'>>) => void;
   updateVendorStatus: (id: string, status: VendorStatus) => void;
   deleteVendor: (id: string) => void;
   addRundownItem: (
@@ -189,6 +192,7 @@ export interface WeddingPlannerContextType {
     location?: string,
     notes?: string
   ) => void;
+  updateRundownItem: (id: string, updates: Partial<Omit<RundownItem, 'id' | 'createdAt'>>) => void;
   deleteRundownItem: (id: string) => void;
   addJournalEntry: (
     title: string,

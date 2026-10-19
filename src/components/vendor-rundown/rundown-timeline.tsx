@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Clock, Copy, Check, Trash2, Milestone, MapPin, UserCheck } from 'lucide-react';
+import { Clock, Copy, Check, Trash2, Milestone, MapPin, UserCheck, Pencil } from 'lucide-react';
 import type { RundownItem, CoupleProfile } from '../../types/wedding.types';
 import { formatIndonesianDate } from '../../utils/date.utils';
 
@@ -7,6 +7,7 @@ interface RundownTimelineProps {
   rundown: RundownItem[];
   profile: CoupleProfile;
   onDelete: (id: string) => void;
+  onEdit?: (item: RundownItem) => void;
   onOpenAdd: () => void;
 }
 
@@ -14,6 +15,7 @@ export const RundownTimeline: React.FC<RundownTimelineProps> = ({
   rundown,
   profile,
   onDelete,
+  onEdit,
   onOpenAdd,
 }) => {
   const [copied, setCopied] = useState(false);
@@ -120,15 +122,28 @@ export const RundownTimeline: React.FC<RundownTimelineProps> = ({
                 </h4>
               </div>
 
-              <button
-                type="button"
-                data-testid={`button-delete-rundown-${item.id}`}
-                onClick={() => onDelete(item.id)}
-                className="opacity-40 hover:opacity-100 hover:text-[#B86B70] text-[#A89B95] p-1 rounded-md transition-opacity cursor-pointer shrink-0"
-                aria-label="Hapus sesi"
-              >
-                <Trash2 className="w-4 h-4" strokeWidth={1.75} />
-              </button>
+              <div className="flex items-center gap-1 shrink-0">
+                {onEdit && (
+                  <button
+                    type="button"
+                    data-testid={`button-edit-rundown-${item.id}`}
+                    onClick={() => onEdit(item)}
+                    className="opacity-40 hover:opacity-100 hover:text-[#58755E] text-[#A89B95] p-1 rounded-md transition-opacity cursor-pointer"
+                    aria-label="Edit sesi"
+                  >
+                    <Pencil className="w-4 h-4" strokeWidth={1.75} />
+                  </button>
+                )}
+                <button
+                  type="button"
+                  data-testid={`button-delete-rundown-${item.id}`}
+                  onClick={() => onDelete(item.id)}
+                  className="opacity-40 hover:opacity-100 hover:text-[#B86B70] text-[#A89B95] p-1 rounded-md transition-opacity cursor-pointer"
+                  aria-label="Hapus sesi"
+                >
+                  <Trash2 className="w-4 h-4" strokeWidth={1.75} />
+                </button>
+              </div>
             </div>
 
             <div className="flex items-center gap-3 text-[10px] text-[#73635C] flex-wrap mt-0.5">

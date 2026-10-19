@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { X } from 'lucide-react';
-import type { BudgetCategory } from '../../types/wedding.types';
+import type { BudgetCategory, BudgetItem } from '../../types/wedding.types';
 import { CATEGORY_OPTIONS } from '../../constants/wedding.constants';
 import { expenseFormSchema } from '../../schemas/wedding-forms.schema';
 import { MaskedCurrencyInput } from '../ui/masked-currency-input';
-import { unmaskCurrency } from '../../utils/mask.utils';
+import { unmaskCurrency, maskCurrency } from '../../utils/mask.utils';
 
-interface AddExpenseDialogProps {
+interface ExpenseDialogProps {
   isOpen: boolean;
   onClose: () => void;
   onAdd: (
@@ -16,21 +16,26 @@ interface AddExpenseDialogProps {
     actualPaid: number,
     notes?: string
   ) => void;
+  onUpdate?: (id: string, updates: Partial<Omit<BudgetItem, 'id' | 'createdAt'>>) => void;
+  expenseToEdit?: BudgetItem | null;
 }
 
-export const AddExpenseDialog: React.FC<AddExpenseDialogProps> = ({
-  isOpen,
+const ExpenseDialogForm: React.FC<ExpenseDialogProps> = ({
   onClose,
   onAdd,
+  onUpdate,
+  expenseToEdit,
 }) => {
-  const [title, setTitle] = useState('');
-  const [category, setCategory] = useState<BudgetCategory>('VENUE_CATERING');
-  const [estimatedStr, setEstimatedStr] = useState('');
-  const [paidStr, setPaidStr] = useState('');
-  const [notes, setNotes] = useState('');
+  const [title, setTitle] = useState(expenseToEdit?.title ?? '');
+  const [category, setCategory] = useState<BudgetCategory>(expenseToEdit?.category ?? 'VENUE_CATERING');
+  const [estimatedStr, setEstimatedStr] = useState(
+    expenseToEdit && expenseToEdit.estimatedCost > 0 ? maskCurrency(expenseToEdit.estimatedCost) : ''
+  );
+  const [paidStr, setPaidStr] = useState(
+    expenseToEdit && expenseToEdit.actualPaid > 0 ? maskCurrency(expenseToEdit.actualPaid) : ''
+  );
+  const [notes, setNotes] = useState(expenseToEdit?.notes ?? '');
   const [errors, setErrors] = useState<Record<string, string>>({});
-
-  if (!isOpen) return null;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -56,23 +61,35 @@ export const AddExpenseDialog: React.FC<AddExpenseDialogProps> = ({
     }
 
     setErrors({});
-    onAdd(result.data.title, result.data.category, result.data.estimatedCost, result.data.actualPaid, result.data.notes?.trim() || undefined);
-    setTitle('');
-    setEstimatedStr('');
-    setPaidStr('');
-    setNotes('');
+    if (expenseToEdit && onUpdate) {
+      onUpdate(expenseToEdit.id, {
+        title: result.data.title,
+        category: result.data.category,
+        estimatedCost: result.data.estimatedCost,
+        actualPaid: result.data.actualPaid,
+        notes: result.data.notes?.trim() || undefined,
+      });
+    } else {
+      onAdd(
+        result.data.title,
+        result.data.category,
+        result.data.estimatedCost,
+        result.data.actualPaid,
+        result.data.notes?.trim() || undefined
+      );
+    }
     onClose();
   };
 
   return (
     <div
-      data-testid="add-expense-dialog"
+      data-testid="expense-dialog"
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#3A302C]/40 backdrop-blur-sm"
     >
       <div className="w-full max-w-sm bg-white rounded-2xl p-5 border border-[#ECE5DE] shadow-ambient">
         <div className="flex items-center justify-between mb-4">
           <h3 className="font-serif text-lg font-semibold text-[#3A302C]">
-            Catat Pos Pengeluaran
+            {expenseToEdit ? 'Edit Pos Pengeluaran' : 'Catat Pos Pengeluaran'}
           </h3>
           <button
             type="button"
@@ -181,7 +198,7 @@ export const AddExpenseDialog: React.FC<AddExpenseDialogProps> = ({
               type="submit"
               className="flex-1 py-2 rounded-xl bg-[#B86B70] hover:bg-[#a65d62] text-xs font-medium text-white transition-colors cursor-pointer shadow-sm"
             >
-              Simpan Pos
+              {expenseToEdit ? 'Simpan Perubahan' : 'Simpan Pos'}
             </button>
           </div>
         </form>
@@ -189,3 +206,11 @@ export const AddExpenseDialog: React.FC<AddExpenseDialogProps> = ({
     </div>
   );
 };
+
+export const ExpenseDialog: React.FC<ExpenseDialogProps> = (props) => {
+  if (!props.isOpen) return null;
+  return <ExpenseDialogForm key={props.expenseToEdit?.id ?? 'create'} {...props} />;
+};
+
+export const AddExpenseDialog = ExpenseDialog;
+

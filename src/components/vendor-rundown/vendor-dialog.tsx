@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { X } from 'lucide-react';
-import type { VendorCategory, VendorStatus } from '../../types/wedding.types';
+import type { VendorCategory, VendorStatus, VendorItem } from '../../types/wedding.types';
 import { VENDOR_CATEGORY_OPTIONS, VENDOR_STATUS_OPTIONS } from '../../constants/wedding.constants';
 import { vendorFormSchema } from '../../schemas/wedding-forms.schema';
 import { MaskedCurrencyInput } from '../ui/masked-currency-input';
-import { unmaskCurrency, maskPhoneNumber } from '../../utils/mask.utils';
+import { unmaskCurrency, maskCurrency, maskPhoneNumber } from '../../utils/mask.utils';
 
-interface AddVendorDialogProps {
+interface VendorDialogProps {
   isOpen: boolean;
   onClose: () => void;
   onAdd: (
@@ -18,19 +18,26 @@ interface AddVendorDialogProps {
     instagram?: string,
     notes?: string
   ) => void;
+  onUpdate?: (id: string, updates: Partial<Omit<VendorItem, 'id' | 'createdAt'>>) => void;
+  vendorToEdit?: VendorItem | null;
 }
 
-export const AddVendorDialog: React.FC<AddVendorDialogProps> = ({ isOpen, onClose, onAdd }) => {
-  const [name, setName] = useState('');
-  const [category, setCategory] = useState<VendorCategory>('VENUE');
-  const [costStr, setCostStr] = useState('');
-  const [status, setStatus] = useState<VendorStatus>('CONTACTED');
-  const [whatsapp, setWhatsapp] = useState('');
-  const [instagram, setInstagram] = useState('');
-  const [notes, setNotes] = useState('');
+const VendorDialogForm: React.FC<VendorDialogProps> = ({
+  onClose,
+  onAdd,
+  onUpdate,
+  vendorToEdit,
+}) => {
+  const [name, setName] = useState(vendorToEdit?.name ?? '');
+  const [category, setCategory] = useState<VendorCategory>(vendorToEdit?.category ?? 'VENUE');
+  const [costStr, setCostStr] = useState(
+    vendorToEdit && vendorToEdit.cost > 0 ? maskCurrency(vendorToEdit.cost) : ''
+  );
+  const [status, setStatus] = useState<VendorStatus>(vendorToEdit?.status ?? 'CONTACTED');
+  const [whatsapp, setWhatsapp] = useState(vendorToEdit?.whatsapp ?? '');
+  const [instagram, setInstagram] = useState(vendorToEdit?.instagram ?? '');
+  const [notes, setNotes] = useState(vendorToEdit?.notes ?? '');
   const [errors, setErrors] = useState<Record<string, string>>({});
-
-  if (!isOpen) return null;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -56,15 +63,27 @@ export const AddVendorDialog: React.FC<AddVendorDialogProps> = ({ isOpen, onClos
     }
 
     setErrors({});
-    onAdd(
-      result.data.name,
-      result.data.category,
-      result.data.cost,
-      result.data.status,
-      result.data.whatsapp?.trim() || undefined,
-      result.data.instagram?.trim() || undefined,
-      result.data.notes?.trim() || undefined
-    );
+    if (vendorToEdit && onUpdate) {
+      onUpdate(vendorToEdit.id, {
+        name: result.data.name,
+        category: result.data.category,
+        cost: result.data.cost,
+        status: result.data.status,
+        whatsapp: result.data.whatsapp?.trim() || undefined,
+        instagram: result.data.instagram?.trim() || undefined,
+        notes: result.data.notes?.trim() || undefined,
+      });
+    } else {
+      onAdd(
+        result.data.name,
+        result.data.category,
+        result.data.cost,
+        result.data.status,
+        result.data.whatsapp?.trim() || undefined,
+        result.data.instagram?.trim() || undefined,
+        result.data.notes?.trim() || undefined
+      );
+    }
 
     setName('');
     setCostStr('');
@@ -76,13 +95,13 @@ export const AddVendorDialog: React.FC<AddVendorDialogProps> = ({ isOpen, onClos
 
   return (
     <div
-      data-testid="add-vendor-dialog"
+      data-testid="vendor-dialog"
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#3A302C]/40 backdrop-blur-sm"
     >
       <div className="w-full max-w-sm bg-white rounded-2xl p-5 border border-[#ECE5DE] shadow-ambient">
         <div className="flex items-center justify-between mb-4">
           <h3 className="font-serif text-lg font-semibold text-[#3A302C]">
-            Tambah Rekanan Vendor
+            {vendorToEdit ? 'Edit Rekanan Vendor' : 'Tambah Rekanan Vendor'}
           </h3>
           <button
             type="button"
@@ -227,7 +246,7 @@ export const AddVendorDialog: React.FC<AddVendorDialogProps> = ({ isOpen, onClos
               type="submit"
               className="flex-1 py-2 rounded-xl bg-[#58755E] hover:bg-[#4b6350] text-xs font-medium text-white transition-colors cursor-pointer shadow-sm"
             >
-              Simpan Vendor
+              {vendorToEdit ? 'Simpan Perubahan' : 'Simpan Vendor'}
             </button>
           </div>
         </form>
@@ -235,3 +254,12 @@ export const AddVendorDialog: React.FC<AddVendorDialogProps> = ({ isOpen, onClos
     </div>
   );
 };
+
+export const VendorDialog: React.FC<VendorDialogProps> = (props) => {
+  if (!props.isOpen) return null;
+  return <VendorDialogForm key={props.vendorToEdit?.id ?? 'create'} {...props} />;
+};
+
+export const AddVendorDialog = VendorDialog;
+
+

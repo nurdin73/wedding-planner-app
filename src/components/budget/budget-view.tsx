@@ -1,18 +1,19 @@
 import React, { useState, useMemo } from 'react';
-import { Plus, Trash2, Coins, Receipt } from 'lucide-react';
+import { Plus, Trash2, Coins, Receipt, Pencil } from 'lucide-react';
 import { useWeddingPlanner } from '../../hooks/use-wedding-planner';
 import { BudgetSummary } from './budget-summary';
-import { AddExpenseDialog } from './add-expense-dialog';
+import { ExpenseDialog } from './expense-dialog';
 import { CATEGORY_OPTIONS } from '../../constants/wedding.constants';
-import type { BudgetCategory } from '../../types/wedding.types';
+import type { BudgetCategory, BudgetItem } from '../../types/wedding.types';
 import { formatRupiah } from '../../utils/currency.utils';
 
 export const BudgetView: React.FC = () => {
-  const { state, addExpense, deleteExpense } = useWeddingPlanner();
+  const { state, addExpense, updateExpense, deleteExpense } = useWeddingPlanner();
   const { expenses, profile } = state;
 
   const [selectedCategory, setSelectedCategory] = useState<BudgetCategory | 'ALL'>('ALL');
   const [isAddOpen, setIsAddOpen] = useState(false);
+  const [expenseToEdit, setExpenseToEdit] = useState<BudgetItem | null>(null);
 
   const totalEstimated = useMemo(
     () => expenses.reduce((sum, item) => sum + item.estimatedCost, 0),
@@ -39,6 +40,21 @@ export const BudgetView: React.FC = () => {
 
   const getCategoryLabel = (cat: BudgetCategory): string => {
     return CATEGORY_OPTIONS.find((c) => c.id === cat)?.label || cat;
+  };
+
+  const handleOpenAdd = () => {
+    setExpenseToEdit(null);
+    setIsAddOpen(true);
+  };
+
+  const handleOpenEdit = (item: BudgetItem) => {
+    setExpenseToEdit(item);
+    setIsAddOpen(true);
+  };
+
+  const handleCloseDialog = () => {
+    setIsAddOpen(false);
+    setExpenseToEdit(null);
   };
 
   return (
@@ -100,7 +116,7 @@ export const BudgetView: React.FC = () => {
         <button
           type="button"
           data-testid="button-open-add-expense"
-          onClick={() => setIsAddOpen(true)}
+          onClick={handleOpenAdd}
           className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#B86B70] hover:bg-[#a65d62] text-white text-xs font-medium transition-colors shadow-sm cursor-pointer shrink-0"
         >
           <Plus className="w-3.5 h-3.5" strokeWidth={2} />
@@ -126,7 +142,7 @@ export const BudgetView: React.FC = () => {
           <button
             type="button"
             data-testid="button-empty-add-expense"
-            onClick={() => setIsAddOpen(true)}
+            onClick={handleOpenAdd}
             className="mt-4 px-4 py-2 rounded-xl bg-[#FAF8F5] hover:bg-[#F5EFEB] border border-[#ECE5DE] text-xs font-medium text-[#3A302C] transition-colors cursor-pointer"
           >
             + Catat Pos Pertama
@@ -173,25 +189,38 @@ export const BudgetView: React.FC = () => {
                 </div>
               </div>
 
-              <button
-                type="button"
-                data-testid={`button-delete-expense-${item.id}`}
-                onClick={() => deleteExpense(item.id)}
-                className="opacity-40 hover:opacity-100 hover:text-[#B86B70] text-[#A89B95] p-1 rounded-md transition-opacity cursor-pointer"
-                aria-label="Hapus pos"
-              >
-                <Trash2 className="w-4 h-4" strokeWidth={1.75} />
-              </button>
+              <div className="flex items-center gap-1 shrink-0">
+                <button
+                  type="button"
+                  data-testid={`button-edit-expense-${item.id}`}
+                  onClick={() => handleOpenEdit(item)}
+                  className="opacity-40 hover:opacity-100 hover:text-[#58755E] text-[#A89B95] p-1 rounded-md transition-opacity cursor-pointer"
+                  aria-label="Edit pos"
+                >
+                  <Pencil className="w-4 h-4" strokeWidth={1.75} />
+                </button>
+                <button
+                  type="button"
+                  data-testid={`button-delete-expense-${item.id}`}
+                  onClick={() => deleteExpense(item.id)}
+                  className="opacity-40 hover:opacity-100 hover:text-[#B86B70] text-[#A89B95] p-1 rounded-md transition-opacity cursor-pointer"
+                  aria-label="Hapus pos"
+                >
+                  <Trash2 className="w-4 h-4" strokeWidth={1.75} />
+                </button>
+              </div>
             </div>
           ))}
         </div>
       )}
 
-      {/* Add Dialog */}
-      <AddExpenseDialog
+      {/* Add / Edit Expense Dialog */}
+      <ExpenseDialog
         isOpen={isAddOpen}
-        onClose={() => setIsAddOpen(false)}
+        onClose={handleCloseDialog}
         onAdd={addExpense}
+        onUpdate={updateExpense}
+        expenseToEdit={expenseToEdit}
       />
     </div>
   );

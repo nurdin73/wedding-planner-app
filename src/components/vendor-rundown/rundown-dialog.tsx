@@ -1,22 +1,28 @@
 import React, { useState } from 'react';
 import { X } from 'lucide-react';
+import type { RundownItem } from '../../types/wedding.types';
 import { rundownFormSchema } from '../../schemas/wedding-forms.schema';
 
-interface AddRundownDialogProps {
+interface RundownDialogProps {
   isOpen: boolean;
   onClose: () => void;
   onAdd: (time: string, activity: string, pic: string, location?: string, notes?: string) => void;
+  onUpdate?: (id: string, updates: Partial<Omit<RundownItem, 'id' | 'createdAt'>>) => void;
+  rundownToEdit?: RundownItem | null;
 }
 
-export const AddRundownDialog: React.FC<AddRundownDialogProps> = ({ isOpen, onClose, onAdd }) => {
-  const [time, setTime] = useState('');
-  const [activity, setActivity] = useState('');
-  const [pic, setPic] = useState('');
-  const [location, setLocation] = useState('');
-  const [notes, setNotes] = useState('');
+const RundownDialogForm: React.FC<RundownDialogProps> = ({
+  onClose,
+  onAdd,
+  onUpdate,
+  rundownToEdit,
+}) => {
+  const [time, setTime] = useState(rundownToEdit?.time ?? '');
+  const [activity, setActivity] = useState(rundownToEdit?.activity ?? '');
+  const [pic, setPic] = useState(rundownToEdit?.pic ?? '');
+  const [location, setLocation] = useState(rundownToEdit?.location ?? '');
+  const [notes, setNotes] = useState(rundownToEdit?.notes ?? '');
   const [errors, setErrors] = useState<Record<string, string>>({});
-
-  if (!isOpen) return null;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,13 +38,23 @@ export const AddRundownDialog: React.FC<AddRundownDialogProps> = ({ isOpen, onCl
     }
 
     setErrors({});
-    onAdd(
-      result.data.time,
-      result.data.activity,
-      result.data.pic,
-      result.data.location?.trim() || undefined,
-      result.data.notes?.trim() || undefined
-    );
+    if (rundownToEdit && onUpdate) {
+      onUpdate(rundownToEdit.id, {
+        time: result.data.time,
+        activity: result.data.activity,
+        pic: result.data.pic,
+        location: result.data.location?.trim() || undefined,
+        notes: result.data.notes?.trim() || undefined,
+      });
+    } else {
+      onAdd(
+        result.data.time,
+        result.data.activity,
+        result.data.pic,
+        result.data.location?.trim() || undefined,
+        result.data.notes?.trim() || undefined
+      );
+    }
 
     setTime('');
     setActivity('');
@@ -50,13 +66,13 @@ export const AddRundownDialog: React.FC<AddRundownDialogProps> = ({ isOpen, onCl
 
   return (
     <div
-      data-testid="add-rundown-dialog"
+      data-testid="rundown-dialog"
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#3A302C]/40 backdrop-blur-sm"
     >
       <div className="w-full max-w-sm bg-white rounded-2xl p-5 border border-[#ECE5DE] shadow-ambient">
         <div className="flex items-center justify-between mb-4">
           <h3 className="font-serif text-lg font-semibold text-[#3A302C]">
-            Tambah Sesi Acara Hari-H
+            {rundownToEdit ? 'Edit Sesi Acara Hari-H' : 'Tambah Sesi Acara Hari-H'}
           </h3>
           <button
             type="button"
@@ -185,7 +201,7 @@ export const AddRundownDialog: React.FC<AddRundownDialogProps> = ({ isOpen, onCl
               type="submit"
               className="flex-1 py-2 rounded-xl bg-[#B86B70] hover:bg-[#a65d62] text-xs font-medium text-white transition-colors cursor-pointer shadow-sm"
             >
-              Simpan Sesi
+              {rundownToEdit ? 'Simpan Perubahan' : 'Simpan Sesi'}
             </button>
           </div>
         </form>
@@ -193,3 +209,12 @@ export const AddRundownDialog: React.FC<AddRundownDialogProps> = ({ isOpen, onCl
     </div>
   );
 };
+
+export const RundownDialog: React.FC<RundownDialogProps> = (props) => {
+  if (!props.isOpen) return null;
+  return <RundownDialogForm key={props.rundownToEdit?.id ?? 'create'} {...props} />;
+};
+
+export const AddRundownDialog = RundownDialog;
+
+

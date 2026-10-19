@@ -2,17 +2,18 @@ import React, { useState, useMemo } from 'react';
 import { Plus, ListTodo, CheckCircle2 } from 'lucide-react';
 import { useWeddingPlanner } from '../../hooks/use-wedding-planner';
 import { ChecklistItem } from './checklist-item';
-import { AddTaskDialog } from './add-task-dialog';
-import type { TimePhase } from '../../types/wedding.types';
+import { TaskDialog } from './task-dialog';
+import type { TimePhase, ChecklistItem as ChecklistItemType } from '../../types/wedding.types';
 import { TIME_PHASES } from '../../constants/wedding.constants';
 import { calculatePercentage } from '../../utils/currency.utils';
 
 export const ChecklistView: React.FC = () => {
-  const { state, addTask, toggleTask, deleteTask } = useWeddingPlanner();
+  const { state, addTask, updateTask, toggleTask, deleteTask } = useWeddingPlanner();
   const { checklist } = state;
 
   const [selectedPhase, setSelectedPhase] = useState<TimePhase>('ALL');
   const [isAddOpen, setIsAddOpen] = useState(false);
+  const [taskToEdit, setTaskToEdit] = useState<ChecklistItemType | null>(null);
 
   const filteredTasks = useMemo(() => {
     if (selectedPhase === 'ALL') return checklist;
@@ -22,6 +23,21 @@ export const ChecklistView: React.FC = () => {
   const totalTasks = checklist.length;
   const completedTasks = checklist.filter((t) => t.isCompleted).length;
   const progressPercent = calculatePercentage(completedTasks, totalTasks);
+
+  const handleOpenAdd = () => {
+    setTaskToEdit(null);
+    setIsAddOpen(true);
+  };
+
+  const handleOpenEdit = (task: ChecklistItemType) => {
+    setTaskToEdit(task);
+    setIsAddOpen(true);
+  };
+
+  const handleCloseDialog = () => {
+    setIsAddOpen(false);
+    setTaskToEdit(null);
+  };
 
   return (
     <div data-testid="checklist-view" className="flex flex-col gap-4 animate-fade-in">
@@ -76,7 +92,7 @@ export const ChecklistView: React.FC = () => {
         <button
           type="button"
           data-testid="button-open-add-task"
-          onClick={() => setIsAddOpen(true)}
+          onClick={handleOpenAdd}
           className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#58755E] hover:bg-[#4b6350] text-white text-xs font-medium transition-colors shadow-sm cursor-pointer"
         >
           <Plus className="w-3.5 h-3.5" strokeWidth={2} />
@@ -102,7 +118,7 @@ export const ChecklistView: React.FC = () => {
           <button
             type="button"
             data-testid="button-empty-add-task"
-            onClick={() => setIsAddOpen(true)}
+            onClick={handleOpenAdd}
             className="mt-4 px-4 py-2 rounded-xl bg-[#FAF8F5] hover:bg-[#F5EFEB] border border-[#ECE5DE] text-xs font-medium text-[#3A302C] transition-colors cursor-pointer"
           >
             + Buat Tugas Pertama
@@ -116,16 +132,19 @@ export const ChecklistView: React.FC = () => {
               item={task}
               onToggle={toggleTask}
               onDelete={deleteTask}
+              onEdit={handleOpenEdit}
             />
           ))}
         </div>
       )}
 
-      {/* Add Task Modal */}
-      <AddTaskDialog
+      {/* Add / Edit Task Modal */}
+      <TaskDialog
         isOpen={isAddOpen}
-        onClose={() => setIsAddOpen(false)}
+        onClose={handleCloseDialog}
         onAdd={addTask}
+        onUpdate={updateTask}
+        taskToEdit={taskToEdit}
         initialPhase={selectedPhase}
       />
     </div>

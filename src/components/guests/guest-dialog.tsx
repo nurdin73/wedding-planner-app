@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { X } from 'lucide-react';
-import type { GuestSide, GuestCategory } from '../../types/wedding.types';
+import type { GuestSide, GuestCategory, GuestItem } from '../../types/wedding.types';
 import { GUEST_SIDE_OPTIONS, GUEST_CATEGORY_OPTIONS } from '../../constants/wedding.constants';
 import { guestFormSchema } from '../../schemas/wedding-forms.schema';
 import { maskPhoneNumber } from '../../utils/mask.utils';
 
-interface AddGuestDialogProps {
+interface GuestDialogProps {
   isOpen: boolean;
   onClose: () => void;
   onAdd: (
@@ -16,18 +16,23 @@ interface AddGuestDialogProps {
     contactInfo?: string,
     notes?: string
   ) => void;
+  onUpdate?: (id: string, updates: Partial<Omit<GuestItem, 'id' | 'createdAt'>>) => void;
+  guestToEdit?: GuestItem | null;
 }
 
-export const AddGuestDialog: React.FC<AddGuestDialogProps> = ({ isOpen, onClose, onAdd }) => {
-  const [name, setName] = useState('');
-  const [side, setSide] = useState<GuestSide>('BRIDE');
-  const [category, setCategory] = useState<GuestCategory>('FAMILY');
-  const [paxCount, setPaxCount] = useState<number>(2);
-  const [contactInfo, setContactInfo] = useState('');
-  const [notes, setNotes] = useState('');
+const GuestDialogForm: React.FC<GuestDialogProps> = ({
+  onClose,
+  onAdd,
+  onUpdate,
+  guestToEdit,
+}) => {
+  const [name, setName] = useState(guestToEdit?.name ?? '');
+  const [side, setSide] = useState<GuestSide>(guestToEdit?.side ?? 'BRIDE');
+  const [category, setCategory] = useState<GuestCategory>(guestToEdit?.category ?? 'FAMILY');
+  const [paxCount, setPaxCount] = useState<number>(guestToEdit?.paxCount ?? 2);
+  const [contactInfo, setContactInfo] = useState(guestToEdit?.contactInfo ?? '');
+  const [notes, setNotes] = useState(guestToEdit?.notes ?? '');
   const [errors, setErrors] = useState<Record<string, string>>({});
-
-  if (!isOpen) return null;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -50,14 +55,25 @@ export const AddGuestDialog: React.FC<AddGuestDialogProps> = ({ isOpen, onClose,
     }
 
     setErrors({});
-    onAdd(
-      result.data.name,
-      result.data.side,
-      result.data.category,
-      result.data.paxCount,
-      result.data.contactInfo?.trim() || undefined,
-      result.data.notes?.trim() || undefined
-    );
+    if (guestToEdit && onUpdate) {
+      onUpdate(guestToEdit.id, {
+        name: result.data.name,
+        side: result.data.side,
+        category: result.data.category,
+        paxCount: result.data.paxCount,
+        contactInfo: result.data.contactInfo?.trim() || undefined,
+        notes: result.data.notes?.trim() || undefined,
+      });
+    } else {
+      onAdd(
+        result.data.name,
+        result.data.side,
+        result.data.category,
+        result.data.paxCount,
+        result.data.contactInfo?.trim() || undefined,
+        result.data.notes?.trim() || undefined
+      );
+    }
 
     setName('');
     setPaxCount(2);
@@ -68,13 +84,13 @@ export const AddGuestDialog: React.FC<AddGuestDialogProps> = ({ isOpen, onClose,
 
   return (
     <div
-      data-testid="add-guest-dialog"
+      data-testid="guest-dialog"
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#3A302C]/40 backdrop-blur-sm"
     >
       <div className="w-full max-w-sm bg-white rounded-2xl p-5 border border-[#ECE5DE] shadow-ambient">
         <div className="flex items-center justify-between mb-4">
           <h3 className="font-serif text-lg font-semibold text-[#3A302C]">
-            Tambah Tamu Undangan
+            {guestToEdit ? 'Edit Tamu Undangan' : 'Tambah Tamu Undangan'}
           </h3>
           <button
             type="button"
@@ -200,7 +216,7 @@ export const AddGuestDialog: React.FC<AddGuestDialogProps> = ({ isOpen, onClose,
               type="submit"
               className="flex-1 py-2 rounded-xl bg-[#B86B70] hover:bg-[#a65d62] text-xs font-medium text-white transition-colors cursor-pointer shadow-sm"
             >
-              Simpan Tamu
+              {guestToEdit ? 'Simpan Perubahan' : 'Simpan Tamu'}
             </button>
           </div>
         </form>
@@ -208,3 +224,12 @@ export const AddGuestDialog: React.FC<AddGuestDialogProps> = ({ isOpen, onClose,
     </div>
   );
 };
+
+export const GuestDialog: React.FC<GuestDialogProps> = (props) => {
+  if (!props.isOpen) return null;
+  return <GuestDialogForm key={props.guestToEdit?.id ?? 'create'} {...props} />;
+};
+
+export const AddGuestDialog = GuestDialog;
+
+

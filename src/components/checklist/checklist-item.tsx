@@ -1,14 +1,20 @@
 import React from 'react';
-import { Check, Trash2 } from 'lucide-react';
+import { Check, Trash2, Pencil } from 'lucide-react';
 import type { ChecklistItem as ChecklistItemType } from '../../types/wedding.types';
 
 interface ChecklistItemProps {
   item: ChecklistItemType;
   onToggle: (id: string) => void;
   onDelete: (id: string) => void;
+  onEdit?: (item: ChecklistItemType) => void;
 }
 
-export const ChecklistItem: React.FC<ChecklistItemProps> = ({ item, onToggle, onDelete }) => {
+export const ChecklistItem: React.FC<ChecklistItemProps> = ({
+  item,
+  onToggle,
+  onDelete,
+  onEdit,
+}) => {
   return (
     <div
       data-testid={`checklist-item-${item.id}`}
@@ -51,15 +57,28 @@ export const ChecklistItem: React.FC<ChecklistItemProps> = ({ item, onToggle, on
         </div>
       </div>
 
-      <button
-        type="button"
-        data-testid={`button-delete-task-${item.id}`}
-        onClick={() => onDelete(item.id)}
-        className="opacity-40 group-hover:opacity-100 hover:text-[#B86B70] text-[#A89B95] p-1 rounded-md transition-opacity cursor-pointer"
-        aria-label="Hapus tugas"
-      >
-        <Trash2 className="w-4 h-4" strokeWidth={1.75} />
-      </button>
+      <div className="flex items-center gap-1 shrink-0">
+        {onEdit && (
+          <button
+            type="button"
+            data-testid={`button-edit-task-${item.id}`}
+            onClick={() => onEdit(item)}
+            className="opacity-40 group-hover:opacity-100 hover:text-[#58755E] text-[#A89B95] p-1 rounded-md transition-opacity cursor-pointer"
+            aria-label="Edit tugas"
+          >
+            <Pencil className="w-3.5 h-3.5" strokeWidth={1.75} />
+          </button>
+        )}
+        <button
+          type="button"
+          data-testid={`button-delete-task-${item.id}`}
+          onClick={() => onDelete(item.id)}
+          className="opacity-40 group-hover:opacity-100 hover:text-[#B86B70] text-[#A89B95] p-1 rounded-md transition-opacity cursor-pointer"
+          aria-label="Hapus tugas"
+        >
+          <Trash2 className="w-4 h-4" strokeWidth={1.75} />
+        </button>
+      </div>
     </div>
   );
 };

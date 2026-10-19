@@ -3,6 +3,7 @@ import type {
   WeddingPlannerState,
   CoupleProfile,
   TimePhase,
+  ChecklistItem,
   BudgetCategory,
   BudgetItem,
   GuestCategory,
@@ -64,6 +65,13 @@ export const WeddingPlannerProvider: React.FC<{ children: React.ReactNode }> = (
       createdAt: new Date().toISOString(),
     };
     setState((prev) => ({ ...prev, checklist: [newTask, ...prev.checklist] }));
+  }, []);
+
+  const updateTask = useCallback((id: string, updates: Partial<Omit<ChecklistItem, 'id' | 'createdAt'>>) => {
+    setState((prev) => ({
+      ...prev,
+      checklist: prev.checklist.map((task) => (task.id === id ? { ...task, ...updates } : task)),
+    }));
   }, []);
 
   const toggleTask = useCallback((id: string) => {
@@ -134,6 +142,13 @@ export const WeddingPlannerProvider: React.FC<{ children: React.ReactNode }> = (
     []
   );
 
+  const updateGuest = useCallback((id: string, updates: Partial<Omit<GuestItem, 'id' | 'createdAt'>>) => {
+    setState((prev) => ({
+      ...prev,
+      guests: prev.guests.map((g) => (g.id === id ? { ...g, ...updates } : g)),
+    }));
+  }, []);
+
   const toggleInvitationStatus = useCallback((id: string) => {
     setState((prev) => ({
       ...prev,
@@ -174,6 +189,13 @@ export const WeddingPlannerProvider: React.FC<{ children: React.ReactNode }> = (
     []
   );
 
+  const updateVendor = useCallback((id: string, updates: Partial<Omit<VendorItem, 'id' | 'createdAt'>>) => {
+    setState((prev) => ({
+      ...prev,
+      vendors: prev.vendors.map((v) => (v.id === id ? { ...v, ...updates } : v)),
+    }));
+  }, []);
+
   const updateVendorStatus = useCallback((id: string, status: VendorStatus) => {
     setState((prev) => ({
       ...prev,
@@ -202,6 +224,13 @@ export const WeddingPlannerProvider: React.FC<{ children: React.ReactNode }> = (
     },
     [state.rundown.length]
   );
+
+  const updateRundownItem = useCallback((id: string, updates: Partial<Omit<RundownItem, 'id' | 'createdAt'>>) => {
+    setState((prev) => ({
+      ...prev,
+      rundown: prev.rundown.map((r) => (r.id === id ? { ...r, ...updates } : r)),
+    }));
+  }, []);
 
   const deleteRundownItem = useCallback((id: string) => {
     setState((prev) => ({ ...prev, rundown: prev.rundown.filter((r) => r.id !== id) }));
@@ -245,18 +274,22 @@ export const WeddingPlannerProvider: React.FC<{ children: React.ReactNode }> = (
     initializePlanner,
     setActiveTab,
     addTask,
+    updateTask,
     toggleTask,
     deleteTask,
     addExpense,
     updateExpense,
     deleteExpense,
     addGuest,
+    updateGuest,
     toggleInvitationStatus,
     deleteGuest,
     addVendor,
+    updateVendor,
     updateVendorStatus,
     deleteVendor,
     addRundownItem,
+    updateRundownItem,
     deleteRundownItem,
     addJournalEntry,
     deleteJournalEntry,

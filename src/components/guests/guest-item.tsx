@@ -1,14 +1,20 @@
 import React from 'react';
-import { Crown, Heart, Users, Send, MailCheck, Trash2 } from 'lucide-react';
+import { Crown, Heart, Users, Send, MailCheck, Trash2, Pencil } from 'lucide-react';
 import type { GuestItem as GuestItemType } from '../../types/wedding.types';
 
 interface GuestItemProps {
   guest: GuestItemType;
   onToggleStatus: (id: string) => void;
   onDelete: (id: string) => void;
+  onEdit?: (guest: GuestItemType) => void;
 }
 
-export const GuestItem: React.FC<GuestItemProps> = ({ guest, onToggleStatus, onDelete }) => {
+export const GuestItem: React.FC<GuestItemProps> = ({
+  guest,
+  onToggleStatus,
+  onDelete,
+  onEdit,
+}) => {
   const isSent = guest.invitationStatus === 'SENT';
 
   return (
@@ -73,6 +79,18 @@ export const GuestItem: React.FC<GuestItemProps> = ({ guest, onToggleStatus, onD
             </>
           )}
         </button>
+
+        {onEdit && (
+          <button
+            type="button"
+            data-testid={`button-edit-guest-${guest.id}`}
+            onClick={() => onEdit(guest)}
+            className="opacity-40 hover:opacity-100 hover:text-[#58755E] text-[#A89B95] p-1 rounded-md transition-opacity cursor-pointer"
+            aria-label="Edit tamu"
+          >
+            <Pencil className="w-3.5 h-3.5" strokeWidth={1.75} />
+          </button>
+        )}
 
         <button
           type="button"

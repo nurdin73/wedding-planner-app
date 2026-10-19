@@ -2,17 +2,20 @@ import React, { useState } from 'react';
 import { Store, Clock, Plus } from 'lucide-react';
 import { useWeddingPlanner } from '../../hooks/use-wedding-planner';
 import { VendorList } from './vendor-list';
-import { AddVendorDialog } from './add-vendor-dialog';
+import { VendorDialog } from './vendor-dialog';
 import { RundownTimeline } from './rundown-timeline';
-import { AddRundownDialog } from './add-rundown-dialog';
+import { RundownDialog } from './rundown-dialog';
+import type { VendorItem, RundownItem } from '../../types/wedding.types';
 
 export const VendorRundownView: React.FC = () => {
   const {
     state,
     addVendor,
+    updateVendor,
     updateVendorStatus,
     deleteVendor,
     addRundownItem,
+    updateRundownItem,
     deleteRundownItem,
   } = useWeddingPlanner();
   const { vendors, rundown, profile } = state;
@@ -20,6 +23,38 @@ export const VendorRundownView: React.FC = () => {
   const [activeSubTab, setActiveSubTab] = useState<'vendor' | 'rundown'>('vendor');
   const [isAddVendorOpen, setIsAddVendorOpen] = useState(false);
   const [isAddRundownOpen, setIsAddRundownOpen] = useState(false);
+  const [vendorToEdit, setVendorToEdit] = useState<VendorItem | null>(null);
+  const [rundownToEdit, setRundownToEdit] = useState<RundownItem | null>(null);
+
+  const handleOpenAddVendor = () => {
+    setVendorToEdit(null);
+    setIsAddVendorOpen(true);
+  };
+
+  const handleOpenEditVendor = (vendor: VendorItem) => {
+    setVendorToEdit(vendor);
+    setIsAddVendorOpen(true);
+  };
+
+  const handleCloseVendorDialog = () => {
+    setIsAddVendorOpen(false);
+    setVendorToEdit(null);
+  };
+
+  const handleOpenAddRundown = () => {
+    setRundownToEdit(null);
+    setIsAddRundownOpen(true);
+  };
+
+  const handleOpenEditRundown = (item: RundownItem) => {
+    setRundownToEdit(item);
+    setIsAddRundownOpen(true);
+  };
+
+  const handleCloseRundownDialog = () => {
+    setIsAddRundownOpen(false);
+    setRundownToEdit(null);
+  };
 
   return (
     <div data-testid="vendor-rundown-view" className="flex flex-col gap-4 animate-fade-in">
@@ -64,7 +99,7 @@ export const VendorRundownView: React.FC = () => {
           <button
             type="button"
             data-testid="button-open-add-vendor"
-            onClick={() => setIsAddVendorOpen(true)}
+            onClick={handleOpenAddVendor}
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#58755E] hover:bg-[#4b6350] text-white text-xs font-medium transition-colors shadow-sm cursor-pointer"
           >
             <Plus className="w-3.5 h-3.5" strokeWidth={2} />
@@ -74,7 +109,7 @@ export const VendorRundownView: React.FC = () => {
           <button
             type="button"
             data-testid="button-open-add-rundown"
-            onClick={() => setIsAddRundownOpen(true)}
+            onClick={handleOpenAddRundown}
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#B86B70] hover:bg-[#a65d62] text-white text-xs font-medium transition-colors shadow-sm cursor-pointer"
           >
             <Plus className="w-3.5 h-3.5" strokeWidth={2} />
@@ -89,28 +124,34 @@ export const VendorRundownView: React.FC = () => {
           vendors={vendors}
           onUpdateStatus={updateVendorStatus}
           onDelete={deleteVendor}
-          onOpenAdd={() => setIsAddVendorOpen(true)}
+          onEdit={handleOpenEditVendor}
+          onOpenAdd={handleOpenAddVendor}
         />
       ) : (
         <RundownTimeline
           rundown={rundown}
           profile={profile}
           onDelete={deleteRundownItem}
-          onOpenAdd={() => setIsAddRundownOpen(true)}
+          onEdit={handleOpenEditRundown}
+          onOpenAdd={handleOpenAddRundown}
         />
       )}
 
       {/* Modals */}
-      <AddVendorDialog
+      <VendorDialog
         isOpen={isAddVendorOpen}
-        onClose={() => setIsAddVendorOpen(false)}
+        onClose={handleCloseVendorDialog}
         onAdd={addVendor}
+        onUpdate={updateVendor}
+        vendorToEdit={vendorToEdit}
       />
 
-      <AddRundownDialog
+      <RundownDialog
         isOpen={isAddRundownOpen}
-        onClose={() => setIsAddRundownOpen(false)}
+        onClose={handleCloseRundownDialog}
         onAdd={addRundownItem}
+        onUpdate={updateRundownItem}
+        rundownToEdit={rundownToEdit}
       />
     </div>
   );

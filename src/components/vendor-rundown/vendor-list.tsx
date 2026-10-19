@@ -1,5 +1,5 @@
 import React from 'react';
-import { Store, MessageCircle, Camera, Trash2 } from 'lucide-react';
+import { Store, MessageCircle, Camera, Trash2, Pencil } from 'lucide-react';
 import type { VendorItem, VendorStatus } from '../../types/wedding.types';
 import { formatRupiah } from '../../utils/currency.utils';
 import { VENDOR_CATEGORY_OPTIONS, VENDOR_STATUS_OPTIONS } from '../../constants/wedding.constants';
@@ -8,6 +8,7 @@ interface VendorListProps {
   vendors: VendorItem[];
   onUpdateStatus: (id: string, status: VendorStatus) => void;
   onDelete: (id: string) => void;
+  onEdit?: (vendor: VendorItem) => void;
   onOpenAdd: () => void;
 }
 
@@ -15,6 +16,7 @@ export const VendorList: React.FC<VendorListProps> = ({
   vendors,
   onUpdateStatus,
   onDelete,
+  onEdit,
   onOpenAdd,
 }) => {
   const getCategoryLabel = (cat: string) => {
@@ -100,6 +102,18 @@ export const VendorList: React.FC<VendorListProps> = ({
                   </option>
                 ))}
               </select>
+
+              {onEdit && (
+                <button
+                  type="button"
+                  data-testid={`button-edit-vendor-${vendor.id}`}
+                  onClick={() => onEdit(vendor)}
+                  className="opacity-40 hover:opacity-100 hover:text-[#58755E] text-[#A89B95] p-1 rounded-md transition-opacity cursor-pointer"
+                  aria-label="Edit vendor"
+                >
+                  <Pencil className="w-4 h-4" strokeWidth={1.75} />
+                </button>
+              )}
 
               <button
                 type="button"
