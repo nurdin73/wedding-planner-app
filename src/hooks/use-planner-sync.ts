@@ -8,9 +8,28 @@ import {
   subscribeWeddingWorkspace,
   type WeddingWorkspaceData,
 } from '../services/partner-collab.service';
-import { loadPlannerState, savePlannerState } from '../utils/storage.utils';
+import { loadPlannerState, savePlannerState, INITIAL_STATE } from '../utils/storage.utils';
 import { useNetworkStatus } from './use-network-status';
 import { reconcilePlannerStates } from '../utils/sync-reconciliation.utils';
+
+function normalizePlannerState(raw: Partial<WeddingPlannerState>): WeddingPlannerState {
+  return {
+    ...INITIAL_STATE,
+    ...raw,
+    profile: {
+      ...INITIAL_STATE.profile,
+      ...(raw.profile || {}),
+    },
+    checklist: Array.isArray(raw.checklist) ? raw.checklist : [],
+    expenses: Array.isArray(raw.expenses) ? raw.expenses : [],
+    guests: Array.isArray(raw.guests) ? raw.guests : [],
+    vendors: Array.isArray(raw.vendors) ? raw.vendors : [],
+    rundown: Array.isArray(raw.rundown) ? raw.rundown : [],
+    journal: Array.isArray(raw.journal) ? raw.journal : [],
+    notes: Array.isArray(raw.notes) ? raw.notes : [],
+    activeTab: raw.activeTab || 'home',
+  };
+}
 
 interface UsePlannerSyncProps {
   user: AuthUser | null;
@@ -88,10 +107,11 @@ export function usePlannerSync({ user, state, setState }: UsePlannerSyncProps) {
 
         if (workspace.plannerState && workspace.plannerState.profile.isInitialized) {
           isRemoteUpdateRef.current = true;
+          const remoteNormalized = normalizePlannerState(workspace.plannerState);
           // Reconcile with any offline modifications
           const resolvedState = hasPendingOfflineChangesRef.current
-            ? reconcilePlannerStates(stateRef.current, workspace.plannerState)
-            : workspace.plannerState;
+            ? reconcilePlannerStates(stateRef.current, remoteNormalized)
+            : remoteNormalized;
           setStateRef.current(resolvedState);
           savePlannerState(resolvedState, currentUser.uid);
         }
@@ -130,9 +150,10 @@ export function usePlannerSync({ user, state, setState }: UsePlannerSyncProps) {
           setMembersInfo(workspace.membersInfo);
         }
 
+        const remoteNormalized = normalizePlannerState(workspace.plannerState);
         const reconciled = hasPendingOfflineChangesRef.current
-          ? reconcilePlannerStates(stateRef.current, workspace.plannerState)
-          : workspace.plannerState;
+          ? reconcilePlannerStates(stateRef.current, remoteNormalized)
+          : remoteNormalized;
 
         setStateRef.current((prev) => ({
           ...reconciled,
@@ -249,8 +270,9 @@ export function usePlannerSync({ user, state, setState }: UsePlannerSyncProps) {
         }
 
         isRemoteUpdateRef.current = true;
-        setState(workspace.plannerState);
-        savePlannerState(workspace.plannerState, user.uid);
+        const normalized = normalizePlannerState(workspace.plannerState);
+        setState(normalized);
+        savePlannerState(normalized, user.uid);
 
         setCloudStatus('saved');
         setLastSyncedAt(

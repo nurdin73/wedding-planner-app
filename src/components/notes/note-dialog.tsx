@@ -12,8 +12,7 @@ interface NoteDialogProps {
   noteToEdit?: NoteItem | null;
 }
 
-export const NoteDialog: React.FC<NoteDialogProps> = ({
-  isOpen,
+const NoteDialogForm: React.FC<NoteDialogProps> = ({
   onClose,
   onAdd,
   onUpdate,
@@ -23,8 +22,6 @@ export const NoteDialog: React.FC<NoteDialogProps> = ({
   const [category, setCategory] = useState<NoteCategory>(noteToEdit?.category ?? 'GENERAL');
   const [content, setContent] = useState(noteToEdit?.content ?? '');
   const [errors, setErrors] = useState<Record<string, string>>({});
-
-  if (!isOpen) return null;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -168,5 +165,10 @@ export const NoteDialog: React.FC<NoteDialogProps> = ({
       </div>
     </div>
   );
+};
+
+export const NoteDialog: React.FC<NoteDialogProps> = (props) => {
+  if (!props.isOpen) return null;
+  return <NoteDialogForm key={props.noteToEdit?.id ?? 'create'} {...props} />;
 };
 

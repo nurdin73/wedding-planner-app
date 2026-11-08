@@ -16,7 +16,7 @@ export const BottomNav: React.FC = () => {
     },
     {
       id: 'checklist' as ActiveTab,
-      label: 'Tugas',
+      label: 'Persiapan',
       icon: CheckCircle2,
       disabled: false,
     },

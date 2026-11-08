@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { Pencil, Trash2, ChevronDown, ChevronUp } from 'lucide-react';
 import type { NoteItem } from '../../types/wedding.types';
 import { NOTE_CATEGORY_OPTIONS } from '../../constants/wedding.constants';
-import { formatIndonesianDate } from '../../utils/date.utils';
 
 interface NoteCardProps {
   note: NoteItem;
@@ -26,15 +25,12 @@ export const NoteCard: React.FC<NoteCardProps> = ({ note, onEdit, onDelete }) =>
     >
       <div className="flex items-start justify-between gap-2">
         <div className="flex flex-col gap-1 min-w-0 flex-1">
-          <div className="flex items-center gap-2 flex-wrap">
+          <div>
             <span
               data-testid={`badge-note-category-${note.id}`}
               className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-[#FAF5E8] text-[#9A702C] border border-[#ECE5DE]"
             >
               {categoryLabel}
-            </span>
-            <span className="text-[10px] text-[#A89B95]">
-              {formatIndonesianDate(note.createdAt.split('T')[0])}
             </span>
           </div>
 

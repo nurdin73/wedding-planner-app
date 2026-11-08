@@ -11,7 +11,6 @@ import { GuestView } from './components/guests/guest-view';
 import { VendorRundownView } from './components/vendor-rundown/vendor-rundown-view';
 import { StoryModal } from './components/story/story-modal';
 import { JournalModal } from './components/journal/journal-modal';
-import { NotesModal } from './components/notes';
 import { InvitePartnerDialog } from './components/collab/invite-partner-dialog';
 import { JoinPartnerDialog } from './components/collab/join-partner-dialog';
 import { AcceptInviteDialog } from './components/collab/accept-invite-dialog';
@@ -23,7 +22,6 @@ const AppContent: React.FC = () => {
 
   const [isStoryOpen, setIsStoryOpen] = useState(false);
   const [isJournalOpen, setIsJournalOpen] = useState(false);
-  const [isNotesOpen, setIsNotesOpen] = useState(false);
   const [isInviteOpen, setIsInviteOpen] = useState(false);
   const [isJoinOpen, setIsJoinOpen] = useState(false);
   const [isRescheduleOpen, setIsRescheduleOpen] = useState(false);
@@ -50,7 +48,6 @@ const AppContent: React.FC = () => {
     <AppLayout
       onOpenInvite={() => setIsInviteOpen(true)}
       onOpenReschedule={() => setIsRescheduleOpen(true)}
-      onOpenNotes={() => setIsNotesOpen(true)}
     >
       <OnboardingModal />
 
@@ -59,7 +56,6 @@ const AppContent: React.FC = () => {
           onOpenStory={() => setIsStoryOpen(true)}
           onOpenJournal={() => setIsJournalOpen(true)}
           onOpenInvite={() => setIsInviteOpen(true)}
-          onOpenNotes={() => setIsNotesOpen(true)}
         />
       )}
       {activeTab === 'checklist' && <ChecklistView />}
@@ -69,7 +65,6 @@ const AppContent: React.FC = () => {
 
       <StoryModal isOpen={isStoryOpen} onClose={() => setIsStoryOpen(false)} />
       <JournalModal isOpen={isJournalOpen} onClose={() => setIsJournalOpen(false)} />
-      <NotesModal isOpen={isNotesOpen} onClose={() => setIsNotesOpen(false)} />
       <RescheduleDateModal
         isOpen={isRescheduleOpen}
         onClose={() => setIsRescheduleOpen(false)}

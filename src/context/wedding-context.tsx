@@ -277,7 +277,7 @@ export const WeddingPlannerProvider: React.FC<{ children: React.ReactNode }> = (
         category,
         createdAt: new Date().toISOString(),
       };
-      setState((prev) => ({ ...prev, notes: [newNote, ...prev.notes] }));
+      setState((prev) => ({ ...prev, notes: [newNote, ...(prev.notes || [])] }));
     },
     []
   );
@@ -286,7 +286,7 @@ export const WeddingPlannerProvider: React.FC<{ children: React.ReactNode }> = (
     (id: string, updates: Partial<Omit<NoteItem, 'id' | 'createdAt'>>) => {
       setState((prev) => ({
         ...prev,
-        notes: prev.notes.map((n) =>
+        notes: (prev.notes || []).map((n) =>
           n.id === id ? { ...n, ...updates, updatedAt: new Date().toISOString() } : n
         ),
       }));
@@ -295,7 +295,7 @@ export const WeddingPlannerProvider: React.FC<{ children: React.ReactNode }> = (
   );
 
   const deleteNote = useCallback((id: string) => {
-    setState((prev) => ({ ...prev, notes: prev.notes.filter((n) => n.id !== id) }));
+    setState((prev) => ({ ...prev, notes: (prev.notes || []).filter((n) => n.id !== id) }));
   }, []);
 
   const resetAllData = useCallback(() => {

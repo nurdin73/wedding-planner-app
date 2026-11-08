@@ -1,17 +1,19 @@
 import React, { useState, useMemo } from 'react';
-import { Plus, ListTodo, CheckCircle2 } from 'lucide-react';
+import { Plus, ListTodo, CheckCircle2, StickyNote } from 'lucide-react';
 import { useWeddingPlanner } from '../../hooks/use-wedding-planner';
 import { ChecklistItem } from './checklist-item';
 import { TaskDialog } from './task-dialog';
 import { ConfirmDialog } from '../ui/confirm-dialog';
+import { NotesList } from '../notes';
 import type { TimePhase, ChecklistItem as ChecklistItemType } from '../../types/wedding.types';
 import { TIME_PHASES } from '../../constants/wedding.constants';
 import { calculatePercentage } from '../../utils/currency.utils';
 
 export const ChecklistView: React.FC = () => {
   const { state, addTask, updateTask, toggleTask, deleteTask } = useWeddingPlanner();
-  const { checklist } = state;
+  const { checklist, notes = [] } = state;
 
+  const [activeSubTab, setActiveSubTab] = useState<'tasks' | 'notes'>('tasks');
   const [selectedPhase, setSelectedPhase] = useState<TimePhase>('ALL');
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [taskToEdit, setTaskToEdit] = useState<ChecklistItemType | null>(null);
@@ -43,130 +45,167 @@ export const ChecklistView: React.FC = () => {
 
   return (
     <div data-testid="checklist-view" className="flex flex-col gap-4 animate-fade-in">
-      {/* Header & Progress Card */}
-      <div className="bg-white rounded-2xl p-4 border border-[#ECE5DE] shadow-ambient">
-        <div className="flex items-center justify-between mb-2">
-          <div className="flex items-center gap-2">
-            <ListTodo className="w-4 h-4 text-primary" strokeWidth={1.75} />
-            <h3 className="font-serif text-lg font-semibold text-[#3A302C]">
-              Linimasa & Checklist
-            </h3>
-          </div>
-          <span className="text-xs font-semibold text-primary tabular-nums">
-            {completedTasks}/{totalTasks} Selesai ({progressPercent}%)
-          </span>
-        </div>
-
-        <div className="w-full bg-[#FAF8F5] h-2 rounded-full overflow-hidden border border-[#ECE5DE]/60">
-          <div
-            className="bg-primary h-full rounded-full transition-all duration-500"
-            style={{ width: `${progressPercent}%` }}
-          />
-        </div>
-      </div>
-
-      {/* Filter Pills */}
-      <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar">
-        {TIME_PHASES.map((phase) => {
-          const isActive = selectedPhase === phase.id;
-          return (
-            <button
-              key={phase.id}
-              data-testid={`filter-phase-${phase.id}`}
-              onClick={() => setSelectedPhase(phase.id)}
-              className={`px-3 py-1.5 rounded-full text-xs whitespace-nowrap transition-all cursor-pointer border ${
-                isActive
-                  ? 'bg-secondary text-white border-secondary shadow-sm font-medium'
-                  : 'bg-white text-[#73635C] border-[#ECE5DE] hover:border-secondary/40'
-              }`}
-            >
-              {phase.label}
-            </button>
-          );
-        })}
-      </div>
-
-      {/* Action Add Button */}
-      <div className="flex justify-between items-center">
-        <span className="text-xs text-[#73635C] font-medium">
-          Daftar Persiapan ({filteredTasks.length})
-        </span>
+      {/* Sub-tab Pill Switcher */}
+      <div className="flex bg-[#F5EFEB] p-1 rounded-xl border border-[#ECE5DE]">
         <button
           type="button"
-          data-testid="button-open-add-task"
-          onClick={handleOpenAdd}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-primary hover:bg-primary-hover text-white text-xs font-medium transition-colors shadow-sm cursor-pointer"
+          data-testid="subtab-tasks"
+          onClick={() => setActiveSubTab('tasks')}
+          className={`flex-1 py-1.5 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+            activeSubTab === 'tasks'
+              ? 'bg-white text-[#3A302C] shadow-sm'
+              : 'text-[#73635C] hover:text-[#3A302C]'
+          }`}
         >
-          <Plus className="w-3.5 h-3.5" strokeWidth={2} />
-          <span>Tambah Tugas</span>
+          <CheckCircle2 className="w-3.5 h-3.5 text-primary" strokeWidth={1.75} />
+          <span>Checklist Tugas ({completedTasks}/{totalTasks})</span>
+        </button>
+
+        <button
+          type="button"
+          data-testid="subtab-notes"
+          onClick={() => setActiveSubTab('notes')}
+          className={`flex-1 py-1.5 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+            activeSubTab === 'notes'
+              ? 'bg-white text-[#3A302C] shadow-sm'
+              : 'text-[#73635C] hover:text-[#3A302C]'
+          }`}
+        >
+          <StickyNote className="w-3.5 h-3.5 text-secondary" strokeWidth={1.75} />
+          <span>Catatan & Memo ({notes.length})</span>
         </button>
       </div>
 
-      {/* Task List or Empty State */}
-      {filteredTasks.length === 0 ? (
-        <div
-          data-testid="checklist-empty-state"
-          className="bg-white rounded-2xl p-8 border border-[#ECE5DE] text-center flex flex-col items-center justify-center shadow-ambient"
-        >
-          <div className="w-12 h-12 rounded-full bg-primary-light flex items-center justify-center text-primary mb-3">
-            <CheckCircle2 className="w-6 h-6" strokeWidth={1.75} />
-          </div>
-          <h4 className="font-serif text-base font-semibold text-[#3A302C]">
-            Belum Ada Tugas di Fase Ini
-          </h4>
-          <p className="text-xs text-[#73635C] mt-1 max-w-[220px] leading-relaxed">
-            Mulai susun langkah-langkah persiapan pernikahan Anda dengan rapi dan terencana.
-          </p>
-          <button
-            type="button"
-            data-testid="button-empty-add-task"
-            onClick={handleOpenAdd}
-            className="mt-4 px-4 py-2 rounded-xl bg-[#FAF8F5] hover:bg-[#F5EFEB] border border-[#ECE5DE] text-xs font-medium text-[#3A302C] transition-colors cursor-pointer"
-          >
-            + Buat Tugas Pertama
-          </button>
-        </div>
+      {activeSubTab === 'notes' ? (
+        <NotesList />
       ) : (
-        <div className="flex flex-col gap-2">
-          {filteredTasks.map((task) => (
-            <ChecklistItem
-              key={task.id}
-              item={task}
-              onToggle={toggleTask}
-              onDelete={() => setTaskToDelete(task)}
-              onEdit={handleOpenEdit}
-            />
-          ))}
-        </div>
+        <>
+          {/* Header & Progress Card */}
+          <div className="bg-white rounded-2xl p-4 border border-[#ECE5DE] shadow-ambient">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2">
+                <ListTodo className="w-4 h-4 text-primary" strokeWidth={1.75} />
+                <h3 className="font-serif text-lg font-semibold text-[#3A302C]">
+                  Linimasa & Checklist
+                </h3>
+              </div>
+              <span className="text-xs font-semibold text-primary tabular-nums">
+                {completedTasks}/{totalTasks} Selesai ({progressPercent}%)
+              </span>
+            </div>
+
+            <div className="w-full bg-[#FAF8F5] h-2 rounded-full overflow-hidden border border-[#ECE5DE]/60">
+              <div
+                className="bg-primary h-full rounded-full transition-all duration-500"
+                style={{ width: `${progressPercent}%` }}
+              />
+            </div>
+          </div>
+
+          {/* Filter Pills */}
+          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar">
+            {TIME_PHASES.map((phase) => {
+              const isActive = selectedPhase === phase.id;
+              return (
+                <button
+                  key={phase.id}
+                  data-testid={`filter-phase-${phase.id}`}
+                  onClick={() => setSelectedPhase(phase.id)}
+                  className={`px-3 py-1.5 rounded-full text-xs whitespace-nowrap transition-all cursor-pointer border ${
+                    isActive
+                      ? 'bg-secondary text-white border-secondary shadow-sm font-medium'
+                      : 'bg-white text-[#73635C] border-[#ECE5DE] hover:border-secondary/40'
+                  }`}
+                >
+                  {phase.label}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Action Add Button */}
+          <div className="flex justify-between items-center">
+            <span className="text-xs text-[#73635C] font-medium">
+              Daftar Persiapan ({filteredTasks.length})
+            </span>
+            <button
+              type="button"
+              data-testid="button-open-add-task"
+              onClick={handleOpenAdd}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-primary hover:bg-primary-hover text-white text-xs font-medium transition-colors shadow-sm cursor-pointer"
+            >
+              <Plus className="w-3.5 h-3.5" strokeWidth={2} />
+              <span>Tambah Tugas</span>
+            </button>
+          </div>
+
+          {/* Task List or Empty State */}
+          {filteredTasks.length === 0 ? (
+            <div
+              data-testid="checklist-empty-state"
+              className="bg-white rounded-2xl p-8 border border-[#ECE5DE] text-center flex flex-col items-center justify-center shadow-ambient"
+            >
+              <div className="w-12 h-12 rounded-full bg-primary-light flex items-center justify-center text-primary mb-3">
+                <CheckCircle2 className="w-6 h-6" strokeWidth={1.75} />
+              </div>
+              <h4 className="font-serif text-base font-semibold text-[#3A302C]">
+                Belum Ada Tugas di Fase Ini
+              </h4>
+              <p className="text-xs text-[#73635C] mt-1 max-w-[220px] leading-relaxed">
+                Mulai susun langkah-langkah persiapan pernikahan Anda dengan rapi dan terencana.
+              </p>
+              <button
+                type="button"
+                data-testid="button-empty-add-task"
+                onClick={handleOpenAdd}
+                className="mt-4 px-4 py-2 rounded-xl bg-[#FAF8F5] hover:bg-[#F5EFEB] border border-[#ECE5DE] text-xs font-medium text-[#3A302C] transition-colors cursor-pointer"
+              >
+                + Buat Tugas Pertama
+              </button>
+            </div>
+          ) : (
+            <div className="flex flex-col gap-2">
+              {filteredTasks.map((task) => (
+                <ChecklistItem
+                  key={task.id}
+                  item={task}
+                  onToggle={toggleTask}
+                  onDelete={() => setTaskToDelete(task)}
+                  onEdit={handleOpenEdit}
+                />
+              ))}
+            </div>
+          )}
+
+          {/* Add / Edit Task Modal */}
+          <TaskDialog
+            isOpen={isAddOpen}
+            onClose={handleCloseDialog}
+            onAdd={addTask}
+            onUpdate={updateTask}
+            taskToEdit={taskToEdit}
+            initialPhase={selectedPhase}
+          />
+
+          {/* Delete Confirmation Modal */}
+          <ConfirmDialog
+            isOpen={taskToDelete !== null}
+            title="Hapus Tugas Persiapan?"
+            description="Tugas ini akan dihapus dari checklist linimasa pernikahan Anda."
+            itemName={taskToDelete?.title}
+            confirmLabel="Hapus Tugas"
+            cancelLabel="Batal"
+            testIdPrefix="confirm-delete-task"
+            onConfirm={() => {
+              if (taskToDelete) {
+                deleteTask(taskToDelete.id);
+                setTaskToDelete(null);
+              }
+            }}
+            onClose={() => setTaskToDelete(null)}
+          />
+        </>
       )}
-
-      {/* Add / Edit Task Modal */}
-      <TaskDialog
-        isOpen={isAddOpen}
-        onClose={handleCloseDialog}
-        onAdd={addTask}
-        onUpdate={updateTask}
-        taskToEdit={taskToEdit}
-        initialPhase={selectedPhase}
-      />
-
-      {/* Delete Confirmation Modal */}
-      <ConfirmDialog
-        isOpen={taskToDelete !== null}
-        title="Hapus Tugas Persiapan?"
-        description="Tugas ini akan dihapus dari checklist linimasa pernikahan Anda."
-        itemName={taskToDelete?.title}
-        confirmLabel="Hapus Tugas"
-        cancelLabel="Batal"
-        testIdPrefix="confirm-delete-task"
-        onConfirm={() => {
-          if (taskToDelete) {
-            deleteTask(taskToDelete.id);
-            setTaskToDelete(null);
-          }
-        }}
-        onClose={() => setTaskToDelete(null)}
-      />
     </div>
   );
 };
