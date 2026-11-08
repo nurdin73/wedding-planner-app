@@ -117,6 +117,17 @@ export interface JournalEntry {
   createdAt: string;
 }
 
+export type NoteCategory = 'CATERING' | 'LOGISTICS' | 'DECORATION' | 'CONCEPT' | 'GENERAL';
+
+export interface NoteItem {
+  id: string;
+  title: string;
+  content: string;
+  category: NoteCategory;
+  createdAt: string;
+  updatedAt?: string;
+}
+
 export type ActiveTab = 'home' | 'checklist' | 'budget' | 'guest' | 'vendor';
 
 export interface WeddingPlannerState {
@@ -127,6 +138,7 @@ export interface WeddingPlannerState {
   vendors: VendorItem[];
   rundown: RundownItem[];
   journal: JournalEntry[];
+  notes: NoteItem[];
   activeTab: ActiveTab;
 }
 
@@ -205,5 +217,8 @@ export interface WeddingPlannerContextType {
     date?: string
   ) => void;
   deleteJournalEntry: (id: string) => void;
+  addNote: (title: string, content: string, category?: NoteCategory) => void;
+  updateNote: (id: string, updates: Partial<Omit<NoteItem, 'id' | 'createdAt'>>) => void;
+  deleteNote: (id: string) => void;
   resetAllData: () => void;
 }

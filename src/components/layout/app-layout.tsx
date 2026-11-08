@@ -7,12 +7,14 @@ interface AppLayoutProps {
   onOpenStory?: () => void;
   onOpenInvite?: () => void;
   onOpenReschedule?: () => void;
+  onOpenNotes?: () => void;
 }
 
 export const AppLayout: React.FC<AppLayoutProps> = ({
   children,
   onOpenInvite,
   onOpenReschedule,
+  onOpenNotes,
 }) => {
   return (
     <div
@@ -20,7 +22,11 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
       className="min-h-screen bg-[#FAF8F5] text-[#3A302C] flex flex-col justify-between selection:bg-secondary-light selection:text-secondary"
     >
       <div className="w-full max-w-md mx-auto min-h-screen bg-[#FAF8F5] flex flex-col relative border-x border-[#ECE5DE]/60 shadow-ambient pb-24">
-        <AppHeader onOpenInvite={onOpenInvite} onOpenReschedule={onOpenReschedule} />
+        <AppHeader
+          onOpenInvite={onOpenInvite}
+          onOpenReschedule={onOpenReschedule}
+          onOpenNotes={onOpenNotes}
+        />
         <main className="flex-1 px-4 py-5 flex flex-col gap-6">{children}</main>
         <BottomNav />
       </div>

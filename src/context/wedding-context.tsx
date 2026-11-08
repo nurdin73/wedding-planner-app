@@ -14,6 +14,8 @@ import type {
   VendorItem,
   RundownItem,
   JournalCategory,
+  NoteCategory,
+  NoteItem,
   ActiveTab,
   WeddingPlannerContextType,
 } from '../types/wedding.types';
@@ -265,6 +267,37 @@ export const WeddingPlannerProvider: React.FC<{ children: React.ReactNode }> = (
     setState((prev) => ({ ...prev, journal: prev.journal.filter((j) => j.id !== id) }));
   }, []);
 
+  // Note operations
+  const addNote = useCallback(
+    (title: string, content: string, category: NoteCategory = 'GENERAL') => {
+      const newNote: NoteItem = {
+        id: `note_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
+        title: title.trim(),
+        content: content.trim(),
+        category,
+        createdAt: new Date().toISOString(),
+      };
+      setState((prev) => ({ ...prev, notes: [newNote, ...prev.notes] }));
+    },
+    []
+  );
+
+  const updateNote = useCallback(
+    (id: string, updates: Partial<Omit<NoteItem, 'id' | 'createdAt'>>) => {
+      setState((prev) => ({
+        ...prev,
+        notes: prev.notes.map((n) =>
+          n.id === id ? { ...n, ...updates, updatedAt: new Date().toISOString() } : n
+        ),
+      }));
+    },
+    []
+  );
+
+  const deleteNote = useCallback((id: string) => {
+    setState((prev) => ({ ...prev, notes: prev.notes.filter((n) => n.id !== id) }));
+  }, []);
+
   const resetAllData = useCallback(() => {
     clearPlannerState(user?.uid);
     setState(INITIAL_STATE);
@@ -302,6 +335,9 @@ export const WeddingPlannerProvider: React.FC<{ children: React.ReactNode }> = (
     deleteRundownItem,
     addJournalEntry,
     deleteJournalEntry,
+    addNote,
+    updateNote,
+    deleteNote,
     resetAllData,
   };
 

@@ -6,6 +6,7 @@ import type {
   VendorCategory,
   VendorStatus,
   JournalCategory,
+  NoteCategory,
 } from '../types/wedding.types';
 
 export const CATEGORY_OPTIONS: BudgetCategoryOption[] = [
@@ -63,4 +64,12 @@ export const JOURNAL_CATEGORY_OPTIONS: { id: JournalCategory; label: string }[] 
   { id: 'VENDOR_MEETING', label: 'Temu Vendor' },
   { id: 'REFLECTION', label: 'Refleksi Rasa Syukur' },
   { id: 'MEMORABLE', label: 'Momen Berkesan' },
+];
+
+export const NOTE_CATEGORY_OPTIONS: { id: NoteCategory; label: string }[] = [
+  { id: 'CATERING', label: 'Konsumsi & Katering' },
+  { id: 'LOGISTICS', label: 'Logistik & Perlengkapan' },
+  { id: 'DECORATION', label: 'Dekorasi & Nuansa' },
+  { id: 'CONCEPT', label: 'Konsep & Acara' },
+  { id: 'GENERAL', label: 'Umum & Lainnya' },
 ];

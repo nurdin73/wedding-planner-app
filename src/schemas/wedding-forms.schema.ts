@@ -94,6 +94,14 @@ export const journalFormSchema = z.object({
 });
 export type JournalFormValues = z.infer<typeof journalFormSchema>;
 
+// 7. Note Form Schema
+export const noteFormSchema = z.object({
+  title: z.string().trim().min(1, 'Judul catatan wajib diisi').max(100, 'Judul maksimal 100 karakter'),
+  content: z.string().trim().min(1, 'Isi catatan wajib diisi').max(5000, 'Isi catatan maksimal 5000 karakter'),
+  category: z.enum(['CATERING', 'LOGISTICS', 'DECORATION', 'CONCEPT', 'GENERAL']),
+});
+export type NoteFormValues = z.infer<typeof noteFormSchema>;
+
 // 7. Onboarding Form Schema
 export const onboardingFormSchema = z.object({
   brideName: z.string().trim().min(1, 'Nama panggilan mempelai wanita wajib diisi'),

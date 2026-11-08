@@ -1,15 +1,21 @@
 import React from 'react';
+import { StickyNote } from 'lucide-react';
 import { useWeddingPlanner } from '../../hooks/use-wedding-planner';
 import { UserAuthButton } from '../auth/user-auth-button';
 
 interface AppHeaderProps {
   onOpenInvite?: () => void;
   onOpenReschedule?: () => void;
+  onOpenNotes?: () => void;
 }
 
-export const AppHeader: React.FC<AppHeaderProps> = ({ onOpenInvite, onOpenReschedule }) => {
+export const AppHeader: React.FC<AppHeaderProps> = ({
+  onOpenInvite,
+  onOpenReschedule,
+  onOpenNotes,
+}) => {
   const { state } = useWeddingPlanner();
-  const { profile } = state;
+  const { profile, notes = [] } = state;
 
   const hasCoupleNames = Boolean(profile.brideName && profile.groomName);
   const coupleTitle = hasCoupleNames
@@ -45,7 +51,25 @@ export const AppHeader: React.FC<AppHeaderProps> = ({ onOpenInvite, onOpenResche
         </div>
 
         {/* Right side: Clean Unified Account & Workspace Menu */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5">
+          {onOpenNotes && (
+            <button
+              type="button"
+              data-testid="header-button-notes"
+              onClick={onOpenNotes}
+              className="p-2 rounded-xl text-[#73635C] hover:text-[#3A302C] hover:bg-[#F5EFEB] border border-[#ECE5DE]/70 transition-colors cursor-pointer relative bg-white/70"
+              aria-label="Catatan & Memo Perencanaan"
+              title="Catatan & Memo Perencanaan"
+            >
+              <StickyNote className="w-4 h-4" strokeWidth={1.75} />
+              {notes.length > 0 && (
+                <span
+                  data-testid="header-notes-badge"
+                  className="absolute top-1 right-1 w-2 h-2 rounded-full bg-secondary"
+                />
+              )}
+            </button>
+          )}
           <UserAuthButton onOpenInvite={onOpenInvite} onOpenReschedule={onOpenReschedule} />
         </div>
       </div>

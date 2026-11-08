@@ -22,6 +22,7 @@ export const INITIAL_STATE: WeddingPlannerState = {
   vendors: [],
   rundown: [],
   journal: [],
+  notes: [],
   activeTab: 'home',
 };
 
@@ -53,6 +54,7 @@ export function loadPlannerState(uid?: string | null): WeddingPlannerState {
       vendors: Array.isArray(parsed.vendors) ? parsed.vendors : [],
       rundown: Array.isArray(parsed.rundown) ? parsed.rundown : [],
       journal: Array.isArray(parsed.journal) ? parsed.journal : [],
+      notes: Array.isArray(parsed.notes) ? parsed.notes : [],
       activeTab: parsed.activeTab || 'home',
     };
   } catch (error) {

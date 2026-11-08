@@ -6,6 +6,7 @@ import type {
   VendorItem,
   RundownItem,
   JournalEntry,
+  NoteItem,
 } from '../types/wedding.types';
 
 interface Identifiable {
@@ -72,6 +73,11 @@ export function reconcilePlannerStates(
     remoteState.journal || []
   );
 
+  const notes = reconcileItemArrays<NoteItem>(
+    localState.notes || [],
+    remoteState.notes || []
+  );
+
   // Profile resolution: prefer whichever has isInitialized true, with local updates
   const profile = {
     ...remoteState.profile,
@@ -87,6 +93,7 @@ export function reconcilePlannerStates(
     vendors,
     rundown,
     journal,
+    notes,
     activeTab: localState.activeTab,
   };
 }

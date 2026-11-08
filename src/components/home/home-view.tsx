@@ -1,5 +1,5 @@
 import React from 'react';
-import { PlusCircle, ReceiptText, RotateCcw, Share2, BookOpen, Heart } from 'lucide-react';
+import { PlusCircle, ReceiptText, RotateCcw, Share2, BookOpen, Heart, StickyNote } from 'lucide-react';
 import { CountdownCard } from './countdown-card';
 import { UrgentTasksCard } from './urgent-tasks-card';
 import { PillarBarometer } from './pillar-barometer';
@@ -9,14 +9,17 @@ interface HomeViewProps {
   onOpenStory?: () => void;
   onOpenJournal?: () => void;
   onOpenInvite?: () => void;
+  onOpenNotes?: () => void;
 }
 
 export const HomeView: React.FC<HomeViewProps> = ({
   onOpenStory,
   onOpenJournal,
   onOpenInvite,
+  onOpenNotes,
 }) => {
-  const { setActiveTab, resetAllData, isPaired } = useWeddingPlanner();
+  const { state, setActiveTab, resetAllData, isPaired } = useWeddingPlanner();
+  const { notes = [] } = state;
 
   const handleReset = () => {
     if (window.confirm('Apakah Anda yakin ingin mereset seluruh data perencanaan pernikahan ini?')) {
@@ -116,6 +119,28 @@ export const HomeView: React.FC<HomeViewProps> = ({
             </div>
           </button>
         </div>
+
+        {onOpenNotes && (
+          <button
+            type="button"
+            data-testid="button-home-notes"
+            onClick={onOpenNotes}
+            className="mt-2.5 w-full flex items-center justify-between p-2.5 rounded-xl bg-[#FAF8F5] hover:bg-[#F5EFEB] border border-[#ECE5DE] text-left transition-colors cursor-pointer"
+          >
+            <div className="flex items-center gap-2 min-w-0 pr-2">
+              <div className="w-7 h-7 rounded-lg bg-[#FAF5E8] flex items-center justify-center text-[#9A702C] shrink-0">
+                <StickyNote className="w-4 h-4" strokeWidth={1.75} />
+              </div>
+              <div className="min-w-0 flex-1">
+                <span className="block text-xs font-semibold text-[#3A302C]">Catatan & Memo Perencanaan</span>
+                <span className="block text-[10px] text-[#A89B95] truncate">Daftar konsumsi, susunan foto & detail teknis</span>
+              </div>
+            </div>
+            <div className="text-[11px] font-medium text-secondary shrink-0">
+              {notes.length} catatan
+            </div>
+          </button>
+        )}
       </div>
 
       {/* Quick Actions Card */}
